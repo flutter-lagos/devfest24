@@ -31,7 +31,8 @@ class MoreHomeScreen extends ConsumerWidget {
                     SignedOutUserHeaderTile(
                       signInOnTap: () {
                         context.goNamedAndPopAll(OnboardingLoginScreen.route);
-                        ConferenceAppStorageService.instance.setIsFirstLaunch(true);
+                        ConferenceAppStorageService.instance
+                            .setIsFirstLaunch(true);
                       },
                     ),
                   MoreSection(
