@@ -1,7 +1,8 @@
 import 'package:cave/cave.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../features/onboarding/presentation/presentation.dart';
 
 class CheckInButton extends StatelessWidget {
   const CheckInButton({
@@ -22,7 +23,8 @@ class CheckInButton extends StatelessWidget {
       child: isLoggedIn
           ? _CheckInButton(onCheckInTap)
           : _LoginCheckInButton(() {
-              context.goNamed(Devfest2024Routes.onboardingLogin.name);
+              context.goNamedAndPopAll(OnboardingLoginScreen.route);
+              ConferenceAppStorageService.instance.setIsFirstLaunch(true);
             }),
     );
   }

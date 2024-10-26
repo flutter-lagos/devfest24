@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/shared.dart';
 
 class DashboardScreen extends StatelessWidget {
+  static const route = '/home';
+
   const DashboardScreen({super.key});
 
   @override
@@ -58,6 +60,7 @@ class _ViewState extends ConsumerState<_View> {
         ref.read(speakersViewModelNotifier.notifier).fetchSpeakers(),
         ref.read(agendasViewModelNotifier.notifier).fetchAgenda(),
       ]);
+      ConferenceAppStorageService.instance.setIsFirstLaunch(false);
     });
   }
 

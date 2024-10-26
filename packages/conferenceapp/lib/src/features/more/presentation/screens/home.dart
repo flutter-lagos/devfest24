@@ -1,13 +1,13 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
-import 'package:devfest24/src/features/more/presentation/widgets/widgets.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../dashboard/application/application.dart';
+import '../../../onboarding/presentation/presentation.dart';
+import '../presentation.dart';
 
 class MoreHomeScreen extends ConsumerWidget {
   const MoreHomeScreen({super.key});
@@ -30,7 +30,8 @@ class MoreHomeScreen extends ConsumerWidget {
                   else
                     SignedOutUserHeaderTile(
                       signInOnTap: () {
-                        context.goNamed(Devfest2024Routes.onboardingLogin.name);
+                        context.goNamedAndPopAll(OnboardingLoginScreen.route);
+                        ConferenceAppStorageService.instance.setIsFirstLaunch(true);
                       },
                     ),
                   MoreSection(
@@ -43,7 +44,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.profile.name);
+                          context.goNamed(ProfileScreen.route);
                         },
                       ),
                       MoreButton(
@@ -53,7 +54,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.myQrCode.name);
+                          context.goNamed(MyQrCodeScreen.route);
                         },
                       ),
                       MoreButton(
@@ -71,7 +72,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.venueMap.name);
+                          context.goNamed(VenueMapScreen.route);
                         },
                       ),
                     ],

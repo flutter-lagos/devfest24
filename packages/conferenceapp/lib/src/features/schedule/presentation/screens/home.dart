@@ -5,7 +5,6 @@ import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../dashboard/application/application.dart';
 
@@ -81,7 +80,7 @@ class _ScheduleHomeScreenState extends ConsumerState<ScheduleHomeScreen> {
                         ? ScheduleTileType.breakout
                         : ScheduleTileType.session,
                     onTap: () {
-                      context.goNamed(Devfest2024Routes.scheduleDetails.name);
+                      context.goNamed(ScheduleDetailsScreen.route);
                     },
                   );
                 },

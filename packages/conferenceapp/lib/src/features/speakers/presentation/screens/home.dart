@@ -5,10 +5,10 @@ import 'package:devfest24/src/features/speakers/presentation/widgets/widgets.dar
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../shared/shared.dart';
 import '../../../dashboard/application/application.dart';
+import 'screens.dart';
 
 class SpeakersHomeScreen extends ConsumerStatefulWidget {
   const SpeakersHomeScreen({super.key});
@@ -133,8 +133,8 @@ class _SpeakersList extends ConsumerWidget {
           speaker: speaker,
           onTap: () {
             context.goNamed(
-              Devfest2024Routes.speakerDetails.name,
-              extra: speaker,
+              SpeakerDetailsScreen.route,
+              arguments: speaker,
             );
           },
         );

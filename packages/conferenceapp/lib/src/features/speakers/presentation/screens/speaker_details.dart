@@ -2,17 +2,18 @@ import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
 import 'package:devfest24/src/features/speakers/presentation/widgets/speaker_social_media.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:devfest24/src/shared/widgets/speaker_talk_info_pill.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconoir_flutter/iconoir_flutter.dart'
     hide Text, List, Key, Radius, Brightness, Map;
 
 import '../../../dashboard/model/model.dart';
 
 class SpeakerDetailsScreen extends ConsumerStatefulWidget {
+  static const route = '/home/speaker-details';
   const SpeakerDetailsScreen({super.key, required this.speaker});
 
   final SpeakerDto speaker;

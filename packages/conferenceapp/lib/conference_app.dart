@@ -4,6 +4,8 @@ import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'src/features/onboarding/presentation/presentation.dart';
+
 class ConferenceApp extends ConsumerStatefulWidget {
   const ConferenceApp({super.key});
 
@@ -17,14 +19,25 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
   @override
   void initState() {
     super.initState();
-    Devfest2024Router.instance.initialiseRouter(ref);
+
+    Future.microtask(() async {
+      final [dynamic isFirstLaunch, dynamic token] = await Future.wait([
+        ConferenceAppStorageService.instance.isFirstLaunch,
+        ConferenceAppStorageService.instance.userToken,
+      ]);
+
+      if (isFirstLaunch == true && (token.toString()).isEmpty) {
+        Devfest2024Router.rootNavigatorKey.currentContext
+            ?.goNamedAndPopAll(OnboardingHomeScreen.route);
+        return;
+      }
+    });
   }
 
   void _unfocus() {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -33,9 +46,11 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
         designSize: designSize,
         minTextAdapt: true,
         builder: (_, child) {
-          return MaterialApp.router(
+          return MaterialApp(
             title: 'Devfest24 Conference App',
-            routerConfig: Devfest2024Router.instance.router,
+            navigatorKey: Devfest2024Router.rootNavigatorKey,
+            initialRoute: Devfest2024Router.initialRoute,
+            onGenerateRoute: Devfest2024Router.instance.onGenerateRoutes,
             builder: (context, child) => AccessibilityTools(
               minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
               checkFontOverflows: true,

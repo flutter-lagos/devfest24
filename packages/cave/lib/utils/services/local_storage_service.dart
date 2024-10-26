@@ -17,11 +17,23 @@ final class ConferenceAppStorageService {
         iOptions: _getIosOptions(),
       );
 
+  SharedPreferencesAsync get _sharedPreferencesInstance =>
+      SharedPreferencesAsync();
+
   Future<void> setUserToken(String token) async {
     return await _securedStorageInstance.write(key: 'user-token', value: token);
   }
 
   Future<String> get userToken async {
     return await _securedStorageInstance.read(key: 'user-token') ?? '';
+  }
+
+  Future<void> setIsFirstLaunch(bool isFirstLaunch) async {
+    return await _sharedPreferencesInstance.setBool(
+        'is-first-launch', isFirstLaunch);
+  }
+
+  Future<bool> get isFirstLaunch async {
+    return await _sharedPreferencesInstance.getBool('is-first-launch') ?? true;
   }
 }

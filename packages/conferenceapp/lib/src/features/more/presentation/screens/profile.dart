@@ -2,13 +2,15 @@ import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../routing/routing.dart';
 import '../../../dashboard/application/application.dart';
+import '../../../onboarding/presentation/presentation.dart';
 import '../widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends ConsumerWidget {
+  static const route = '/more/profile';
+
   const ProfileScreen({super.key});
 
   @override
@@ -37,7 +39,8 @@ class ProfileScreen extends ConsumerWidget {
           else
             SignedOutUserHeaderTile(
               signInOnTap: () {
-                context.goNamed(Devfest2024Routes.onboardingLogin.name);
+                context.goNamedAndPopAll(OnboardingLoginScreen.route);
+                ConferenceAppStorageService.instance.setIsFirstLaunch(true);
               },
             ),
           Expanded(

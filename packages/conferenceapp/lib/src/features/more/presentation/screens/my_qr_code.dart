@@ -1,21 +1,21 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class MyQrCodeScreen extends StatelessWidget {
+  static const route = '/more/my-qr-code';
+
   const MyQrCodeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: GoBackButton(
-          onTap: context.pop,
-        ),
+        leading: GoBackButton(onTap: context.pop),
         leadingWidth: 120.w,
       ),
       body: Padding(
@@ -43,10 +43,18 @@ class MyQrCodeScreen extends StatelessWidget {
             ),
             const Spacer(),
             Consumer(
-              builder: (context, ref, child) => QrImageView(
+              builder: (context, ref, child) {
+                if (ref
+                    .watch(userViewModelNotifier.select((vm) => vm.user.id))
+                    .isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return QrImageView(
                   data: ref
                       .watch(userViewModelNotifier.select((vm) => vm.user.id)),
-                  size: 296.w),
+                  size: 296.w,
+                );
+              },
             ),
             const Spacer(flex: 3),
           ],
