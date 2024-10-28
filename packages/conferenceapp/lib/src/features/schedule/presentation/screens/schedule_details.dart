@@ -66,7 +66,7 @@ class ScheduleDetailsScreen extends StatelessWidget {
               children: [
                 SpeakersTalkInfoPill(
                   icon: IconsaxOutline.clock,
-                  title: '10:00AM',
+                  title: '11:00AM',
                 ),
                 SpeakersTalkInfoPill(
                   icon: IconsaxOutline.location,
