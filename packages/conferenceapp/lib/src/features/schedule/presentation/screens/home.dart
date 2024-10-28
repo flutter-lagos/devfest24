@@ -80,7 +80,7 @@ class _ScheduleHomeScreenState extends ConsumerState<ScheduleHomeScreen> {
                         ? ScheduleTileType.breakout
                         : ScheduleTileType.session,
                     onTap: () {
-                      context.goNamed(ScheduleDetailsScreen.route);
+                      context.goNamed(ScheduleDetailsScreen.route,arguments: session);
                     },
                   );
                 },

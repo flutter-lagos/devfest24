@@ -1,14 +1,18 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
+import 'package:devfest24/src/features/dashboard/application/agenda/view_model.dart';
+import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:devfest24/src/routing/routing.dart';
+import 'package:devfest24/src/shared/shared.dart';
 import 'package:devfest24/src/shared/widgets/speaker_talk_info_pill.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleDetailsScreen extends StatelessWidget {
   static const route = '/home/schedule-details';
 
-  const ScheduleDetailsScreen({super.key});
+  const ScheduleDetailsScreen({super.key,required this.session});
+  final SessionDto session;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class ScheduleDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '😘 Women Tech Makers Breakfast',
+              session.title,
               style:
                   DevfestTheme.of(context).textTheme?.titleTitle2Semibold?.semi,
             ),
@@ -51,7 +55,7 @@ class ScheduleDetailsScreen extends StatelessWidget {
                 ),
                 Constants.horizontalGutter.horizontalSpace,
                 Text(
-                  'Femi Falana',
+                  session.speakers.getNames,
                   style:
                       DevfestTheme.of(context).textTheme?.bodyBody1Medium?.semi,
                 ),
@@ -82,7 +86,7 @@ class ScheduleDetailsScreen extends StatelessWidget {
             ),
             Constants.verticalGutter.verticalSpace,
             Text(
-              'Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain, suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace, initiates war and hatred is born in order to protect love. There are nexuses causal relationships that cannot be separated.',
+              session.descrption,
               style: DevfestTheme.of(context).textTheme?.bodyBody2Medium?.semi,
             ),
           ],
