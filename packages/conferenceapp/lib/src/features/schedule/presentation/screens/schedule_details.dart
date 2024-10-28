@@ -1,7 +1,6 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
-import 'package:devfest24/src/features/dashboard/application/agenda/view_model.dart';
 import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/material.dart';
 class ScheduleDetailsScreen extends StatelessWidget {
   static const route = '/home/schedule-details';
 
-  const ScheduleDetailsScreen({super.key,required this.session});
+  const ScheduleDetailsScreen({super.key, required this.session});
   final SessionDto session;
 
   @override

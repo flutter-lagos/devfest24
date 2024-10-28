@@ -1,4 +1,4 @@
-library cave;
+library;
 
 export 'themes/themes.dart';
 export 'widgets/widgets.dart';
