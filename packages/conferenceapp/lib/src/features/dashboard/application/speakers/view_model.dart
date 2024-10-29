@@ -11,6 +11,21 @@ final speakersViewModelNotifier =
   () => SpeakersViewModel(),
 );
 
+final dayOneSpeakersProvider = Provider.autoDispose<List<SpeakerDto>>((ref) {
+  return ref.watch(speakersViewModelNotifier.select((vm) => vm.speakers
+      .where((speaker) => speaker.sessions
+          .where((session) => session.startTime!.day == 15)
+          .isNotEmpty)
+      .toList()));
+}, dependencies: [speakersViewModelNotifier]);
+final dayTwoSpeakersProvider = Provider.autoDispose<List<SpeakerDto>>((ref) {
+  return ref.watch(speakersViewModelNotifier.select((vm) => vm.speakers
+      .where((speaker) => speaker.sessions
+          .where((session) => session.startTime!.day == 16)
+          .isNotEmpty)
+      .toList()));
+}, dependencies: [speakersViewModelNotifier]);
+
 final class SpeakersViewModel extends AutoDisposeNotifier<SpeakersUiState> {
   late DashboardApiService _apiService;
 

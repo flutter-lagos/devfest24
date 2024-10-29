@@ -1,13 +1,17 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
+import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:devfest24/src/shared/extensions.dart';
 import 'package:devfest24/src/shared/widgets/icon_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AgendaScheduleTile extends StatelessWidget {
-  const AgendaScheduleTile({super.key, this.onTap});
+  const AgendaScheduleTile(
+      {super.key, required this.start, required this.session, this.onTap});
 
+  final DateTime start;
+  final SessionDto session;
   final VoidCallback? onTap;
 
   @override
@@ -33,10 +37,12 @@ class AgendaScheduleTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _Initials(initial: 'W'),
+              _Initials(initial: session.title[0]),
               Constants.verticalGutter.verticalSpace,
               Text(
-                '😘  Women Tech Makers Breakfast',
+                session.title,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.titleTitle2Semibold
@@ -44,7 +50,9 @@ class AgendaScheduleTile extends StatelessWidget {
               ),
               Constants.smallVerticalGutter.verticalSpace,
               Text(
-                'Celebrate the women tech makers at their annual breakfast',
+                session.descrption,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.bodyBody2Medium
@@ -56,10 +64,10 @@ class AgendaScheduleTile extends StatelessWidget {
                 children: [
                   IconText(
                     IconsaxOutline.clock,
-                    dateFormat.format(DateTime.now()),
+                    dateFormat.format(start),
                   ),
                   Constants.largeHorizontalGutter.horizontalSpace,
-                  const IconText(IconsaxOutline.location, 'Hall A')
+                  IconText(IconsaxOutline.location, session.venue.id),
                 ],
               ),
             ],

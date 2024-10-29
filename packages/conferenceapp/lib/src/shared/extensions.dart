@@ -1,4 +1,5 @@
 import 'package:cave/cave.dart';
+import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
 
@@ -24,5 +25,23 @@ extension DevfestColorsX on Color {
     }
 
     return this;
+  }
+}
+
+extension ListX<E> on List<E> {
+  List<E> safeSublist(int length) {
+    try {
+      return sublist(0, length);
+    } on RangeError {
+      return this;
+    }
+  }
+}
+
+extension SpeakerNames on List<SpeakerDto> {
+  String get getNames => getSpeakerNames(this);
+  String getSpeakerNames(List<SpeakerDto> speakers) {
+    final names = speakers.map((speaker) => speaker.fullname).toList();
+    return names.join(', ');
   }
 }

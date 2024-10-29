@@ -11,6 +11,12 @@ final sponsorsViewModelNotifier =
   () => SponsorsViewModel(),
 );
 
+final sponsorsProvider = Provider.autoDispose<List<SponsorDto>>((ref) {
+  return ref.watch(sponsorsViewModelNotifier.select((vm) => vm.sponsorCategories
+      .fold(<SponsorDto>[],
+          (previous, next) => [...previous, ...next.sponsors])));
+});
+
 final class SponsorsViewModel extends AutoDisposeNotifier<SponsorsUiState> {
   late DashboardApiService _apiService;
 

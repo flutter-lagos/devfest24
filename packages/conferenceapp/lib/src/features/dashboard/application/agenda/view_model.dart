@@ -11,6 +11,17 @@ final agendasViewModelNotifier =
   () => AgendaViewModel(),
 );
 
+final dayOneSessionsProvider = Provider.autoDispose<List<SessionDto>>((ref) {
+  return ref.watch(agendasViewModelNotifier.select((vm) => vm.agendas
+      .where((agenda) => agenda.start?.day == 15)
+      .fold([], (previous, next) => [...previous, ...next.sessions.sessions])));
+}, dependencies: [agendasViewModelNotifier]);
+final dayTwoSessionsProvider = Provider.autoDispose<List<SessionDto>>((ref) {
+  return ref.watch(agendasViewModelNotifier.select((vm) => vm.agendas
+      .where((agenda) => agenda.start?.day == 16)
+      .fold([], (previous, next) => [...previous, ...next.sessions.sessions])));
+}, dependencies: [agendasViewModelNotifier]);
+
 final class AgendaViewModel extends AutoDisposeNotifier<AgendaUiState> {
   late DashboardApiService _apiService;
 
@@ -27,7 +38,17 @@ final class AgendaViewModel extends AutoDisposeNotifier<AgendaUiState> {
 
       state = model.emit(
         result.fold(
-          (left) => state.copyWith(uiState: UiState.error, error: left),
+          (left) {
+            if (left is WithCachedDataException) {
+              return state.copyWith(
+                uiState: UiState.error,
+                error: left,
+                agendas: (left.result as AgendasDto).agendas,
+              );
+            }
+
+            return state.copyWith(uiState: UiState.error, error: left);
+          },
           (right) =>
               state.copyWith(uiState: UiState.success, agendas: right.agendas),
         ),

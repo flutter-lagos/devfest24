@@ -4,6 +4,8 @@ import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../dashboard/model/model.dart';
+
 enum ScheduleTileType { session, breakout }
 
 class ConferenceScheduleTile extends StatefulWidget {
@@ -11,8 +13,14 @@ class ConferenceScheduleTile extends StatefulWidget {
     super.key,
     this.onTap,
     required this.type,
+    required this.session,
+    required this.start,
+    required this.duration,
   });
 
+  final SessionDto session;
+  final DateTime start;
+  final int duration;
   final VoidCallback? onTap;
   final ScheduleTileType type;
 
@@ -77,15 +85,15 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  dateFormat.format(
-                      DateTime.now().subtract(const Duration(hours: 5))),
+                  dateFormat.format(widget.start),
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody4Medium
                       ?.medium,
                 ),
                 Text(
-                  dateFormat.format(DateTime.now()),
+                  dateFormat.format(
+                      widget.start.add(Duration(minutes: widget.duration))),
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody4Medium
@@ -97,8 +105,9 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
             Expanded(
               key: _expandedTileKey,
               child: switch (widget.type) {
-                ScheduleTileType.session => const _SessionInfo(),
-                ScheduleTileType.breakout => const _BreakoutScheduleInfo(),
+                ScheduleTileType.session => _SessionInfo(widget.session),
+                ScheduleTileType.breakout =>
+                  _BreakoutScheduleInfo(widget.session),
               },
             ),
           ],
@@ -109,7 +118,9 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
 }
 
 class _SessionInfo extends StatelessWidget {
-  const _SessionInfo();
+  const _SessionInfo(this.session);
+
+  final SessionDto session;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +145,7 @@ class _SessionInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'mobile development'.toUpperCase(),
+                  session.categories.first.toUpperCase(),
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody3Medium
@@ -148,7 +159,9 @@ class _SessionInfo extends StatelessWidget {
             ),
             Constants.verticalGutter.verticalSpace,
             Text(
-              'Appreciating the usefulness of football memes in decoding intent',
+              session.title,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: DevfestTheme.of(context)
                   .textTheme
                   ?.bodyBody1Semibold
@@ -157,7 +170,9 @@ class _SessionInfo extends StatelessWidget {
             ),
             Constants.smallVerticalGutter.verticalSpace,
             Text(
-              'Celebrate the women tech makers at their annual breakfast',
+              session.descrption,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: DevfestTheme.of(context)
                   .textTheme
                   ?.bodyBody2Medium
@@ -165,13 +180,14 @@ class _SessionInfo extends StatelessWidget {
                   .applyColor(DevfestColors.grey50.possibleDarkVariant),
             ),
             Constants.verticalGutter.verticalSpace,
-            const SpeakerInfo(
-              name: 'Samuel Abada',
-              shortBio: 'Flutter Engineer, Tesla',
-              avatarUrl: '',
+            SpeakerInfo(
+              name: session.speakers.first.fullname,
+              shortBio:
+                  '${session.speakers.first.title}, ${session.speakers.first.company}',
+              avatarUrl: session.speakers.first.imageUrl,
             ),
             Constants.verticalGutter.verticalSpace,
-            const IconText(IconsaxOutline.location, 'Hall A'),
+            IconText(IconsaxOutline.location, session.venue.id),
           ],
         ),
       ),
@@ -224,6 +240,8 @@ class SpeakerInfo extends StatelessWidget {
               (Constants.smallVerticalGutter / 2).verticalSpace,
               Text(
                 shortBio,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.bodyBody3Medium
@@ -239,7 +257,9 @@ class SpeakerInfo extends StatelessWidget {
 }
 
 class _BreakoutScheduleInfo extends StatelessWidget {
-  const _BreakoutScheduleInfo();
+  const _BreakoutScheduleInfo(this.session);
+
+  final SessionDto session;
 
   @override
   Widget build(BuildContext context) {
@@ -255,16 +275,20 @@ class _BreakoutScheduleInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _Initials(initial: 'W'),
+            _Initials(initial: session.title[0]),
             Constants.verticalGutter.verticalSpace,
             Text(
-              '😘  Women Tech Makers Breakfast',
+              session.title,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style:
                   DevfestTheme.of(context).textTheme?.titleTitle2Semibold?.semi,
             ),
             Constants.smallVerticalGutter.verticalSpace,
             Text(
-              'Celebrate the women tech makers at their annual breakfast',
+              session.descrption,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: DevfestTheme.of(context)
                   .textTheme
                   ?.bodyBody2Medium
@@ -272,7 +296,7 @@ class _BreakoutScheduleInfo extends StatelessWidget {
                   .copyWith(color: DevfestColors.grey50.possibleDarkVariant),
             ),
             Constants.verticalGutter.verticalSpace,
-            const IconText(IconsaxOutline.location, 'Hall A'),
+            IconText(IconsaxOutline.location, session.venue.id),
           ],
         ),
       ),

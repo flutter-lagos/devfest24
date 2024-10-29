@@ -2,9 +2,9 @@ import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/more/presentation/map/map.dart';
 import 'package:devfest24/src/features/more/presentation/widgets/map.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart' hide Action;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../shared/shared.dart';
 import '../widgets/map_layout.dart';
@@ -22,6 +22,8 @@ final showBlocksProvider = StateProvider.autoDispose<bool>((ref) {
 });
 
 class VenueMapScreen extends ConsumerStatefulWidget {
+  static const route = '/home/venue-map';
+
   const VenueMapScreen({super.key});
 
   @override
