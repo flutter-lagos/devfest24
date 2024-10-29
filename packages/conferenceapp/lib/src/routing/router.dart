@@ -26,8 +26,10 @@ class Devfest2024Router {
         MaterialPageRoute(builder: (_) => const OnboardingSignatureScreen()),
       DashboardScreen.route =>
         MaterialPageRoute(builder: (_) => const DashboardScreen()),
-      ScheduleDetailsScreen.route =>
-        MaterialPageRoute(builder: (_) => const ScheduleDetailsScreen()),
+      ScheduleDetailsScreen.route => MaterialPageRoute(
+          builder: (_) => ScheduleDetailsScreen(
+                session: settings.arguments as SessionDto,
+              )),
       SpeakerDetailsScreen.route => MaterialPageRoute(
           builder: (_) =>
               SpeakerDetailsScreen(speaker: settings.arguments as SpeakerDto)),
