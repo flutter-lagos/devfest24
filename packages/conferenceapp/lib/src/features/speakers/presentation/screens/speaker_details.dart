@@ -1,19 +1,23 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
+import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/features/speakers/presentation/widgets/speaker_social_media.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:devfest24/src/shared/widgets/speaker_talk_info_pill.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconoir_flutter/iconoir_flutter.dart'
     hide Text, List, Key, Radius, Brightness, Map;
 
 import '../../../dashboard/model/model.dart';
+import 'package:collection/collection.dart';
 
 class SpeakerDetailsScreen extends ConsumerStatefulWidget {
   static const route = '/home/speaker-details';
+
   const SpeakerDetailsScreen({super.key, required this.speaker});
 
   final SpeakerDto speaker;
@@ -24,8 +28,17 @@ class SpeakerDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
+  late bool isDayOne = widget.speaker.day == 1;
+
   @override
   Widget build(BuildContext context) {
+    final session = isDayOne
+        ? ref.watch(dayOneScheduleProvider.select((sessions) =>
+            sessions.firstWhereOrNull(
+                (session) => session.title == widget.speaker.sessionTitle)))
+        : ref.watch(dayTwoScheduleProvider.select((sessions) =>
+            sessions.firstWhereOrNull(
+                (session) => session.title == widget.speaker.sessionTitle)));
     return Scaffold(
       appBar: AppBar(
         leading: GoBackButton(
@@ -33,8 +46,9 @@ class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
         ),
         leadingWidth: 120.w,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 24.w).add(
+            EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -48,7 +62,7 @@ class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
                 children: [
                   const Icon(IconsaxBold.people),
                   Text(
-                    '100 Slots Left',
+                    '${session?.venue.size ?? 'N\\A'} Slots',
                     style: DevfestTheme.of(context)
                         .textTheme
                         ?.bodyBody2Medium
@@ -61,7 +75,7 @@ class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
             Padding(
               padding: EdgeInsets.only(right: 32.w),
               child: Text(
-                'Appreciating the usefulness of football memes in decoding intent',
+                widget.speaker.sessionTitle,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.titleTitle2Semibold
@@ -78,48 +92,54 @@ class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
                         color: DevfestColors.primariesBlue60, width: 2),
                   ),
                   padding: EdgeInsets.all(2),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.speaker.imageUrl,
-                    height: 56.h,
-                    width: 56.w,
+                  child: Semantics(
+                    label: 'Speaker Image',
+                    child: CachedNetworkImage(
+                      imageUrl: widget.speaker.imageUrl,
+                      height: 56.h,
+                      width: 56.w,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Constants.horizontalGutter.horizontalSpace,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      widget.speaker.fullname,
-                      style: DevfestTheme.of(context)
-                          .textTheme
-                          ?.bodyBody1Semibold
-                          ?.semi,
-                    ),
-                    Constants.smallVerticalGutter.verticalSpace,
-                    Text(
-                      '${widget.speaker.title}, ${widget.speaker.company}',
-                      style: DevfestTheme.of(context)
-                          .textTheme
-                          ?.bodyBody2Medium
-                          ?.semi
-                          .applyColor(DevfestColors.grey50),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        widget.speaker.name,
+                        style: DevfestTheme.of(context)
+                            .textTheme
+                            ?.bodyBody1Semibold
+                            ?.semi,
+                      ),
+                      Constants.smallVerticalGutter.verticalSpace,
+                      Text(
+                        widget.speaker.title,
+                        style: DevfestTheme.of(context)
+                            .textTheme
+                            ?.bodyBody2Medium
+                            ?.semi
+                            .applyColor(DevfestColors.grey50),
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),
             Constants.verticalGutter.verticalSpace,
-            const Wrap(
+            Wrap(
               spacing: 8,
               children: [
                 SpeakersTalkInfoPill(
                   icon: IconsaxOutline.clock,
-                  title: '10:00AM',
+                  title: session?.startTime ?? 'N\\A',
                 ),
                 SpeakersTalkInfoPill(
                   icon: IconsaxOutline.location,
-                  title: 'Hall A',
+                  title: session?.venue.name ?? 'N\\A',
                 ),
               ],
             ),

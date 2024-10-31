@@ -85,8 +85,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ProviderScope(
                       overrides: [
                         _agendaSessionsProvider.overrideWithValue(ref
-                            .watch(dayOneSessionsProvider)
-                            .where((session) => session.categories.isEmpty)
+                            .watch(dayOneScheduleProvider.select((sessions) =>
+                                sessions.where((session) =>
+                                    session.eventType == EventType.general)))
                             .toList()
                             .safeSublist(2)),
                       ],
@@ -95,8 +96,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ProviderScope(
                       overrides: [
                         _agendaSessionsProvider.overrideWithValue(ref
-                            .watch(dayTwoSessionsProvider)
-                            .where((session) => session.categories.isEmpty)
+                            .watch(dayTwoScheduleProvider.select((sessions) =>
+                                sessions.where((session) =>
+                                    session.eventType == EventType.general)))
                             .toList()
                             .safeSublist(2)),
                       ],
@@ -200,7 +202,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     itemBuilder: (context, index) => ConferenceSponsorTile(
                       sponsor: ref.watch(sponsorsProvider)[index],
                       linkOnTap: () {
-                        launchWebUrl(ref.read(sponsorsProvider)[index].website);
+                        launchWebUrl(ref.read(sponsorsProvider)[index].link);
                       },
                     ),
                     separatorBuilder: (context, _) =>
@@ -218,7 +220,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-final _agendaSessionsProvider = Provider.autoDispose<List<SessionDto>>((ref) {
+final _agendaSessionsProvider = Provider.autoDispose<List<SessionEvent>>((ref) {
   throw UnimplementedError();
 });
 
@@ -232,15 +234,8 @@ class _AgendaSessions extends ConsumerWidget {
       itemCount: sessions.length,
       itemBuilder: (context, index) {
         final session = sessions[index];
-        final agenda = ref
-            .watch(agendasViewModelNotifier)
-            .agendas
-            .firstWhere((agenda) => session.periodId == agenda.id);
-        return AgendaScheduleTile(
-          session: session,
-          start: agenda.start!,
-          onTap: () {},
-        );
+
+        return AgendaScheduleTile(session: session);
       },
       separatorBuilder: (context, _) =>
           Constants.smallVerticalGutter.verticalSpace,
@@ -262,18 +257,18 @@ class _Speakers extends ConsumerWidget {
       itemCount: speakers.length,
       itemBuilder: (context, index) {
         final speaker = speakers[index];
-        final isDayOne = speaker.sessions.first.startTime?.day == 15;
-        final session = isDayOne
-            ? ref.watch(dayOneSessionsProvider).firstWhereOrNull(
-                (session) => session.id == speaker.sessions.first.id)
-            : ref.watch(dayTwoSessionsProvider).firstWhereOrNull(
-                (session) => session.id == speaker.sessions.first.id);
 
+        final isDayOne = speaker.day == 1;
+        final session = isDayOne
+            ? ref.watch(dayOneScheduleProvider).firstWhereOrNull(
+                (session) => session.facilitator == speaker.id)
+            : ref.watch(dayTwoScheduleProvider).firstWhereOrNull(
+                (session) => session.facilitator == speaker.id);
+        //
         if (session == null) return const SizedBox.shrink();
         return AgendaTalkTile(
           speaker: speaker,
           session: session,
-          onTap: () {},
         );
       },
       separatorBuilder: (context, _) =>

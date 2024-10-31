@@ -32,15 +32,18 @@ class ConferenceSponsorTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SponsorTierTag(sponsor.category),
+                  _SponsorTierTag(sponsor.level),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                             vertical: Constants.largeVerticalGutter)
                         .h,
                     child: Center(
-                      child: CachedNetworkImage(
-                        imageUrl: sponsor.logoUrl,
-                        height: 122.h,
+                      child: Semantics(
+                        label: sponsor.name,
+                        child: CachedNetworkImage(
+                          imageUrl: sponsor.logo,
+                          height: 122.h,
+                        ),
                       ),
                     ),
                   ),

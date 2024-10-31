@@ -1,28 +1,28 @@
 part of 'view_model.dart';
 
 final class SponsorsUiState extends Devfest2024UiState {
-  final List<CategorySponsors> sponsorCategories;
+  final List<SponsorDto> sponsors;
 
   const SponsorsUiState({
     super.error,
     super.uiState,
-    required this.sponsorCategories,
+    required this.sponsors,
   });
 
-  const SponsorsUiState.initial() : this(sponsorCategories: const []);
+  const SponsorsUiState.initial() : this(sponsors: const []);
 
   SponsorsUiState copyWith({
-    List<CategorySponsors>? sponsorCategories,
+    List<SponsorDto>? sponsors,
     UiState? uiState,
     Devfest2024Exception? error,
   }) {
     return SponsorsUiState(
-      sponsorCategories: sponsorCategories ?? this.sponsorCategories,
+      sponsors: sponsors ?? this.sponsors,
       uiState: uiState ?? this.uiState,
       error: error ?? this.error,
     );
   }
 
   @override
-  List<Object?> get otherProps => [sponsorCategories];
+  List<Object?> get otherProps => [sponsors];
 }

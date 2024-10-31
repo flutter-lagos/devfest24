@@ -40,8 +40,9 @@ extension ListX<E> on List<E> {
 
 extension SpeakerNames on List<SpeakerDto> {
   String get getNames => getSpeakerNames(this);
+
   String getSpeakerNames(List<SpeakerDto> speakers) {
-    final names = speakers.map((speaker) => speaker.fullname).toList();
+    final names = speakers.map((speaker) => speaker.name).toList();
     return names.join(', ');
   }
 }
