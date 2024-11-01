@@ -1,3 +1,4 @@
+import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:devfest24/src/features/more/presentation/presentation.dart';
 import 'package:devfest24/src/features/onboarding/presentation/presentation.dart';
@@ -28,7 +29,7 @@ class Devfest2024Router {
         MaterialPageRoute(builder: (_) => const DashboardScreen()),
       ScheduleDetailsScreen.route => MaterialPageRoute(
           builder: (_) => ScheduleDetailsScreen(
-                session: settings.arguments as SessionDto,
+                session: settings.arguments as SessionEvent,
               )),
       SpeakerDetailsScreen.route => MaterialPageRoute(
           builder: (_) =>

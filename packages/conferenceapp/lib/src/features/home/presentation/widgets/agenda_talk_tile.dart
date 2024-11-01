@@ -1,5 +1,6 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
+import 'package:devfest24/src/features/dashboard/application/schedule/view_model.dart';
 import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,7 @@ class AgendaTalkTile extends StatelessWidget {
       {super.key, required this.speaker, required this.session, this.onTap});
 
   final SpeakerDto speaker;
-  final SessionDto session;
+  final SessionEvent session;
   final VoidCallback? onTap;
 
   @override
@@ -49,15 +50,12 @@ class AgendaTalkTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    session.categories.first.toUpperCase(),
+                    session.category.toUpperCase(),
                     style: DevfestTheme.of(context)
                         .textTheme
                         ?.bodyBody3Medium
                         ?.medium
                         .applyColor(DevfestColors.grey60.possibleDarkVariant),
-                  ),
-                  FavouriteIcon(
-                    onTap: () {},
                   ),
                 ],
               ),
@@ -73,20 +71,9 @@ class AgendaTalkTile extends StatelessWidget {
                     .applyColor(DevfestColors.grey10.possibleDarkVariant),
               ),
               Constants.smallVerticalGutter.verticalSpace,
-              Text(
-                session.descrption,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: DevfestTheme.of(context)
-                    .textTheme
-                    ?.bodyBody2Medium
-                    ?.semi
-                    .applyColor(DevfestColors.grey50.possibleDarkVariant),
-              ),
-              Constants.verticalGutter.verticalSpace,
               SpeakerInfo(
-                name: speaker.fullname,
-                shortBio: '${speaker.title}, ${speaker.company}',
+                name: speaker.name,
+                shortBio: speaker.title,
                 avatarUrl: speaker.imageUrl,
               ),
               Constants.verticalGutter.verticalSpace,
@@ -135,10 +122,14 @@ class SpeakerInfo extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.all(2),
-            child: CachedNetworkImage(
-              imageUrl: avatarUrl,
-              height: 48,
-              width: 48,
+            child: Semantics(
+              label: 'Speaker avatar',
+              child: CachedNetworkImage(
+                imageUrl: avatarUrl,
+                height: 48,
+                width: 48,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),

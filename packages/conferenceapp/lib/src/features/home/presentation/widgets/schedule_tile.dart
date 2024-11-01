@@ -1,22 +1,18 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
-import 'package:devfest24/src/features/dashboard/model/model.dart';
+import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/shared/extensions.dart';
 import 'package:devfest24/src/shared/widgets/icon_text.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AgendaScheduleTile extends StatelessWidget {
-  const AgendaScheduleTile(
-      {super.key, required this.start, required this.session, this.onTap});
+  const AgendaScheduleTile({super.key, required this.session, this.onTap});
 
-  final DateTime start;
-  final SessionDto session;
+  final SessionEvent session;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('hh:mm a');
     return Material(
       shape: RoundedRectangleBorder(
         borderRadius:
@@ -49,25 +45,14 @@ class AgendaScheduleTile extends StatelessWidget {
                     ?.semi,
               ),
               Constants.smallVerticalGutter.verticalSpace,
-              Text(
-                session.descrption,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: DevfestTheme.of(context)
-                    .textTheme
-                    ?.bodyBody2Medium
-                    ?.medium
-                    .copyWith(color: DevfestColors.grey50.possibleDarkVariant),
-              ),
-              Constants.verticalGutter.verticalSpace,
               Row(
                 children: [
                   IconText(
                     IconsaxOutline.clock,
-                    dateFormat.format(start),
+                    session.startTime,
                   ),
                   Constants.largeHorizontalGutter.horizontalSpace,
-                  IconText(IconsaxOutline.location, session.venue.id),
+                  IconText(IconsaxOutline.location, session.venue.name),
                 ],
               ),
             ],

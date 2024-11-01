@@ -1,9 +1,8 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
-import 'package:devfest24/src/features/dashboard/model/model.dart';
+import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/routing/routing.dart';
-import 'package:devfest24/src/shared/shared.dart';
 import 'package:devfest24/src/shared/widgets/speaker_talk_info_pill.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,8 @@ class ScheduleDetailsScreen extends StatelessWidget {
   static const route = '/home/schedule-details';
 
   const ScheduleDetailsScreen({super.key, required this.session});
-  final SessionDto session;
+
+  final SessionEvent session;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class ScheduleDetailsScreen extends StatelessWidget {
                 ),
                 Constants.horizontalGutter.horizontalSpace,
                 Text(
-                  session.speakers.getNames,
+                  session.facilitator,
                   style:
                       DevfestTheme.of(context).textTheme?.bodyBody1Medium?.semi,
                 ),
@@ -73,20 +73,6 @@ class ScheduleDetailsScreen extends StatelessWidget {
                   title: 'Hall A',
                 ),
               ],
-            ),
-            Constants.largeVerticalGutter.verticalSpace,
-            Text(
-              'DESCRIPTION',
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.bodyBody3Medium
-                  ?.semi
-                  .applyColor(DevfestColors.grey50),
-            ),
-            Constants.verticalGutter.verticalSpace,
-            Text(
-              session.descrption,
-              style: DevfestTheme.of(context).textTheme?.bodyBody2Medium?.semi,
             ),
           ],
         ),

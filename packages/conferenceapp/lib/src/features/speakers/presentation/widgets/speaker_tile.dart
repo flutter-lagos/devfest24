@@ -21,8 +21,8 @@ class SpeakerTile extends StatelessWidget {
           Radius.circular(Constants.verticalGutter),
         ),
         child: SpeakerInfo(
-          name: speaker.fullname,
-          shortBio: '${speaker.title}, ${speaker.company}',
+          name: speaker.name,
+          shortBio: speaker.title,
           avatarUrl: speaker.imageUrl,
         ),
       ),
@@ -57,10 +57,14 @@ class SpeakerInfo extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(2),
-            child: CachedNetworkImage(
-              imageUrl: avatarUrl,
-              height: 48.h,
-              width: 48.w,
+            child: Semantics(
+              label: 'Speaker avatar',
+              child: CachedNetworkImage(
+                imageUrl: avatarUrl,
+                height: 48.h,
+                width: 48.w,
+                fit: BoxFit.cover,
+              ),
             ),
             // FlutterLogo(size: 48),
           ),
@@ -80,6 +84,8 @@ class SpeakerInfo extends StatelessWidget {
               (Constants.smallVerticalGutter / 2).verticalSpace,
               Text(
                 shortBio,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.bodyBody3Medium

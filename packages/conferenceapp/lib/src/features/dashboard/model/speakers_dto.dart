@@ -8,6 +8,15 @@ final class SpeakersDto extends Equatable {
   factory SpeakersDto.fromJson(dynamic json) => SpeakersDto(
         speakers: switch (json) {
           List list => list.map((e) => SpeakerDto.fromJson(e)).toList(),
+          Map<String, dynamic> map => map.entries
+              .map((entry) {
+                if (entry.value is Map<String, dynamic>) {
+                  return entry.value as Map<String, dynamic>;
+                }
+                return <String, dynamic>{};
+              })
+              .map(SpeakerDto.fromJson)
+              .toList(),
           _ => const [],
         },
       );
@@ -20,89 +29,69 @@ final class SpeakersDto extends Equatable {
 
 final class SpeakerDto extends Equatable {
   final String id;
-  final String fullname;
+  final String name;
   final String title;
-  final String company;
+  final String shortbio;
   final String bio;
   final String imageUrl;
+  final int day;
   final Map<String, dynamic> links;
-  final List<SpeakerSessionDto> sessions;
+  final String track;
+  final String sessionTitle;
 
   const SpeakerDto({
     required this.id,
-    required this.fullname,
+    required this.name,
     required this.title,
-    required this.company,
+    required this.shortbio,
     required this.bio,
     required this.imageUrl,
+    required this.day,
     required this.links,
-    required this.sessions,
+    required this.track,
+    required this.sessionTitle,
   });
 
   factory SpeakerDto.fromJson(Map<String, dynamic> json) => SpeakerDto(
         id: json['id'] ?? '',
-        fullname: json['fullname'] ?? '',
+        name: json['name'] ?? '',
         title: json['title'] ?? '',
-        company: json['company'] ?? '',
+        shortbio: json['shortbio'] ?? '',
         bio: json['bio'] ?? '',
         imageUrl: json['image_url'] ?? '',
+        day: json['day'] ?? 0,
         links: switch (json['links']) {
           Map map => map.map((key, value) => MapEntry(key.toString(), value)),
           _ => const {},
         },
-        sessions: switch (json['sessions']) {
-          List list => list.map((e) => SpeakerSessionDto.fromJson(e)).toList(),
-          _ => const [],
-        },
+        track: json['track'] ?? '',
+        sessionTitle: json['session_title'] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'fullname': fullname,
+        'name': name,
         'title': title,
-        'company': company,
+        'shortbio': shortbio,
         'bio': bio,
         'image_url': imageUrl,
+        'day': day,
         'links': links,
-        'sessions': sessions,
+        'track': track,
+        'session_title': sessionTitle,
       };
 
   @override
-  List<Object?> get props =>
-      [id, fullname, title, company, bio, imageUrl, links];
-}
-
-final class SpeakerSessionDto extends Equatable {
-  final String title;
-  final String id;
-  final String venue;
-  final DateTime? startTime;
-  final int duration;
-
-  const SpeakerSessionDto(
-      {required this.title,
-      required this.id,
-      required this.venue,
-      required this.startTime,
-      required this.duration});
-
-  factory SpeakerSessionDto.fromJson(Map<String, dynamic> json) =>
-      SpeakerSessionDto(
-        title: json['title'] ?? '',
-        id: json['id'] ?? '',
-        venue: json['venue'] ?? '',
-        startTime: DateTime.tryParse(json['start_time'] ?? ''),
-        duration: json['duration'] ?? 0,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'id': id,
-        'venue': venue,
-        'start_time': startTime?.toIso8601String(),
-        'duration': duration,
-      };
-
-  @override
-  List<Object?> get props => [title, id, venue, startTime, duration];
+  List<Object?> get props => [
+        id,
+        name,
+        title,
+        shortbio,
+        bio,
+        imageUrl,
+        day,
+        links,
+        track,
+        sessionTitle
+      ];
 }

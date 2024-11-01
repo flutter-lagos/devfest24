@@ -1,28 +1,26 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../dashboard/model/model.dart';
+import '../../../dashboard/application/application.dart';
+import 'package:collection/collection.dart';
 
-enum ScheduleTileType { session, breakout }
+enum ScheduleTileType { breakOut, general }
 
 class ConferenceScheduleTile extends StatefulWidget {
   const ConferenceScheduleTile({
     super.key,
     this.onTap,
-    required this.type,
     required this.session,
-    required this.start,
-    required this.duration,
   });
 
-  final SessionDto session;
-  final DateTime start;
-  final int duration;
   final VoidCallback? onTap;
-  final ScheduleTileType type;
+
+  final SessionEvent session;
 
   @override
   State<ConferenceScheduleTile> createState() => _ConferenceScheduleTileState();
@@ -37,10 +35,11 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
     super.initState();
 
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
-      final RenderBox renderBox =
-          _expandedTileKey.currentContext!.findRenderObject() as RenderBox;
+      final RenderBox? renderBox =
+          _expandedTileKey.currentContext?.findRenderObject() as RenderBox?;
+      if (!mounted) return;
       setState(() {
-        maxHeightOfTile = renderBox.size.height;
+        if (renderBox != null) maxHeightOfTile = renderBox.size.height;
       });
     });
   }
@@ -50,13 +49,12 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
     super.didChangeDependencies();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        maxHeightOfTile = 0;
-      });
+      maxHeightOfTile = 0;
 
       Future.microtask(() {
-        final RenderBox renderBox =
-            _expandedTileKey.currentContext!.findRenderObject() as RenderBox;
+        final RenderBox? renderBox =
+            _expandedTileKey.currentContext?.findRenderObject() as RenderBox?;
+        if (!mounted || renderBox == null) return;
         if (maxHeightOfTile != renderBox.size.height) {
           setState(() {
             maxHeightOfTile = renderBox.size.height;
@@ -68,8 +66,6 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('hh:mm a');
-
     return InkWell(
       onTap: widget.onTap,
       borderRadius: const BorderRadius.horizontal(
@@ -85,15 +81,14 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  dateFormat.format(widget.start),
+                  widget.session.startTime,
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody4Medium
                       ?.medium,
                 ),
                 Text(
-                  dateFormat.format(
-                      widget.start.add(Duration(minutes: widget.duration))),
+                  widget.session.endTime,
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody4Medium
@@ -104,10 +99,11 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
             (Constants.horizontalGutter * 1.5).horizontalSpace,
             Expanded(
               key: _expandedTileKey,
-              child: switch (widget.type) {
-                ScheduleTileType.session => _SessionInfo(widget.session),
-                ScheduleTileType.breakout =>
-                  _BreakoutScheduleInfo(widget.session),
+              child: switch (widget.session.eventType) {
+                EventType.breakout => _BreakoutScheduleInfo(widget.session),
+                EventType.general ||
+                EventType.postBreakout =>
+                  _GeneralScheduleInfo(widget.session),
               },
             ),
           ],
@@ -117,13 +113,16 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
   }
 }
 
-class _SessionInfo extends StatelessWidget {
-  const _SessionInfo(this.session);
+class _BreakoutScheduleInfo extends ConsumerWidget {
+  const _BreakoutScheduleInfo(this.session);
 
-  final SessionDto session;
+  final SessionEvent session;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final speakerInfo = ref.watch(speakersViewModelNotifier.select((vm) => vm
+        .speakers
+        .firstWhereOrNull((speaker) => speaker.id == session.facilitator)));
     return Material(
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.all(
@@ -145,15 +144,12 @@ class _SessionInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  session.categories.first.toUpperCase(),
+                  session.category.toUpperCase(),
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody3Medium
                       ?.medium
                       .applyColor(DevfestColors.grey60.possibleDarkVariant),
-                ),
-                FavouriteIcon(
-                  onTap: () {},
                 ),
               ],
             ),
@@ -169,25 +165,13 @@ class _SessionInfo extends StatelessWidget {
                   .applyColor(DevfestColors.grey10.possibleDarkVariant),
             ),
             Constants.smallVerticalGutter.verticalSpace,
-            Text(
-              session.descrption,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.bodyBody2Medium
-                  ?.semi
-                  .applyColor(DevfestColors.grey50.possibleDarkVariant),
-            ),
-            Constants.verticalGutter.verticalSpace,
             SpeakerInfo(
-              name: session.speakers.first.fullname,
-              shortBio:
-                  '${session.speakers.first.title}, ${session.speakers.first.company}',
-              avatarUrl: session.speakers.first.imageUrl,
+              name: speakerInfo?.name ?? session.facilitator,
+              shortBio: speakerInfo?.shortbio ?? '',
+              avatarUrl: speakerInfo?.imageUrl ?? '',
             ),
             Constants.verticalGutter.verticalSpace,
-            IconText(IconsaxOutline.location, session.venue.id),
+            IconText(IconsaxOutline.location, session.venue.name),
           ],
         ),
       ),
@@ -256,10 +240,10 @@ class SpeakerInfo extends StatelessWidget {
   }
 }
 
-class _BreakoutScheduleInfo extends StatelessWidget {
-  const _BreakoutScheduleInfo(this.session);
+class _GeneralScheduleInfo extends StatelessWidget {
+  const _GeneralScheduleInfo(this.session);
 
-  final SessionDto session;
+  final SessionEvent session;
 
   @override
   Widget build(BuildContext context) {
@@ -284,19 +268,8 @@ class _BreakoutScheduleInfo extends StatelessWidget {
               style:
                   DevfestTheme.of(context).textTheme?.titleTitle2Semibold?.semi,
             ),
-            Constants.smallVerticalGutter.verticalSpace,
-            Text(
-              session.descrption,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.bodyBody2Medium
-                  ?.medium
-                  .copyWith(color: DevfestColors.grey50.possibleDarkVariant),
-            ),
             Constants.verticalGutter.verticalSpace,
-            IconText(IconsaxOutline.location, session.venue.id),
+            IconText(IconsaxOutline.location, session.venue.name),
           ],
         ),
       ),

@@ -53,12 +53,18 @@ class _ViewState extends ConsumerState<_View> {
   void initState() {
     super.initState();
 
+    ref.listenManual(dayOneScheduleProvider, (_, next) {});
+    ref.listenManual(dayTwoScheduleProvider, (_, next) {});
+    ref.listenManual(sponsorsProvider, (_, next) {});
+    ref.listenManual(dayOneSpeakersProvider, (_, next) {});
+    ref.listenManual(dayTwoSpeakersProvider, (_, next) {});
+
     Future.microtask(() {
       Future.wait([
         ref.read(userViewModelNotifier.notifier).fetchUserProfile(),
         ref.read(sponsorsViewModelNotifier.notifier).fetchSponsors(),
         ref.read(speakersViewModelNotifier.notifier).fetchSpeakers(),
-        ref.read(agendasViewModelNotifier.notifier).fetchAgenda(),
+        ref.read(scheduleViewModelNotifier.notifier).fetchSchedule(),
       ]);
       ConferenceAppStorageService.instance.setIsFirstLaunch(false);
     });
