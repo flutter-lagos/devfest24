@@ -1,6 +1,5 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
-import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -39,14 +38,6 @@ class DevfestAppVersion extends StatelessWidget {
           },
         ),
         Constants.smallVerticalGutter.verticalSpace,
-        Text(
-          'Built with love by the Wayne Family 💓',
-          style: DevfestTheme.of(context)
-              .textTheme
-              ?.bodyBody4Medium
-              ?.medium
-              .applyColor(DevfestColors.grey60.possibleDarkVariant),
-        ),
       ],
     );
   }
