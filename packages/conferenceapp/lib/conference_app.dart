@@ -56,6 +56,7 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
               checkFontOverflows: true,
               child: child,
             ),
+            themeMode: ThemeMode.light,
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.deepPurple,
@@ -75,8 +76,6 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
                 scrolledUnderElevation: 0,
               ),
               extensions: <ThemeExtension<dynamic>>[
-                /// Use the below format for raw theme data
-                /// DevFestTheme(textTheme: DevfestTextTheme()),
                 DevFestThemeData.light(),
               ],
             ),
@@ -98,8 +97,6 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
                 displayMedium: TextStyle(color: DevfestColors.grey100),
               ),
               extensions: <ThemeExtension<dynamic>>[
-                /// Use the below format for raw theme data
-                /// DevFestTheme(textTheme: DevfestTextTheme()),
                 DevFestThemeData.dark(),
               ],
             ),
