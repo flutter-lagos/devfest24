@@ -48,6 +48,7 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
         builder: (_, child) {
           return MaterialApp(
             title: 'Devfest24 Conference App',
+            debugShowCheckedModeBanner: false,
             navigatorKey: Devfest2024Router.rootNavigatorKey,
             initialRoute: Devfest2024Router.initialRoute,
             onGenerateRoute: Devfest2024Router.instance.onGenerateRoutes,
