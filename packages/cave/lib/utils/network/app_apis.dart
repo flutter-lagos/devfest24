@@ -23,7 +23,7 @@ final class ConferenceApis {
       'https://raw.githubusercontent.com/GDG-W/Gotham/refs/heads/v2/src/app/speakers/data/speakers.json';
 
   String get getSchedule =>
-      'https://raw.githubusercontent.com/GDG-W/Gotham/a40964c56dadc6b8b7b1399143ae31af4138b895/src/app/schedule/data/schedule.json';
+      'https://raw.githubusercontent.com/GDG-W/Gotham/refs/heads/v2/src/app/schedule/data/schedule.json';
 
   String getSingleSession(String id) => '$baseUrl/events/sessions/$id';
 }
