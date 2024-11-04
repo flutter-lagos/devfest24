@@ -138,7 +138,7 @@ class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
                 ),
                 SpeakersTalkInfoPill(
                   icon: IconsaxOutline.location,
-                  title: session?.venue.name ?? 'N\\A',
+                  title: session?.venue.name.capitalize ?? 'N\\A',
                 ),
               ],
             ),

@@ -52,7 +52,8 @@ class AgendaScheduleTile extends StatelessWidget {
                     session.startTime,
                   ),
                   Constants.largeHorizontalGutter.horizontalSpace,
-                  IconText(IconsaxOutline.location, session.venue.name),
+                  IconText(
+                      IconsaxOutline.location, session.venue.name.capitalize),
                 ],
               ),
             ],
