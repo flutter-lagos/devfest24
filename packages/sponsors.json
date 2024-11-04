@@ -1,0 +1,38 @@
+[
+    {
+      "name": "Google",
+      "level": "Platinum",
+      "logo": "https://i.ibb.co/BZb4QG7/sam-gde-badge.png",
+      "link": "https://google.com"
+    },
+    {
+      "name": "Cleva",
+      "level": "Silver",
+      "logo": "https://i.ibb.co/BZb4QG7/sam-gde-badge.png",
+      "link": "https://google.com"
+    },
+    {
+      "name": "Klasha",
+      "level": "Silver",
+      "logo": "https://i.ibb.co/BZb4QG7/sam-gde-badge.png",
+      "link": "https://google.com"
+    },
+    {
+      "name": "Arm",
+      "level": "Silver",
+      "logo": "https://i.ibb.co/BZb4QG7/sam-gde-badge.png",
+      "link": "https://google.com"
+    },
+    {
+      "name": "Andela",
+      "level": "Silver",
+      "logo": "https://i.ibb.co/BZb4QG7/sam-gde-badge.png",
+      "link": "https://google.com"
+    },
+    {
+      "name": "FlutterFlow",
+      "level": "Silver",
+      "logo": "https://i.ibb.co/BZb4QG7/sam-gde-badge.png",
+      "link": "https://google.com"
+    }
+  ]
