@@ -18,6 +18,9 @@ class AuthorizedClientInterceptor extends Interceptor {
     if (idToken.isNotEmpty) {
       options.headers.addAll({'Authorization': 'Bearer $idToken'});
     }
+    if (options.uri.toString().toLowerCase().contains('github')) {
+      options.headers.remove('Authorization');
+    }
     super.onRequest(options, handler);
   }
 }
