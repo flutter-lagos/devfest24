@@ -56,6 +56,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   .read(userViewModelNotifier.notifier)
                   .fetchUserProfile(refresh: true),
               ref
+                  .read(scheduleViewModelNotifier.notifier)
+                  .fetchSchedule(refresh: true),
+              ref
+                  .read(speakersViewModelNotifier.notifier)
+                  .fetchSpeakers(refresh: true),
+              ref
                   .read(sponsorsViewModelNotifier.notifier)
                   .fetchSponsors(refresh: true),
             ]);
