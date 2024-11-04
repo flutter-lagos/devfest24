@@ -57,3 +57,4 @@ unlinked_spec.ds
 .fvm/
 .vscode/launch.json
 **/*.env
+**/*.jks
