@@ -1,11 +1,13 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/reserve/presentation/widgets/widgets.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/shared.dart';
 import '../../../dashboard/application/application.dart';
+import '../../../more/presentation/screens/my_qr_code.dart';
 
 class ReserveHomeScreen extends ConsumerStatefulWidget {
   const ReserveHomeScreen({super.key});
@@ -32,6 +34,9 @@ class _ReserveHomeScreenState extends ConsumerState<ReserveHomeScreen> {
           CheckInButton(
             isLoggedIn: ref.watch(
                 userViewModelNotifier.select((vm) => vm.user.id.isNotEmpty)),
+            onCheckInTap: () {
+              context.goNamed(MyQrCodeScreen.route);
+            },
           ),
           Constants.horizontalMargin.horizontalSpace,
         ],

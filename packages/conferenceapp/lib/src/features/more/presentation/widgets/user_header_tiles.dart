@@ -66,7 +66,7 @@ class SignedOutUserHeaderTile extends StatelessWidget {
                     ),
                     Constants.smallVerticalGutter.verticalSpace,
                     Text(
-                      'You have not logged yet to access\nyour profile',
+                      'You have not logged in yet to access\nyour profile',
                       textAlign: TextAlign.center,
                       style: DevfestTheme.of(context)
                           .textTheme

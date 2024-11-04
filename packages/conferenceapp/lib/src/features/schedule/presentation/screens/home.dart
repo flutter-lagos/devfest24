@@ -1,11 +1,13 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/schedule/presentation/presentation.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../dashboard/application/application.dart';
+import '../../../more/presentation/screens/my_qr_code.dart';
 
 class ScheduleHomeScreen extends ConsumerStatefulWidget {
   const ScheduleHomeScreen({super.key});
@@ -52,6 +54,9 @@ class _ScheduleHomeScreenState extends ConsumerState<ScheduleHomeScreen> {
           CheckInButton(
             isLoggedIn: ref.watch(
                 userViewModelNotifier.select((vm) => vm.user.id.isNotEmpty)),
+            onCheckInTap: () {
+              context.goNamed(MyQrCodeScreen.route);
+            },
           ),
           Constants.horizontalMargin.horizontalSpace,
         ],
