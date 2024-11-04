@@ -23,3 +23,7 @@ flutter build apk --release --obfuscate --split-debug-info=./symbols --dart-defi
 ```sh
 shorebird release android -- --obfuscate --split-debug-info=./symbols --dart-define-from-file=.env
 ```
+
+```sh
+shorebird patch --platforms=android
+```
