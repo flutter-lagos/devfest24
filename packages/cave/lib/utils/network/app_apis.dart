@@ -13,7 +13,7 @@ final class ConferenceApis {
   String get getEventSessions => '$baseUrl/events/sessions';
 
   String get getEventSponsors =>
-      'https://gist.githubusercontent.com/Mastersam07/8a29cbf07339cf222d24c9f57d4af33e/raw/6901c7612048f5b9471f719d99391303fd63447c/sponsors.json';
+      'https://raw.githubusercontent.com/GDG-W/cave/refs/heads/dev/packages/sponsors.json';
 
   String get postReserveSession => '$baseUrl/events/reservations';
 
