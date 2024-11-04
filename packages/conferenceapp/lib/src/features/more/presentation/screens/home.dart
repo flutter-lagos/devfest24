@@ -87,7 +87,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           IconsaxOutline.heart,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () => launchWebUrl('https://devfestlagos.com'),
                       ),
                       MoreButton(
                         title: const Text('Contact Us'),
@@ -95,7 +95,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           IconsaxOutline.info_circle,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () => launchWebUrl('https://devfestlagos.com'),
                       ),
                     ],
                   ),
