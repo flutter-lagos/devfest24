@@ -38,26 +38,30 @@ class MoreHomeScreen extends ConsumerWidget {
                   MoreSection(
                     title: const Text('GENERAL'),
                     options: [
-                      MoreButton(
-                        title: const Text('Profile'),
-                        icon: Icon(
-                          IconsaxOutline.user,
-                          size: 22.r,
+                      if (ref.watch(userViewModelNotifier
+                          .select((vm) => vm.user.id.isNotEmpty)))
+                        MoreButton(
+                          title: const Text('Profile'),
+                          icon: Icon(
+                            IconsaxOutline.user,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(ProfileScreen.route);
+                          },
                         ),
-                        onTap: () {
-                          context.goNamed(ProfileScreen.route);
-                        },
-                      ),
-                      MoreButton(
-                        title: const Text('My QR Code'),
-                        icon: Icon(
-                          IconsaxOutline.shield,
-                          size: 22.r,
+                      if (ref.watch(userViewModelNotifier
+                          .select((vm) => vm.user.id.isNotEmpty)))
+                        MoreButton(
+                          title: const Text('My QR Code'),
+                          icon: Icon(
+                            IconsaxOutline.shield,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(MyQrCodeScreen.route);
+                          },
                         ),
-                        onTap: () {
-                          context.goNamed(MyQrCodeScreen.route);
-                        },
-                      ),
                       MoreButton(
                         title: const Text('Theme Settings'),
                         icon: Icon(

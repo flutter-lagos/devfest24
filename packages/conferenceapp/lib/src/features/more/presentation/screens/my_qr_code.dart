@@ -13,6 +13,7 @@ class MyQrCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = DevfestTheme.of(context).onBackgroundColor;
     return Scaffold(
       appBar: AppBar(
         leading: GoBackButton(onTap: context.pop),
@@ -53,6 +54,8 @@ class MyQrCodeScreen extends StatelessWidget {
                   data: ref
                       .watch(userViewModelNotifier.select((vm) => vm.user.id)),
                   size: 296.w,
+                  // ignore: deprecated_member_use
+                  foregroundColor: color,
                 );
               },
             ),
