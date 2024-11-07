@@ -105,11 +105,8 @@ class _ProfileInfoTile extends StatelessWidget {
             Constants.smallVerticalGutter.verticalSpace,
             Text(
               info,
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.bodyBody2Medium
-                  ?.medium
-                  .applyColor(DevfestColors.grey50.possibleDarkVariant),
+              style:
+                  DevfestTheme.of(context).textTheme?.bodyBody2Medium?.medium,
             ),
           ],
         ),

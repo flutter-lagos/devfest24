@@ -12,6 +12,7 @@ class SignedOutUserHeaderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = DevfestTheme.of(context).headerTileTheme;
     return Padding(
       padding: const EdgeInsets.only(
         top: Constants.smallVerticalGutter,
@@ -27,10 +28,11 @@ class SignedOutUserHeaderTile extends StatelessWidget {
                 height: 188.h,
                 padding: const EdgeInsets.all(Constants.verticalGutter).r,
                 decoration: BoxDecoration(
-                  color: DevfestColors.grey10.possibleDarkVariant,
+                  color: DevfestColors.grey10,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(Constants.largeVerticalGutter),
                   ),
+                  border: theme?.border,
                 ),
                 child: Column(
                   children: [
@@ -61,8 +63,7 @@ class SignedOutUserHeaderTile extends StatelessWidget {
                           .textTheme
                           ?.titleTitle2Semibold
                           ?.semi
-                          .applyColor(
-                              DevfestColors.grey100.possibleDarkVariant),
+                          .applyColor(theme?.titleColor),
                     ),
                     Constants.smallVerticalGutter.verticalSpace,
                     Text(
@@ -72,8 +73,7 @@ class SignedOutUserHeaderTile extends StatelessWidget {
                           .textTheme
                           ?.bodyBody3Medium
                           ?.medium
-                          .applyColor(
-                              DevfestColors.grey100.possibleDarkVariant),
+                          .applyColor(theme?.subtitleColor),
                     ),
                   ],
                 ),
