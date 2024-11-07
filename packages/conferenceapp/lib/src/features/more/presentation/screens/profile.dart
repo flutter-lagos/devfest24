@@ -70,11 +70,6 @@ class ProfileScreen extends ConsumerWidget {
                     title: '😊 Level of Experience',
                     info: user.levelOfExpertise,
                   ),
-                  Constants.verticalGutter.verticalSpace,
-                  _ProfileInfoTile(
-                    title: '👕 Shirt Size',
-                    info: user.shirtSize,
-                  ),
                 ],
               ),
             ),
