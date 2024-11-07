@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/shared.dart';
 
 class DashboardScreen extends StatelessWidget {
-  static const route = '/home';
+  static const route = 'home';
 
   const DashboardScreen({super.key});
 

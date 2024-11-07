@@ -7,7 +7,7 @@ import 'package:devfest24/src/shared/widgets/speaker_talk_info_pill.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleDetailsScreen extends StatelessWidget {
-  static const route = '/home/schedule-details';
+  static const route = 'home/schedule-details';
 
   const ScheduleDetailsScreen({super.key, required this.session});
 

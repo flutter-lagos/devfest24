@@ -15,7 +15,7 @@ import '../../../dashboard/model/model.dart';
 import 'package:collection/collection.dart';
 
 class SpeakerDetailsScreen extends ConsumerStatefulWidget {
-  static const route = '/home/speaker-details';
+  static const route = 'home/speaker-details';
 
   const SpeakerDetailsScreen({super.key, required this.speaker});
 

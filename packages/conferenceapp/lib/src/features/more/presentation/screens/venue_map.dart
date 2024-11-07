@@ -22,7 +22,7 @@ final showBlocksProvider = StateProvider.autoDispose<bool>((ref) {
 });
 
 class VenueMapScreen extends ConsumerStatefulWidget {
-  static const route = '/home/venue-map';
+  static const route = 'home/venue-map';
 
   const VenueMapScreen({super.key});
 
