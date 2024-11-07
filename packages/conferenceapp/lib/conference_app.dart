@@ -57,7 +57,6 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
               checkFontOverflows: true,
               child: child,
             ),
-            themeMode: ThemeMode.light,
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.deepPurple,
