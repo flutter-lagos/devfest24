@@ -145,7 +145,7 @@ jobs:
         with:
           working-directory: packages/${{ inputs['package-name'] }}
           platform: android
-          args: -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-symbols=./symbols
+          args: -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-info=./symbols
       
       - name: Upload AAB to Google Play
         uses: r0adkll/upload-google-play@v1
