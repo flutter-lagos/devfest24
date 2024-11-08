@@ -44,6 +44,8 @@ on:
         required: false
       CERTIFICATE_PRIVATE_KEY:
         required: false
+      APP_STORE_APP_ID:
+        required: false
       SHOREBIRD_TOKEN:
         required: false
 
