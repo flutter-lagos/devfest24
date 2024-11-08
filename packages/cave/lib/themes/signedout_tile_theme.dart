@@ -51,7 +51,7 @@ class DevfestUserHeaderTile extends ThemeExtension<DevfestUserHeaderTile> {
     if (other is! DevfestUserHeaderTile) return this;
 
     return DevfestUserHeaderTile._(
-      border: BoxBorder.lerp(border, other.border, t)!,
+      border: BoxBorder.lerp(border, other.border, t),
       titleColor: Color.lerp(titleColor, other.titleColor, t)!,
       subtitleColor: Color.lerp(subtitleColor, other.subtitleColor, t)!,
     );
