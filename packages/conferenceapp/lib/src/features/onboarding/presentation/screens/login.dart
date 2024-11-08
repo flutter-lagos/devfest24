@@ -117,27 +117,31 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                     },
                                   ),
                                   Constants.largeVerticalGutter.verticalSpace,
-                                  Text.rich(
-                                    TextSpan(
-                                      text: 'Looking for your ticket ID? ',
-                                      style: DevfestTheme.of(context)
-                                          .textTheme
-                                          ?.bodyBody2Medium
-                                          ?.medium
-                                          .apply(
-                                              color: DevfestColors
-                                                  .grey60.possibleDarkVariant),
-                                      children: [
-                                        TextSpan(
-                                          text: 'Click Here',
-                                          style: TextStyle(
-                                                  color: DevfestColors.grey10
-                                                      .possibleDarkVariant)
-                                              .semi,
-                                        ),
-                                      ],
+                                  InkWell(
+                                    onTap: () =>
+                                        launchWebUrl('https://x.com/gdglagos'),
+                                    child: Text.rich(
+                                      TextSpan(
+                                        text: 'Looking for your ticket ID? ',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody2Medium
+                                            ?.medium
+                                            .apply(
+                                                color: DevfestColors.grey60
+                                                    .possibleDarkVariant),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Click Here',
+                                            style: TextStyle(
+                                                    color: DevfestColors.grey10
+                                                        .possibleDarkVariant)
+                                                .semi,
+                                          ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.start,
                                     ),
-                                    textAlign: TextAlign.start,
                                   ),
                                 ],
                               ),

@@ -62,14 +62,58 @@ class MoreHomeScreen extends ConsumerWidget {
                             context.goNamed(MyQrCodeScreen.route);
                           },
                         ),
-                      MoreButton(
-                        title: const Text('Theme Settings'),
-                        icon: Icon(
-                          IconsaxOutline.component,
-                          size: 22.r,
-                        ),
-                        onTap: () {},
-                      ),
+                      // MoreButton(
+                      //   title: const Text('Theme Settings'),
+                      //   icon: Icon(
+                      //     IconsaxOutline.component,
+                      //     size: 22.r,
+                      //   ),
+                      //   onTap: () {
+                      //     showDevfestBottomModal(context, children: [
+                      //       Text(
+                      //         'Select App Theme',
+                      //         style: DevfestTheme.of(context)
+                      //             .textTheme
+                      //             ?.bodyBody1Semibold
+                      //             ?.semi,
+                      //       ),
+                      //       Constants.largeHorizontalGutter.verticalSpace,
+                      //       ...ThemeMode.values.map(
+                      //         (theme) => _CustomRadioTile(
+                      //           value: theme,
+                      //           activeColor: DevfestColors.primariesYellow50,
+                      //           contentPadding:
+                      //               const EdgeInsets.symmetric(vertical: 8.0),
+                      //           groupValue: ThemeMode.system,
+                      //           onChanged: (ThemeMode? newTheme) {},
+                      //           title: Row(
+                      //             children: [
+                      //               Text(
+                      //                 switch (ThemeMode.values.indexOf(theme)) {
+                      //                   1 => '😎',
+                      //                   2 => '🌚',
+                      //                   _ => '💫',
+                      //                 },
+                      //                 style: DevfestTheme.of(context)
+                      //                     .textTheme
+                      //                     ?.bodyBody1Medium
+                      //                     ?.medium,
+                      //               ),
+                      //               Constants.horizontalGutter.horizontalSpace,
+                      //               Text(
+                      //                 '${theme.name.capitalize} Theme',
+                      //                 style: DevfestTheme.of(context)
+                      //                     .textTheme
+                      //                     ?.bodyBody1Medium
+                      //                     ?.medium,
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       )
+                      //     ]);
+                      //   },
+                      // ),
                       MoreButton(
                         title: const Text('Venue Map'),
                         icon: Icon(
@@ -172,6 +216,59 @@ class MoreButton extends StatelessWidget {
                 color: DevfestColors.grey60.possibleDarkVariant,
               ),
             ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
+class _CustomRadioTile<T> extends StatelessWidget {
+  final T value;
+  final T groupValue;
+  final ValueChanged<T?> onChanged;
+  final Widget title;
+  final Color activeColor;
+  final EdgeInsetsGeometry contentPadding;
+  final BorderRadius? borderRadius;
+
+  const _CustomRadioTile({
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+    required this.title,
+    this.activeColor = Colors.yellow,
+    this.contentPadding = const EdgeInsets.all(0),
+    this.borderRadius = const BorderRadius.all(Radius.circular(20)),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onChanged(value),
+      borderRadius: borderRadius,
+      child: Container(
+        padding: contentPadding,
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+        ),
+        child: Row(
+          children: [
+            Semantics(
+              label: 'theme radio button',
+              child: Transform.scale(
+                scale: 1.5,
+                child: Radio<T>(
+                  value: value,
+                  groupValue: groupValue,
+                  onChanged: onChanged,
+                  activeColor: activeColor,
+                ),
+              ),
+            ),
+            Constants.largeHorizontalGutter.horizontalSpace,
+            Expanded(child: title),
           ],
         ),
       ),
