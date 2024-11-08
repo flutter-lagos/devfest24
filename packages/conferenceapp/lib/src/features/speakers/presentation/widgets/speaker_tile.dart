@@ -1,3 +1,4 @@
+import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/model/model.dart';
@@ -59,12 +60,22 @@ class SpeakerInfo extends StatelessWidget {
             padding: const EdgeInsets.all(2),
             child: Semantics(
               label: 'Speaker avatar',
-              child: CachedNetworkImage(
-                imageUrl: avatarUrl,
-                height: 48.h,
-                width: 48.w,
-                fit: BoxFit.cover,
-              ),
+              child: avatarUrl.contains('.svg')
+                  ? CachedNetworkSVGImage(
+                      avatarUrl,
+                      height: 48.h,
+                      width: 48.w,
+                      fit: BoxFit.cover,
+                      fadeDuration: const Duration(milliseconds: 500),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: avatarUrl,
+                      height: 48.h,
+                      width: 48.w,
+                      fit: BoxFit.cover,
+                      fadeInDuration: const Duration(milliseconds: 500),
+                      fadeOutDuration: const Duration(milliseconds: 500),
+                    ),
             ),
             // FlutterLogo(size: 48),
           ),
