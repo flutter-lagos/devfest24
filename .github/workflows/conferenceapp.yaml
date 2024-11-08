@@ -24,12 +24,12 @@ on:
       build-version:
         description: 'Version number for the release'
         required: false
-        default: ''
+        default: '1.0.0'
         type: string
 
       build-number:
         required: false
-        default: ''
+        default: '1'
         type: string
 
 env:
@@ -41,21 +41,21 @@ jobs:
     steps:
       - name: Validate Inputs
         run: |
-          if [[ "${{ github.event.inputs.release-type }}" == "build" ]]; then
-            if [[ -z "${{ github.event.inputs.build-version }}" ]]; then
+          if [ "${{ github.event.inputs['release-type'] }}" == "build" ]; then
+            if [ -z "${{ github.event.inputs.build-version }}" ]; then
               echo "Error: build-version is required for a build release."
               exit 1
             fi
-            if [[ -z "${{ github.event.inputs.build-number }}" ]]; then
+            if [ -z "${{ github.event.inputs.build-number }}" ]; then
               echo "Error: build-number is required for a build release."
               exit 1
             fi
-            if [[ -z "${{ github.event.inputs.changelog }}" ]]; then
+            if [ -z "${{ github.event.inputs.changelog }}" ]; then
               echo "Error: changelog is required for a build release."
               exit 1
             fi
           fi
-          if [[ "${{ github.event.inputs.release-type }}" == "patch" ]]; then
+          if [ "${{ github.event.inputs.release-type }}" == "patch" ]; then
             echo "Patch release selected. Skipping build-version and build-number validation."
           fi
 
@@ -70,7 +70,7 @@ jobs:
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
-      android-build: ${{ github.event.inputs.release-type == 'build' }}
+      android-build: ${{ github.event.inputs['release-type'] == 'build' }}
       changelog: ${{ github.event.inputs.changelog }}
       build-number: ${{ github.event.inputs.build-number }}
       build-version: ${{ github.event.inputs.build-version }}
@@ -96,7 +96,7 @@ jobs:
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
   
   patch-release:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release-type == 'patch'
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
