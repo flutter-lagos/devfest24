@@ -8,15 +8,6 @@ on:
       - 'packages/conferenceapp/**'
   workflow_dispatch:
     inputs:
-      changelog:
-        description: 'Changelog for this release'
-        required: true
-      build-version:
-        description: 'Version number for the release'
-        required: true
-      build-number:
-        description: 'Build number for the release'
-        required: true
       release-type:
         description: 'Type of release'
         required: true
@@ -25,6 +16,21 @@ on:
           - build
           - patch
         default: build
+
+      changelog:
+        description: 'Changelog for this release'
+        required: true
+
+      build-version:
+        description: 'Version number for the release'
+        required: ${{ github.event.inputs.release-type == 'build' }}
+        default: ''
+        type: string
+        
+      build-number:
+        required: ${{ github.event.inputs.release-type == 'build' }}
+        default: ''
+        type: string
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
