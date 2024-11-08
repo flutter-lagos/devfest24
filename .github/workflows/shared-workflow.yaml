@@ -49,8 +49,12 @@ on:
       SHOREBIRD_TOKEN:
         required: false
 
+env:
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+
 jobs:
   check-formatting:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
