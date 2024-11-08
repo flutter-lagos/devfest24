@@ -248,7 +248,7 @@ jobs:
 
       - name: 🛠️ Shorebird Patch for Android
         uses: shorebirdtech/shorebird-patch@v0
-        id: shorebird-patch
+        id: shorebird-patch-android
         with:
           platform: android
           args: --allow-native-diffs
@@ -256,7 +256,7 @@ jobs:
 
       - name: 🛠️ Shorebird Patch for iOS
         uses: shorebirdtech/shorebird-patch@v0
-        id: shorebird-patch
+        id: shorebird-patch-ios
         with:
           platform: ios
           args: --allow-native-diffs
