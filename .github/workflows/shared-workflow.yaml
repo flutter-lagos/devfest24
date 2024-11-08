@@ -44,7 +44,7 @@ on:
         required: false
       CERTIFICATE_PRIVATE_KEY:
         required: false
-      SSH_PRIVATE_KEY:
+      SHOREBIRD_TOKEN:
         required: false
 
 jobs:
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -92,7 +92,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
       
       - name: Setup Java 17
         uses: actions/setup-java@v2
@@ -134,13 +139,18 @@ jobs:
 
       - name: Generate Files  
         run: melos generate
-
-      - name: Build Android
-        run: flutter build apk --release --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
-        working-directory: packages/${{ inputs['package-name'] }}
+      
+      - name: 🚀 Shorebird Release
+        id: shorebird-release
+        uses: shorebirdtech/shorebird-release@v0
+        with:
+          working-directory: packages/${{ inputs['package-name'] }}
+          platform: android
+          args: -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
 
       - name: Deploy Android to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1
+        working-directory: packages/${{ inputs['package-name'] }}
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
@@ -157,6 +167,11 @@ jobs:
         with:
           ref: ${{ github.event.sha }}
           fetch-depth: 0
+      
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
       
       - name: Cache CocoaPods dependencies
         uses: actions/cache@v4
@@ -218,12 +233,17 @@ jobs:
       - name: Set up code signing in Xcode project
         run: xcode-project use-profiles
         working-directory: packages/${{ inputs['package-name'] }}
-
-      - name: Build iOS
-        run: flutter build ipa --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
-        working-directory: packages/${{ inputs['package-name'] }}
+      
+      - name: 🚀 Shorebird Release
+        id: shorebird-release
+        uses: shorebirdtech/shorebird-release@v0
+        with:
+          working-directory: packages/${{ inputs['package-name'] }}
+          platform: ios
+          args: -- --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
       
       - name: Publish the app to App Store Connect
+        working-directory: packages/${{ inputs['package-name'] }}
         run: |
           APP_FILE=$(find $(pwd) -name "*.ipa")
           app-store-connect publish \

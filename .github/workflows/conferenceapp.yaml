@@ -18,6 +18,9 @@ on:
         description: 'Build number for the release'
         required: true
 
+env:
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+
 jobs:
   check-formatting:
     if: github.event_name == 'pull_request'
@@ -53,3 +56,4 @@ jobs:
       APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
       CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
       APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
