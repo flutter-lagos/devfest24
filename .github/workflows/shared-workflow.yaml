@@ -45,7 +45,7 @@ on:
       KEYSTORE_BASE64:
         required: false
       KEYSTORE_PASSWORD:
-        reauired: false
+        required: false
       KEY_ALIAS:
         required: false
       KEY_PASSWORD:
