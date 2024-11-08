@@ -130,7 +130,6 @@ jobs:
 
       - name: Deploy Android to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1
-        working-directory: packages/${{ inputs['package-name'] }}
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
