@@ -17,6 +17,11 @@ on:
       build-number:
         description: 'Build number for the release'
         required: true
+      release-type:
+        description: 'Type of release (build or patch)'
+        required: true
+        default: 'build'
+        type: string
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
@@ -29,11 +34,11 @@ jobs:
       package-name: conferenceapp
 
   android-build:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release-type == 'build'
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
-      android-build: true
+      android-build: ${{ github.event.inputs.release-type == 'build' }}
       changelog: ${{ github.event.inputs.changelog }}
       build-number: ${{ github.event.inputs.build-number }}
       build-version: ${{ github.event.inputs.build-version }}
@@ -42,11 +47,11 @@ jobs:
       FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
 
   ios-build:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release-type == 'build'
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
-      ios-build: true
+      ios-build: ${{ github.event.inputs.release-type == 'build' }}
       changelog: ${{ github.event.inputs.changelog }}
       build-number: ${{ github.event.inputs.build-number }}
       build-version: ${{ github.event.inputs.build-version }}
@@ -56,4 +61,15 @@ jobs:
       APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
       CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
       APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  
+  patch-release:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release-type == 'patch'
+    uses: ./.github/workflows/shared-workflow.yaml
+    with:
+      package-name: conferenceapp
+      changelog: ${{ github.event.inputs.changelog }}
+      build-version: ${{ github.event.inputs.build-version }}
+      build-number: ${{ github.event.inputs.build-number }}
+    secrets:
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}

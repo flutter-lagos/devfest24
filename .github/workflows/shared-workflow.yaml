@@ -59,16 +59,6 @@ jobs:
         with:
           flutter-version: '3.24.3'
           cache: true
-
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            packages/${{ inputs['package-name'] }}/.dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
       
       - name: Enable melos
         run: dart pub global activate melos
@@ -104,16 +94,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            packages/${{ inputs['package-name'] }}/.dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
       
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
@@ -182,21 +162,12 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
-      
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            packages/${{ inputs['package-name'] }}/.dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.3'
+          cache: true
 
       - name: Enable melos
         run: dart pub global activate melos
@@ -248,3 +219,46 @@ jobs:
           APP_FILE=$(find $(pwd) -name "*.ipa")
           app-store-connect publish \
           --path "$APP_FILE" --whats-new "${{ inputs.changelog }}"
+  
+  patch-release:
+    if: inputs.android-build == 'false' && inputs.ios-build == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          cache: true
+
+      - name: Enable melos
+        run: dart pub global activate melos
+
+      - name: Get packages
+        run: melos bootstrap
+
+      - name: Generate Files
+        run: melos generate
+
+      - name: 🛠️ Shorebird Patch for Android
+        uses: shorebirdtech/shorebird-patch@v0
+        id: shorebird-patch
+        with:
+          platform: android
+          args: --allow-native-diffs
+          working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: 🛠️ Shorebird Patch for iOS
+        uses: shorebirdtech/shorebird-patch@v0
+        id: shorebird-patch
+        with:
+          platform: ios
+          args: --allow-native-diffs
+          working-directory: packages/${{ inputs['package-name'] }}
