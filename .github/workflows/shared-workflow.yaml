@@ -221,7 +221,7 @@ jobs:
           --path "$APP_FILE" --whats-new "${{ inputs.changelog }}"
   
   patch-release:
-    if: inputs.android-build == 'false' && inputs.ios-build == 'false'
+    if: ${{ inputs.android-build == false && inputs.ios-build == false }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
