@@ -63,7 +63,8 @@ jobs:
       build-number: ${{ github.event.inputs['build-number'] }}
       build-version: ${{ github.event.inputs['build-version'] }}
     secrets:
-      GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
 
   ios-build:
     needs: validate-inputs
