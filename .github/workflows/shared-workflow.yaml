@@ -145,7 +145,7 @@ jobs:
         with:
           working-directory: packages/${{ inputs['package-name'] }}
           platform: android
-          args: -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-info=./symbols
+          args: --flutter-version=3.24.3 -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-info=./symbols
       
       - name: Upload AAB to Google Play
         uses: r0adkll/upload-google-play@v1
@@ -233,7 +233,7 @@ jobs:
         with:
           working-directory: packages/${{ inputs['package-name'] }}
           platform: ios
-          args: -- --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
+          args: --flutter-version=3.24.3 -- --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
       
       - name: Publish the app to App Store Connect
         working-directory: packages/${{ inputs['package-name'] }}
