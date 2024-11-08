@@ -84,7 +84,7 @@ jobs:
         working-directory: packages/${{ inputs['package-name'] }}
 
   android-build:
-    if: inputs.android-build == 'true'
+    if: inputs.android-build == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -144,7 +144,7 @@ jobs:
           releaseNotes: ${{ inputs.changelog }}
 
   ios-build:
-    if: inputs.ios-build == 'true'
+    if: inputs.ios-build == true
     runs-on: macos-latest
     steps:
       - name: Checkout repository
