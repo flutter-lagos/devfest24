@@ -17,11 +17,6 @@ on:
           - patch
         default: patch
 
-      changelog:
-        description: 'Changelog for this release'
-        required: false
-        type: string
-
       build-version:
         description: 'Version number for the release'
         required: false
@@ -47,10 +42,6 @@ jobs:
               echo "Error: build-number is required for a build release."
               exit 1
             fi
-            if [[ -z "${{ github.event.inputs['changelog'] }}" ]]; then
-              echo "Error: changelog is required for a build release."
-              exit 1
-            fi
           fi
           if [[ "${{ github.event.inputs['release-type'] }}" == "patch" ]]; then
             echo "Patch release selected. Skipping build-version and build-number validation."
@@ -69,12 +60,10 @@ jobs:
     with:
       package-name: conferenceapp
       android-build: ${{ github.event.inputs['release-type'] == 'build' }}
-      changelog: ${{ github.event.inputs['changelog'] }}
       build-number: ${{ github.event.inputs['build-number'] }}
       build-version: ${{ github.event.inputs['build-version'] }}
     secrets:
-      CREDENTIAL_FILE_CONTENT: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+      GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
 
   ios-build:
     needs: validate-inputs
@@ -83,7 +72,6 @@ jobs:
     with:
       package-name: conferenceapp
       ios-build: ${{ github.event.inputs['release-type'] == 'build' }}
-      changelog: ${{ github.event.inputs['changelog'] }}
       build-number: ${{ github.event.inputs['build-number'] }}
       build-version: ${{ github.event.inputs['build-version'] }}
     secrets:
@@ -100,7 +88,6 @@ jobs:
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
-      changelog: ${{ github.event.inputs['changelog'] }}
       build-version: ${{ github.event.inputs['build-version'] }}
       build-number: ${{ github.event.inputs['build-number'] }}
     secrets:

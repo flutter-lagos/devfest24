@@ -17,10 +17,6 @@ on:
         required: false
         default: false
         type: boolean
-      changelog:
-        description: 'Changelog for the release'
-        required: false
-        type: string
       build-version:
         description: 'Version number for the release'
         required: false
@@ -32,9 +28,7 @@ on:
         default: '1'
         type: string
     secrets:
-      CREDENTIAL_FILE_CONTENT:
-        required: false
-      FIREBASE_APP_ID:
+      GOOGLE_PLAY_SERVICE_ACCOUNT:
         required: false
       APP_STORE_CONNECT_ISSUER_ID:
         required: false
@@ -132,16 +126,19 @@ jobs:
         with:
           working-directory: packages/${{ inputs['package-name'] }}
           platform: android
-          args: -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
-
-      - name: Deploy Android to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+          args: -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-symbols=./symbols
+      
+      - name: Upload AAB to Google Play
+        uses: r0adkll/upload-google-play@v1
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-          groups: testers
-          file: packages/${{ inputs['package-name'] }}/build/app/outputs/flutter-apk/app-release.apk
-          releaseNotes: ${{ inputs.changelog }}
+          serviceAccountJson: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: com.devfestlagos.${{ inputs['package-name'] }}
+          releaseFile: packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
+          track: production
+          inAppUpdatePriority: 5
+          userFraction: 1.0
+          debugSymbolsPath: packages/${{ inputs['package-name'] }}/symbols
+          mappingFile: packages/${{ inputs['package-name'] }}/build/app/intermediates/mapping/release/mapping.txt
 
   ios-build:
     if: inputs.ios-build == true
@@ -223,7 +220,7 @@ jobs:
         run: |
           APP_FILE=$(find $(pwd) -name "*.ipa")
           app-store-connect publish \
-          --path "$APP_FILE" --whats-new "${{ inputs.changelog }}"
+          --path "$APP_FILE"
   
   patch-release:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
