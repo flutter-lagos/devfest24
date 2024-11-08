@@ -154,7 +154,7 @@ jobs:
           packageName: com.devfestlagos.${{ inputs['package-name'] }}
           releaseFile: packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
           track: production
-          status: completed
+          status: inProgress
           inAppUpdatePriority: 5
           userFraction: 1.0
           debugSymbolsPath: packages/${{ inputs['package-name'] }}/symbols
