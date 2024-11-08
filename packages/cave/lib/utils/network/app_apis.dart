@@ -10,20 +10,10 @@ final class ConferenceApis {
 
   String get getUserProfile => '$baseUrl/users/profile';
 
-  String get getEventSessions => '$baseUrl/events/sessions';
-
   String get getEventSponsors =>
-      'https://raw.githubusercontent.com/GDG-W/cave/refs/heads/dev/packages/sponsors.json';
+      'https://devfestlagos.com/app-assets/sponsors.json';
 
-  String get postReserveSession => '$baseUrl/events/reservations';
+  String get getSpeakers => 'https://devfestlagos.com/app-assets/speakers.json';
 
-  String deleteSession(String id) => '$baseUrl/events/reservations/$id';
-
-  String get getSpeakers =>
-      'https://raw.githubusercontent.com/GDG-W/Gotham/refs/heads/v2/src/app/speakers/data/speakers.json';
-
-  String get getSchedule =>
-      'https://raw.githubusercontent.com/GDG-W/Gotham/refs/heads/v2/src/app/schedule/data/schedule.json';
-
-  String getSingleSession(String id) => '$baseUrl/events/sessions/$id';
+  String get getSchedule => 'https://devfestlagos.com/app-assets/schedule.json';
 }
