@@ -18,10 +18,13 @@ on:
         description: 'Build number for the release'
         required: true
       release-type:
-        description: 'Type of release (build or patch)'
+        description: 'Type of release'
         required: true
-        default: 'build'
-        type: string
+        type: choice
+        options:
+          - build
+          - patch
+        default: build
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
