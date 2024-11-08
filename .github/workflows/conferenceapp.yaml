@@ -19,16 +19,16 @@ on:
 
       changelog:
         description: 'Changelog for this release'
-        required: true
+        required: false
 
       build-version:
         description: 'Version number for the release'
-        required: ${{ github.event.inputs.release-type == 'build' }}
+        required: false
         default: ''
         type: string
 
       build-number:
-        required: ${{ github.event.inputs.release-type == 'build' }}
+        required: false
         default: ''
         type: string
 
@@ -36,6 +36,30 @@ env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
 
 jobs:
+
+  validate-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Inputs
+        run: |
+          if [[ "${{ github.event.inputs.release-type }}" == "build" ]]; then
+            if [[ -z "${{ github.event.inputs.build-version }}" ]]; then
+              echo "Error: build-version is required for a build release."
+              exit 1
+            fi
+            if [[ -z "${{ github.event.inputs.build-number }}" ]]; then
+              echo "Error: build-number is required for a build release."
+              exit 1
+            fi
+            if [[ -z "${{ github.event.inputs.changelog }}" ]]; then
+              echo "Error: changelog is required for a build release."
+              exit 1
+            fi
+          fi
+          if [[ "${{ github.event.inputs.release-type }}" == "patch" ]]; then
+            echo "Patch release selected. Skipping build-version and build-number validation."
+          fi
+
   check-formatting:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/shared-workflow.yaml
