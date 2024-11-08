@@ -15,7 +15,7 @@ on:
         options:
           - build
           - patch
-        default: build
+        default: patch
 
       changelog:
         description: 'Changelog for this release'
@@ -26,7 +26,7 @@ on:
         required: ${{ github.event.inputs.release-type == 'build' }}
         default: ''
         type: string
-        
+
       build-number:
         required: ${{ github.event.inputs.release-type == 'build' }}
         default: ''
