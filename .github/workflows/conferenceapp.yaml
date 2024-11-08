@@ -58,7 +58,7 @@ jobs:
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
-      ios-build: ${{ github.event.inputs['release-type ']== 'build' }}
+      ios-build: ${{ github.event.inputs['release-type'] == 'build' }}
       changelog: ${{ github.event.inputs['changelog'] }}
       build-number: ${{ github.event.inputs['build-number'] }}
       build-version: ${{ github.event.inputs['build-version'] }}

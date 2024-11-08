@@ -226,7 +226,7 @@ jobs:
           --path "$APP_FILE" --whats-new "${{ inputs.changelog }}"
   
   patch-release:
-    if: ${{ inputs.android-build == false && inputs.ios-build == false }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
