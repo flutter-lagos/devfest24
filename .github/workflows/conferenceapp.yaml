@@ -20,16 +20,15 @@ on:
       changelog:
         description: 'Changelog for this release'
         required: false
+        type: string
 
       build-version:
         description: 'Version number for the release'
         required: false
-        default: '1.0.0'
         type: string
 
       build-number:
         required: false
-        default: '1'
         type: string
 
 jobs:
