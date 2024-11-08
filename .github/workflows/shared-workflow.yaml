@@ -42,6 +42,14 @@ on:
         required: false
       SHOREBIRD_TOKEN:
         required: false
+      KEYSTORE_BASE64:
+        required: false
+      KEYSTORE_PASSWORD:
+        reauired: false
+      KEY_ALIAS:
+        required: false
+      KEY_PASSWORD:
+        required: false
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
@@ -110,6 +118,17 @@ jobs:
         with:
           flutter-version: '3.24.3'
           cache: true
+      
+      - name: Decode Keystore File
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks
+
+      - name: Create key.properties File
+        run: |
+          echo "storeFile=${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks" > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
       
       - name: Enable melos
         run: dart pub global activate melos
