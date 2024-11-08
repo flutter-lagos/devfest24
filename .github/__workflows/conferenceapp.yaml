@@ -38,10 +38,18 @@ jobs:
       CREDENTIAL_FILE_CONTENT: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
       FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
 
-  # ios-build:
-  #   if: github.event_name == 'workflow_dispatch'
-  #   uses: ./.github/workflows/shared-workflow.yaml
-  #   with:
-  #     package-name: conferenceapp
-  #     ios-build: true
-  #     changelog: ${{ github.event.inputs.changelog }}
+  ios-build:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/shared-workflow.yaml
+    with:
+      package-name: conferenceapp
+      ios-build: true
+      changelog: ${{ github.event.inputs.changelog }}
+      build-number: ${{ github.event.inputs.build-number }}
+      build-version: ${{ github.event.inputs.build-version }}
+    secrets:
+      APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ vars.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+      APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}

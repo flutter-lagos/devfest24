@@ -36,16 +36,16 @@ on:
         required: false
       FIREBASE_APP_ID:
         required: false
-      # APP_STORE_CONNECT_ISSUER_ID:
-      #   required: false
-      # APP_STORE_CONNECT_KEY_IDENTIFIER:
-      #   required: false
-      # APP_STORE_CONNECT_PRIVATE_KEY:
-      #   required: false
-      # CERTIFICATE_PRIVATE_KEY:
-      #   required: false
-      # SSH_PRIVATE_KEY:
-      #   required: false
+      APP_STORE_CONNECT_ISSUER_ID:
+        required: false
+      APP_STORE_CONNECT_KEY_IDENTIFIER:
+        required: false
+      APP_STORE_CONNECT_PRIVATE_KEY:
+        required: false
+      CERTIFICATE_PRIVATE_KEY:
+        required: false
+      SSH_PRIVATE_KEY:
+        required: false
 
 jobs:
   check-formatting:
@@ -148,83 +148,83 @@ jobs:
           file: packages/${{ inputs['package-name'] }}/build/app/outputs/flutter-apk/app-release.apk
           releaseNotes: ${{ inputs.changelog }}
 
-  # ios-build:
-  #   if: inputs.ios-build == 'true'
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+  ios-build:
+    if: inputs.ios-build == 'true'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.sha }}
+          fetch-depth: 0
       
-  #     - name: Cache CocoaPods dependencies
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: |
-  #           ~/.cocoapods
-  #           ios/Pods
-  #         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-pods-
+      - name: Cache CocoaPods dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cocoapods
+            ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
       
-  #     - name: Cache Flutter dependencies
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: |
-  #           ~/.pub-cache
-  #           packages/${{ inputs['package-name'] }}/.dart_tool
-  #         key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-pub-
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            packages/${{ inputs['package-name'] }}/.dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
 
-  #     - name: Set up Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: '3.24.3'
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
 
-  #     - name: Enable melos
-  #       run: dart pub global activate melos
+      - name: Enable melos
+        run: dart pub global activate melos
 
-  #     - name: Get packages 
-  #       run: melos bootstrap
+      - name: Get packages 
+        run: melos bootstrap
 
-  #     - name: Generate Files  
-  #       run: melos generate
+      - name: Generate Files  
+        run: melos generate
 
-  #     - name: Install dependencies
-  #       run: flutter pub get
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: packages/${{ inputs['package-name'] }}
       
-  #     - name: Install Codemagic CLI tools
-  #       run: pip install codemagic-cli-tools
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Install Codemagic CLI tools
+        run: pip install codemagic-cli-tools
+        working-directory: packages/${{ inputs['package-name'] }}
       
-  #     - name: Set up keychain
-  #       run: keychain initialize
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Set up keychain
+        run: keychain initialize
+        working-directory: packages/${{ inputs['package-name'] }}
 
-  #     - name: Fetch signing files from App Store Connect
-  #       run: |
-  #         app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
-  #         --type IOS_APP_STORE \
-  #         --create
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Fetch signing files from App Store Connect
+        run: |
+          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+          --type IOS_APP_STORE \
+          --create
+        working-directory: packages/${{ inputs['package-name'] }}
 
-  #     - name: Set up signing certificate in keychain
-  #       run: keychain add-certificates
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Set up signing certificate in keychain
+        run: keychain add-certificates
+        working-directory: packages/${{ inputs['package-name'] }}
 
-  #     - name: Set up code signing in Xcode project
-  #       run: xcode-project use-profiles
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Set up code signing in Xcode project
+        run: xcode-project use-profiles
+        working-directory: packages/${{ inputs['package-name'] }}
 
-  #     - name: Build iOS
-  #       run: flutter build ipa --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
-  #       working-directory: packages/${{ inputs['package-name'] }}
+      - name: Build iOS
+        run: flutter build ipa --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
+        working-directory: packages/${{ inputs['package-name'] }}
       
-  #     - name: Deploy iOS to Firebase
-  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
-  #       with:
-  #         appId: ${{ secrets.FIREBASE_APP_ID }}
-  #         serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-  #         groups: testers
-  #         file: packages/${{ inputs['package-name'] }}/build/ios/ipa/*.ipa
-  #         releaseNotes: ${{ inputs.changelog }}
+      - name: Publish the app to App Store Connect
+        run: |
+          APP_FILE=$(find $(pwd) -name "*.ipa")
+          app-store-connect publish \
+          --path "$APP_FILE" --whats-new "${{ inputs.changelog }}"
