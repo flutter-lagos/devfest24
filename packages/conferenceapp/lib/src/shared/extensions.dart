@@ -19,7 +19,10 @@ extension DevfestColorsX on Color {
         DevfestColors.grey70 => DevfestColors.grey50,
         DevfestColors.grey50 => DevfestColors.grey70,
         DevfestColors.primariesYellow90 => DevfestColors.grey40,
-        DevfestColors.primariesYellow100 => DevfestColors.backgroundDark,
+        DevfestColors.primariesYellow100 ||
+        DevfestColors.grey80 ||
+        DevfestColors.warning100 =>
+          DevfestColors.backgroundDark,
         _ => this,
       };
     }

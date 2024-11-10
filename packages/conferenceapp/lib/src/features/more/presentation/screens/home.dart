@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../dashboard/application/application.dart';
 import '../../../onboarding/presentation/presentation.dart';
+import '../../application/theme_vm.dart';
 import '../presentation.dart';
 
 class MoreHomeScreen extends ConsumerWidget {
@@ -13,6 +14,7 @@ class MoreHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final themeVM = ref.read(themeVMNotifier.notifier);
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: Column(
@@ -79,49 +81,55 @@ class MoreHomeScreen extends ConsumerWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          showDevfestBottomModal(context, children: [
-                            Text(
-                              'Select App Theme',
-                              style: DevfestTheme.of(context)
-                                  .textTheme
-                                  ?.bodyBody1Semibold
-                                  ?.semi,
+                          showDevfestBottomModal(
+                            context,
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                final currentTheme = ref.watch(themeVMNotifier);
+
+                                return SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Select App Theme',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody1Semibold
+                                            ?.semi,
+                                      ),
+                                      Constants
+                                          .largeHorizontalGutter.verticalSpace,
+                                      ...ThemeMode.values.map(
+                                        (theme) => _CustomRadioTile<ThemeMode>(
+                                          value: theme,
+                                          activeColor:
+                                              DevfestColors.primariesYellow50,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 8.0),
+                                          groupValue: currentTheme.theme,
+                                          onChanged: (ThemeMode? newTheme) {
+                                            if (newTheme != null) {
+                                              themeVM.onThemeChange(newTheme);
+                                              context.pop();
+                                            }
+                                          },
+                                          title: Text(
+                                            '${theme.name.capitalize} Theme',
+                                            style: DevfestTheme.of(context)
+                                                .textTheme
+                                                ?.bodyBody1Medium
+                                                ?.medium,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                            Constants.largeHorizontalGutter.verticalSpace,
-                            ...ThemeMode.values.map(
-                              (theme) => _CustomRadioTile(
-                                value: theme,
-                                activeColor: DevfestColors.primariesYellow50,
-                                contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                groupValue: ThemeMode.system,
-                                onChanged: (ThemeMode? newTheme) {},
-                                title: Row(
-                                  children: [
-                                    Text(
-                                      switch (ThemeMode.values.indexOf(theme)) {
-                                        1 => '😎',
-                                        2 => '🌚',
-                                        _ => '💫',
-                                      },
-                                      style: DevfestTheme.of(context)
-                                          .textTheme
-                                          ?.bodyBody1Medium
-                                          ?.medium,
-                                    ),
-                                    Constants.horizontalGutter.horizontalSpace,
-                                    Text(
-                                      '${theme.name.capitalize} Theme',
-                                      style: DevfestTheme.of(context)
-                                          .textTheme
-                                          ?.bodyBody1Medium
-                                          ?.medium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ]);
+                          );
                         },
                       ),
                       MoreButton(
