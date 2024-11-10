@@ -8,24 +8,13 @@ import '../../../onboarding/presentation/presentation.dart';
 import '../../application/hiring_vm.dart';
 import '../presentation.dart';
 
-class HiringScreen extends ConsumerStatefulWidget {
+class HiringScreen extends ConsumerWidget {
   static const route = 'home/hiring';
 
-  const HiringScreen({super.key});
+  HiringScreen({super.key});
 
-  @override
-  ConsumerState<HiringScreen> createState() => _HiringScreenState();
-}
-
-class _HiringScreenState extends ConsumerState<HiringScreen> {
   final hiringFormKey = GlobalKey<FormState>();
-  bool agreeToTerms = false;
-
-  void _agreementOnChanged(bool? action) {
-    setState(() {
-      agreeToTerms = action ?? false;
-    });
-  }
+  final ValueNotifier<bool> agreeToTerms = ValueNotifier(false);
 
   bool isValidUrl(String url) {
     final uri = Uri.tryParse(url.startsWith('http') ? url : 'https://$url');
@@ -33,7 +22,7 @@ class _HiringScreenState extends ConsumerState<HiringScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final user = ref.watch(userViewModelNotifier).user;
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -92,6 +81,8 @@ class _HiringScreenState extends ConsumerState<HiringScreen> {
                       DevfestTextFormField(
                         title: 'Link to cv/resume',
                         hint: 'e.g https://bit.ly/resume',
+                        keyboardType: TextInputType.url,
+                        inputFormatters: [UrlInputFormatter()],
                         onChanged:
                             ref.read(hiringVMNotifier.notifier).resumeChanged,
                         onEditingComplete: FocusScope.of(context).nextFocus,
@@ -106,29 +97,34 @@ class _HiringScreenState extends ConsumerState<HiringScreen> {
                         },
                       ),
                       Constants.verticalGutter.verticalSpace,
-                      CheckboxListTile.adaptive(
-                        value: agreeToTerms,
-                        onChanged: _agreementOnChanged,
-                        activeColor: DevfestColors.primariesYellow50,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        title: InkWell(
-                          onTap: () => launchWebUrl(
-                              'https://bit.ly/devfestlagos-hiringterms'),
-                          child: Text(
-                            'Agree to participation terms',
-                            style: DevfestTheme.of(context)
-                                .textTheme
-                                ?.bodyBody2Medium
-                                ?.medium
-                                .apply(
-                                  color:
-                                      DevfestColors.grey10.possibleDarkVariant,
-                                  decoration: TextDecoration.underline,
+                      ValueListenableBuilder(
+                          valueListenable: agreeToTerms,
+                          builder: (_, agreed, __) {
+                            return CheckboxListTile.adaptive(
+                              value: agreed,
+                              onChanged: (value) =>
+                                  agreeToTerms.value = value ?? false,
+                              activeColor: DevfestColors.primariesYellow50,
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                              title: InkWell(
+                                onTap: () => launchWebUrl(
+                                    'https://bit.ly/devfestlagos-hiringterms'),
+                                child: Text(
+                                  'Agree to participation terms',
+                                  style: DevfestTheme.of(context)
+                                      .textTheme
+                                      ?.bodyBody2Medium
+                                      ?.medium
+                                      .apply(
+                                        color: DevfestColors
+                                            .grey10.possibleDarkVariant,
+                                        decoration: TextDecoration.underline,
+                                      ),
                                 ),
-                          ),
-                        ),
-                      ),
+                              ),
+                            );
+                          }),
                     ],
                   ),
                 ),
@@ -148,7 +144,8 @@ class _HiringScreenState extends ConsumerState<HiringScreen> {
                       )
                     : null,
                 onPressed: () {
-                  if (hiringFormKey.currentState?.validate() ?? false) {
+                  if ((hiringFormKey.currentState?.validate() ?? false) &&
+                      agreeToTerms.value) {
                     FocusScope.of(context).unfocus();
                     ref.read(hiringVMNotifier.notifier).uploadUserResume();
                   }

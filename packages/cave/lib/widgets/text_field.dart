@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants.dart';
@@ -17,6 +18,7 @@ class DevfestTextFormField extends StatelessWidget {
     bool? readOnly,
     IconData? prefixIconData,
     IconData? suffixIconData,
+    this.inputFormatters,
     this.enabled,
     this.onChanged,
     this.validator,
@@ -55,6 +57,7 @@ class DevfestTextFormField extends StatelessWidget {
   final TextStyle? hintStyle;
   final TextStyle? errorStyle;
   final VoidCallback? onEditingComplete;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +118,7 @@ class DevfestTextFormField extends StatelessWidget {
               keyboardAppearance: Brightness.dark,
               style: textFieldTheme.style,
               onEditingComplete: onEditingComplete,
+              inputFormatters: inputFormatters ?? [],
               decoration: InputDecoration(
                 prefixIcon: prefixIcon,
                 suffixIcon: suffixIcon,
