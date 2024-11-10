@@ -59,3 +59,6 @@ unlinked_spec.ds
 **/*.env
 **/*.jks
 **/*.p8
+**/cert_key.*
+**/cert_key
+**/&.pub
