@@ -6,17 +6,16 @@ final class HiringApiService {
   const HiringApiService(this._networkClient);
 
   Future<Either<Devfest2024Exception, String>> uploadUserResume(
-      String resumeUrl) async {
+      String resumeUrl, String userId) async {
     final response = await _networkClient.call(
-      path: ConferenceApis.instance.postInitiateUserSession,
-      method: RequestMethod.post,
-      // TODO: Use actual body
-      body: {'resume': resumeUrl},
+      path: ConferenceApis.instance.updateUserProfile(userId),
+      method: RequestMethod.patch,
+      body: {'resume_url': resumeUrl},
     );
 
     return await processData(
       (p0) => switch (p0) {
-        Map data => (data as Map<String, dynamic>)['token'],
+        Map data => (data as Map<String, dynamic>)['resume_url'],
         _ => ''
       },
       response,

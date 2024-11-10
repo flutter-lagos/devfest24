@@ -10,6 +10,8 @@ final class ConferenceApis {
 
   String get getUserProfile => '$baseUrl/users/profile';
 
+  String updateUserProfile(String userId) => '$baseUrl/users/$userId';
+
   String get getEventSponsors =>
       'https://devfestlagos.com/app-assets/sponsors.json';
 

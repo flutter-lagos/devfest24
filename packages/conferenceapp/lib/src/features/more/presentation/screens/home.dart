@@ -63,16 +63,18 @@ class MoreHomeScreen extends ConsumerWidget {
                             context.goNamed(MyQrCodeScreen.route);
                           },
                         ),
-                        MoreButton(
-                          title: const Text('Upload Resume'),
-                          icon: Icon(
-                            IconsaxOutline.document,
-                            size: 22.r,
+                        if (ref.watch(userViewModelNotifier
+                            .select((vm) => vm.user.resumeUrl.isEmpty)))
+                          MoreButton(
+                            title: const Text('Upload Resume'),
+                            icon: Icon(
+                              IconsaxOutline.document,
+                              size: 22.r,
+                            ),
+                            onTap: () {
+                              context.goNamed(HiringScreen.route);
+                            },
                           ),
-                          onTap: () {
-                            context.goNamed(HiringScreen.route);
-                          },
-                        ),
                       ],
                       MoreButton(
                         title: const Text('Theme Settings'),

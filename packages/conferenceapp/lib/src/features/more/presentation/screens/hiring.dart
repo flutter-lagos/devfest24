@@ -8,22 +8,48 @@ import '../../../onboarding/presentation/presentation.dart';
 import '../../application/hiring_vm.dart';
 import '../presentation.dart';
 
-class HiringScreen extends ConsumerWidget {
+class HiringScreen extends ConsumerStatefulWidget {
+  const HiringScreen({super.key});
+
   static const route = 'home/hiring';
 
-  HiringScreen({super.key});
+  @override
+  ConsumerState<HiringScreen> createState() => _HiringScreenState();
+}
 
+class _HiringScreenState extends ConsumerState<HiringScreen> {
   final hiringFormKey = GlobalKey<FormState>();
   final ValueNotifier<bool> agreeToTerms = ValueNotifier(false);
 
   bool isValidUrl(String url) {
+    final urlPattern = RegExp(
+      r"^(https?:\/\/)?([\w\-]+\.)+[\w\-]{2,}([\/\w\-._~:/?#[\]@!$&\'()*+,;=%]*)?$",
+    );
     final uri = Uri.tryParse(url.startsWith('http') ? url : 'https://$url');
-    return uri != null && uri.host.isNotEmpty;
+    return uri != null && uri.host.isNotEmpty && urlPattern.hasMatch(url);
   }
 
   @override
-  Widget build(BuildContext context, ref) {
+  void initState() {
+    super.initState();
+    ref.listenManual(hiringVMNotifier, (previous, next) {
+      if (next.uiState.isSuccess) {
+        final snackbar = SnackBar(
+          content: Text('You have successfully uploaded your resume.'),
+          backgroundColor: DevfestColors.success20,
+          behavior: SnackBarBehavior.floating,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        context.pop();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(userViewModelNotifier).user;
+    final backgroundColor = DevfestTheme.of(context).backgroundColor;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -82,7 +108,7 @@ class HiringScreen extends ConsumerWidget {
                         title: 'Link to cv/resume',
                         hint: 'e.g https://bit.ly/resume',
                         keyboardType: TextInputType.url,
-                        inputFormatters: [UrlInputFormatter()],
+                        // inputFormatters: [UrlInputFormatter()],
                         onChanged:
                             ref.read(hiringVMNotifier.notifier).resumeChanged,
                         onEditingComplete: FocusScope.of(context).nextFocus,
@@ -137,9 +163,9 @@ class HiringScreen extends ConsumerWidget {
                 title: const Text('Submit'),
                 prefixIcon: ref.watch(
                         hiringVMNotifier.select((vm) => vm.uiState.isLoading))
-                    ? const CircularProgressIndicator.adaptive(
+                    ? CircularProgressIndicator.adaptive(
                         valueColor: AlwaysStoppedAnimation(Colors.white),
-                        backgroundColor: Colors.white,
+                        backgroundColor: backgroundColor,
                         strokeWidth: 2.0,
                       )
                     : null,
@@ -147,7 +173,9 @@ class HiringScreen extends ConsumerWidget {
                   if ((hiringFormKey.currentState?.validate() ?? false) &&
                       agreeToTerms.value) {
                     FocusScope.of(context).unfocus();
-                    ref.read(hiringVMNotifier.notifier).uploadUserResume();
+                    ref
+                        .read(hiringVMNotifier.notifier)
+                        .uploadUserResume(user.id);
                   }
                 },
               ),

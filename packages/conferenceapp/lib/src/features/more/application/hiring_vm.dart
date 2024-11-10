@@ -3,6 +3,7 @@ import 'package:devfest24/src/shared/shared.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../dashboard/application/application.dart';
 import '../model/model.dart';
 
 part 'hiring_state.dart';
@@ -24,20 +25,29 @@ final class HiringViewModel extends AutoDisposeNotifier<HiringState> {
     state = state.copyWith(resumeLink: input);
   }
 
-  Future<void> uploadUserResume() async {
+  Future<void> uploadUserResume(String userId) async {
     if (state.resumeLink.isNotEmpty && state.resumeLink.isNotEmpty) {
-      // TODO: Revisit when upload is live
       await launch(
         state.ref,
         (model) async {
           state = state.copyWith(uiState: UiState.loading);
-          final tokenResult =
-              await _apiService.uploadUserResume(state.resumeLink);
+          final resumeResult =
+              await _apiService.uploadUserResume(state.resumeLink, userId);
 
           state = model.emit(
-            await tokenResult.fold(
+            await resumeResult.fold(
               (left) => state.copyWith(uiState: UiState.error, error: left),
-              (right) => state.copyWith(uiState: UiState.success),
+              (right) async {
+                final userVM = ref.read(userViewModelNotifier.notifier);
+                final currentUser = userVM.state.user;
+
+                final updatedUser = currentUser.copyWith(resumeUrl: right);
+
+                userVM.state = userVM.state.copyWith(user: updatedUser);
+
+                return state.copyWith(
+                    uiState: UiState.success, resumeLink: right);
+              },
             ),
           );
         },

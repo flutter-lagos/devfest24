@@ -166,8 +166,6 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                 .read(sessionSignInVMNotifier.notifier)
                                 .initialiseUserSession();
                           }
-                          // context.goNamed(
-                          //     Devfest2024Routes.onboardingSignature.name);
                         },
                       ),
                       DevfestFilledButton(
