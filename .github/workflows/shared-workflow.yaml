@@ -157,7 +157,7 @@ jobs:
         with:
           serviceAccountJson: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.devfestlagos.${{ inputs['package-name'] }}
-          releaseFile: packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
+          releaseFiles: packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
           track: production
           status: inProgress
           inAppUpdatePriority: 5
