@@ -163,7 +163,6 @@ jobs:
           inAppUpdatePriority: 5
           userFraction: 0.9
           debugSymbolsPath: packages/${{ inputs['package-name'] }}/symbols
-          mappingFile: packages/${{ inputs['package-name'] }}/build/app/intermediates/mapping/release/mapping.txt
 
   ios-build:
     if: inputs.ios-build == true
