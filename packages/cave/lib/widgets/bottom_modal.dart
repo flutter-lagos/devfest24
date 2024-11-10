@@ -1,17 +1,18 @@
 import 'package:cave/cave.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showDevfestBottomModal(BuildContext context,
-    {required List<Widget> children}) async {
+Future<void> showDevfestBottomModal(
+  BuildContext context, {
+  required Widget child,
+  Color? backgroundColor,
+}) async {
   await showModalBottomSheet(
     isScrollControlled: true,
-    // constraints: BoxConstraints.loose(Size(MediaQuery.of(context).size.width,
-    //     MediaQuery.of(context).size.height * 0.45)),
-    backgroundColor: DevfestColors.warning100,
+    backgroundColor: backgroundColor,
     showDragHandle: true,
     context: context,
     builder: (context) => DevfestBottomModal(
-      children: children,
+      child: child,
     ),
   );
 }
@@ -19,9 +20,9 @@ Future<void> showDevfestBottomModal(BuildContext context,
 class DevfestBottomModal extends StatefulWidget {
   const DevfestBottomModal({
     super.key,
-    required this.children,
+    required this.child,
   });
-  final List<Widget> children;
+  final Widget child;
 
   @override
   State<DevfestBottomModal> createState() => _DevfestBottomModalState();
@@ -30,18 +31,9 @@ class DevfestBottomModal extends StatefulWidget {
 class _DevfestBottomModalState extends State<DevfestBottomModal> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(16.0.w, 0.0, 16.0.w, 16.0.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [...widget.children],
-          ),
-        ),
-      ],
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16.0.w, 0.0, 16.0.w, 16.0.h),
+      child: widget.child,
     );
   }
 }
