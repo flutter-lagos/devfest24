@@ -105,12 +105,30 @@ class MoreHomeScreen extends ConsumerWidget {
                                               context.pop();
                                             }
                                           },
-                                          title: Text(
-                                            '${theme.name.capitalize} Theme',
-                                            style: DevfestTheme.of(context)
-                                                .textTheme
-                                                ?.bodyBody1Medium
-                                                ?.medium,
+                                          title: Row(
+                                            children: [
+                                              Text(
+                                                switch (ThemeMode.values
+                                                    .indexOf(theme)) {
+                                                  1 => '😎',
+                                                  2 => '🌚',
+                                                  _ => '💫',
+                                                },
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.bodyBody1Medium
+                                                    ?.medium,
+                                              ),
+                                              Constants.horizontalGutter
+                                                  .horizontalSpace,
+                                              Text(
+                                                '${theme.name.capitalize} Theme',
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.bodyBody1Medium
+                                                    ?.medium,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       )
