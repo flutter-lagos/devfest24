@@ -53,6 +53,11 @@ on:
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+  APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+  APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+  CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+  APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
 
 jobs:
   check-formatting:
@@ -156,7 +161,7 @@ jobs:
           track: production
           status: inProgress
           inAppUpdatePriority: 5
-          userFraction: 1.0
+          userFraction: 0.9
           debugSymbolsPath: packages/${{ inputs['package-name'] }}/symbols
           mappingFile: packages/${{ inputs['package-name'] }}/build/app/intermediates/mapping/release/mapping.txt
 
