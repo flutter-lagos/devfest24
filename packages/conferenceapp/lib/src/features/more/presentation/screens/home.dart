@@ -143,7 +143,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           IconsaxOutline.info_circle,
                           size: 22.r,
                         ),
-                        onTap: () => launchWebUrl('https://devfestlagos.com'),
+                        onTap: () => launchWebUrl('https://x.com/gdglagos'),
                       ),
                     ],
                   ),
