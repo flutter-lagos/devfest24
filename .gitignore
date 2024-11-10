@@ -58,3 +58,4 @@ unlinked_spec.ds
 .vscode/launch.json
 **/*.env
 **/*.jks
+**/*.p8
