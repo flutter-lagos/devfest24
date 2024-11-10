@@ -44,31 +44,31 @@ class AgendaHeader extends StatelessWidget {
           HeaderText(
             title: title,
             titleStyle: titleStyle,
-            titleAction: onFilterSelected == null
-                ? null
-                : SizedBox(
-                    width: 87.w,
-                    child: DevfestFilledButton.small(
-                      onPressed: onFilterSelected,
-                      backgroundColor:
-                          DevfestColors.primariesYellow90.possibleDarkVariant,
-                      prefixIcon: Icon(
-                        IconsaxOutline.filter,
-                        color: DevfestTheme.of(context)
-                            .textTheme
-                            ?.titleTitle2Semibold
-                            ?.color,
-                      ),
-                      title: const Text('Filter'),
-                      titleStyle: TextStyle(
-                        color: DevfestTheme.of(context)
-                            .textTheme
-                            ?.titleTitle2Semibold
-                            ?.color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+            // titleAction: onFilterSelected == null
+            //     ? null
+            //     : SizedBox(
+            //         width: 87.w,
+            //         child: DevfestFilledButton.small(
+            //           onPressed: onFilterSelected,
+            //           backgroundColor:
+            //               DevfestColors.primariesYellow90.possibleDarkVariant,
+            //           prefixIcon: Icon(
+            //             IconsaxOutline.filter,
+            //             color: DevfestTheme.of(context)
+            //                 .textTheme
+            //                 ?.titleTitle2Semibold
+            //                 ?.color,
+            //           ),
+            //           title: const Text('Filter'),
+            //           titleStyle: TextStyle(
+            //             color: DevfestTheme.of(context)
+            //                 .textTheme
+            //                 ?.titleTitle2Semibold
+            //                 ?.color,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ),
             subtitle: subtitle,
             subtitleStyle: DevfestTheme.of(context)
                 .textTheme
