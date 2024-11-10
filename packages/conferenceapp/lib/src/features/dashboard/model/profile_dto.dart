@@ -7,6 +7,7 @@ final class ProfileResponseDto extends Equatable {
   final String role;
   final String levelOfExpertise;
   final String shirtSize;
+  final String resumeUrl;
   final Map<String, dynamic> ticket;
 
   const ProfileResponseDto({
@@ -16,6 +17,7 @@ final class ProfileResponseDto extends Equatable {
     required this.role,
     required this.levelOfExpertise,
     required this.shirtSize,
+    required this.resumeUrl,
     required this.ticket,
   });
 
@@ -27,6 +29,7 @@ final class ProfileResponseDto extends Equatable {
           role: '',
           levelOfExpertise: '',
           shirtSize: '',
+          resumeUrl: '',
           ticket: const {},
         );
 
@@ -38,6 +41,7 @@ final class ProfileResponseDto extends Equatable {
         role: json['role'] ?? '',
         levelOfExpertise: json['level_of_expertise'] ?? '',
         shirtSize: json['shirt_size'] ?? '',
+        resumeUrl: json['resume_url'] ?? '',
         ticket: switch (json['ticket']) {
           Map map => map.map((key, value) => MapEntry(key.toString(), value)),
           _ => const {},
@@ -53,6 +57,28 @@ final class ProfileResponseDto extends Equatable {
         'shirt_size': shirtSize,
         'ticket': ticket,
       };
+
+  ProfileResponseDto copyWith({
+    String? id,
+    String? fullName,
+    String? emailAddress,
+    String? role,
+    String? levelOfExpertise,
+    String? shirtSize,
+    String? resumeUrl,
+    Map<String, dynamic>? ticket,
+  }) {
+    return ProfileResponseDto(
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      emailAddress: emailAddress ?? this.emailAddress,
+      role: role ?? this.role,
+      levelOfExpertise: levelOfExpertise ?? this.levelOfExpertise,
+      shirtSize: shirtSize ?? this.shirtSize,
+      resumeUrl: resumeUrl ?? this.resumeUrl,
+      ticket: ticket ?? this.ticket,
+    );
+  }
 
   @override
   List<Object?> get props => [

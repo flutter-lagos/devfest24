@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:devfest24/src/features/speakers/presentation/widgets/widgets.dart';
 import 'package:devfest24/src/routing/routing.dart';

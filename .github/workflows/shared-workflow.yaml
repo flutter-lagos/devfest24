@@ -125,10 +125,10 @@ jobs:
 
       - name: Create key.properties File
         run: |
-          echo "storeFile=${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks" > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/key.properties
+          echo "storeFile=${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks" > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
       
       - name: Enable melos
         run: dart pub global activate melos

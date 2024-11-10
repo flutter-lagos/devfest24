@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/shared/extensions.dart';
 import 'package:devfest24/src/shared/widgets/icon_text.dart';

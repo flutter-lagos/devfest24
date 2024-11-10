@@ -34,6 +34,7 @@ class Devfest2024Router {
       SpeakerDetailsScreen.route => MaterialPageRoute(
           builder: (_) =>
               SpeakerDetailsScreen(speaker: settings.arguments as SpeakerDto)),
+      HiringScreen.route => MaterialPageRoute(builder: (_) => HiringScreen()),
       MyQrCodeScreen.route =>
         MaterialPageRoute(builder: (_) => const MyQrCodeScreen()),
       ProfileScreen.route =>

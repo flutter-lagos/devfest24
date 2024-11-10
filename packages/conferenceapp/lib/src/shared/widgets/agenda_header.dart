@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

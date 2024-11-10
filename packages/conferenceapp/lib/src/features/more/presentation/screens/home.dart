@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +52,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           },
                         ),
                       if (ref.watch(userViewModelNotifier
-                          .select((vm) => vm.user.id.isNotEmpty)))
+                          .select((vm) => vm.user.id.isNotEmpty))) ...[
                         MoreButton(
                           title: const Text('My QR Code'),
                           icon: Icon(
@@ -64,6 +63,19 @@ class MoreHomeScreen extends ConsumerWidget {
                             context.goNamed(MyQrCodeScreen.route);
                           },
                         ),
+                        if (ref.watch(userViewModelNotifier
+                            .select((vm) => vm.user.resumeUrl.isEmpty)))
+                          MoreButton(
+                            title: const Text('Upload Resume'),
+                            icon: Icon(
+                              IconsaxOutline.document,
+                              size: 22.r,
+                            ),
+                            onTap: () {
+                              context.goNamed(HiringScreen.route);
+                            },
+                          ),
+                      ],
                       MoreButton(
                         title: const Text('Theme Settings'),
                         icon: Icon(
