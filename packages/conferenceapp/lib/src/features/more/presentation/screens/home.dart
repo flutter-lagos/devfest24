@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +50,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           },
                         ),
                       if (ref.watch(userViewModelNotifier
-                          .select((vm) => vm.user.id.isNotEmpty)))
+                          .select((vm) => vm.user.id.isNotEmpty))) ...[
                         MoreButton(
                           title: const Text('My QR Code'),
                           icon: Icon(
@@ -62,58 +61,69 @@ class MoreHomeScreen extends ConsumerWidget {
                             context.goNamed(MyQrCodeScreen.route);
                           },
                         ),
-                      // MoreButton(
-                      //   title: const Text('Theme Settings'),
-                      //   icon: Icon(
-                      //     IconsaxOutline.component,
-                      //     size: 22.r,
-                      //   ),
-                      //   onTap: () {
-                      //     showDevfestBottomModal(context, children: [
-                      //       Text(
-                      //         'Select App Theme',
-                      //         style: DevfestTheme.of(context)
-                      //             .textTheme
-                      //             ?.bodyBody1Semibold
-                      //             ?.semi,
-                      //       ),
-                      //       Constants.largeHorizontalGutter.verticalSpace,
-                      //       ...ThemeMode.values.map(
-                      //         (theme) => _CustomRadioTile(
-                      //           value: theme,
-                      //           activeColor: DevfestColors.primariesYellow50,
-                      //           contentPadding:
-                      //               const EdgeInsets.symmetric(vertical: 8.0),
-                      //           groupValue: ThemeMode.system,
-                      //           onChanged: (ThemeMode? newTheme) {},
-                      //           title: Row(
-                      //             children: [
-                      //               Text(
-                      //                 switch (ThemeMode.values.indexOf(theme)) {
-                      //                   1 => '😎',
-                      //                   2 => '🌚',
-                      //                   _ => '💫',
-                      //                 },
-                      //                 style: DevfestTheme.of(context)
-                      //                     .textTheme
-                      //                     ?.bodyBody1Medium
-                      //                     ?.medium,
-                      //               ),
-                      //               Constants.horizontalGutter.horizontalSpace,
-                      //               Text(
-                      //                 '${theme.name.capitalize} Theme',
-                      //                 style: DevfestTheme.of(context)
-                      //                     .textTheme
-                      //                     ?.bodyBody1Medium
-                      //                     ?.medium,
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       )
-                      //     ]);
-                      //   },
-                      // ),
+                        MoreButton(
+                          title: const Text('Upload Resume'),
+                          icon: Icon(
+                            IconsaxOutline.document,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(HiringScreen.route);
+                          },
+                        ),
+                      ],
+                      MoreButton(
+                        title: const Text('Theme Settings'),
+                        icon: Icon(
+                          IconsaxOutline.component,
+                          size: 22.r,
+                        ),
+                        onTap: () {
+                          showDevfestBottomModal(context, children: [
+                            Text(
+                              'Select App Theme',
+                              style: DevfestTheme.of(context)
+                                  .textTheme
+                                  ?.bodyBody1Semibold
+                                  ?.semi,
+                            ),
+                            Constants.largeHorizontalGutter.verticalSpace,
+                            ...ThemeMode.values.map(
+                              (theme) => _CustomRadioTile(
+                                value: theme,
+                                activeColor: DevfestColors.primariesYellow50,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                groupValue: ThemeMode.system,
+                                onChanged: (ThemeMode? newTheme) {},
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      switch (ThemeMode.values.indexOf(theme)) {
+                                        1 => '😎',
+                                        2 => '🌚',
+                                        _ => '💫',
+                                      },
+                                      style: DevfestTheme.of(context)
+                                          .textTheme
+                                          ?.bodyBody1Medium
+                                          ?.medium,
+                                    ),
+                                    Constants.horizontalGutter.horizontalSpace,
+                                    Text(
+                                      '${theme.name.capitalize} Theme',
+                                      style: DevfestTheme.of(context)
+                                          .textTheme
+                                          ?.bodyBody1Medium
+                                          ?.medium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ]);
+                        },
+                      ),
                       MoreButton(
                         title: const Text('Venue Map'),
                         icon: Icon(
