@@ -4,6 +4,7 @@ import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'src/features/more/application/theme_vm.dart';
 import 'src/features/onboarding/presentation/presentation.dart';
 
 class ConferenceApp extends ConsumerStatefulWidget {
@@ -46,6 +47,7 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
         designSize: designSize,
         minTextAdapt: true,
         builder: (_, child) {
+          final themeMode = ref.watch(themeVMNotifier);
           return MaterialApp(
             title: 'Devfest24 Conference App',
             debugShowCheckedModeBanner: false,
@@ -57,6 +59,7 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
               checkFontOverflows: true,
               child: child,
             ),
+            themeMode: themeMode.theme,
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.deepPurple,
@@ -74,6 +77,12 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
                 surfaceTintColor: Colors.transparent,
                 shadowColor: Colors.transparent,
                 scrolledUnderElevation: 0,
+              ),
+              bottomSheetTheme: BottomSheetThemeData(
+                backgroundColor: DevfestColors.warning100,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                ),
               ),
               extensions: <ThemeExtension<dynamic>>[
                 DevFestThemeData.light(),
@@ -95,6 +104,14 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
               useMaterial3: true,
               textTheme: const TextTheme(
                 displayMedium: TextStyle(color: DevfestColors.grey100),
+              ),
+              bottomSheetTheme: BottomSheetThemeData(
+                backgroundColor: DevfestColors.backgroundDark,
+                shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(40)),
+                    side: BorderSide(
+                        color: DevfestColors.backgroundLight, width: 1)),
               ),
               extensions: <ThemeExtension<dynamic>>[
                 DevFestThemeData.dark(),

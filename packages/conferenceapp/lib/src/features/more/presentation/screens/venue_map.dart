@@ -264,7 +264,7 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen> {
                 Expanded(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: const Color(0xfffffaeb),
+                      color: DevfestTheme.of(context).backgroundColor,
                       border: Border(
                         top: BorderSide(
                           color: DevfestColors.grey80.possibleDarkVariant,
