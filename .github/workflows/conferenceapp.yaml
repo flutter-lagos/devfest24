@@ -80,11 +80,11 @@ jobs:
       build-number: ${{ github.event.inputs['build-number'] }}
       build-version: ${{ github.event.inputs['build-version'] }}
     secrets:
-      APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
-      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ vars.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
       APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
       CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
-      APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+      APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
   
   patch-release:
