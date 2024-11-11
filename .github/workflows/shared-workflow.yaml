@@ -159,7 +159,7 @@ jobs:
           packageName: com.devfestlagos.${{ inputs['package-name'] }}
           releaseFiles: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
           track: production
-          status: inProgress
+          status: draft
           inAppUpdatePriority: 5
           userFraction: 0.9
           debugSymbolsPath: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/symbols
