@@ -157,12 +157,12 @@ jobs:
         with:
           serviceAccountJson: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.devfestlagos.${{ inputs['package-name'] }}
-          releaseFiles: packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
+          releaseFiles: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
           track: production
           status: inProgress
           inAppUpdatePriority: 5
           userFraction: 0.9
-          debugSymbolsPath: packages/${{ inputs['package-name'] }}/symbols
+          debugSymbolsPath: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/symbols
 
   ios-build:
     if: inputs.ios-build == true
