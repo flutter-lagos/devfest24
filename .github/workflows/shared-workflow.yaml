@@ -303,7 +303,7 @@ jobs:
         id: shorebird-patch-android
         working-directory: packages/${{ inputs['package-name'] }}
         run: |
-          shorebird patch android --allow-native-diffs -- --dart-define-from-file=.env
+          shorebird patch android --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
         # with:
         #   platform: android
         #   args: --allow-native-diffs --flutter-version=3.24.3
@@ -320,6 +320,10 @@ jobs:
         uses: shorebirdtech/setup-shorebird@v1
         with:
           cache: true
+      
+      - name: Debug Secrets
+        run: echo "Key Identifier: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}"
+        shell: bash
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -368,7 +372,7 @@ jobs:
         id: shorebird-patch-ios
         working-directory: packages/${{ inputs['package-name'] }}
         run: |
-          shorebird patch ios --allow-native-diffs -- --dart-define-from-file=.env
+          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
         # with:
         #   platform: ios
         #   args: --allow-native-diffs --flutter-version=3.24.3
