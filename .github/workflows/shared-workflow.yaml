@@ -124,6 +124,10 @@ jobs:
           flutter-version: '3.24.3'
           cache: true
       
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+      
       - name: Decode Keystore File
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks
@@ -150,7 +154,7 @@ jobs:
         with:
           working-directory: packages/${{ inputs['package-name'] }}
           platform: android
-          args: --flutter-version=3.24.3 -- --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-info=./symbols
+          args: --flutter-version=3.24.3 -- --dart-define-from-file=.env --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-info=./symbols
       
       - name: Upload AAB to Google Play
         uses: r0adkll/upload-google-play@v1
@@ -208,6 +212,10 @@ jobs:
         run: flutter pub get
         working-directory: packages/${{ inputs['package-name'] }}
       
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+      
       - name: Install Codemagic CLI tools
         run: pip install codemagic-cli-tools
         working-directory: packages/${{ inputs['package-name'] }}
@@ -237,7 +245,7 @@ jobs:
         with:
           working-directory: packages/${{ inputs['package-name'] }}
           platform: ios
-          args: --flutter-version=3.24.3 -- --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
+          args: --flutter-version=3.24.3 -- --dart-define-from-file=.env --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
       
       - name: Publish the app to App Store Connect
         working-directory: packages/${{ inputs['package-name'] }}
