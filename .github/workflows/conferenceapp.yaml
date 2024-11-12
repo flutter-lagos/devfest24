@@ -139,15 +139,10 @@ jobs:
         run: melos generate
 
       - name: 🛠️ Shorebird Patch for Android
-        # uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch-android
         working-directory: packages/conferenceapp
         run: |
           shorebird patch android --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
-        # with:
-        #   platform: android
-        #   args: --allow-native-diffs --flutter-version=3.24.3
-        #   working-directory: packages/conferenceapp
 
   patch-ios:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
@@ -208,44 +203,7 @@ jobs:
         working-directory: packages/conferenceapp
 
       - name: 🛠️ Shorebird Patch for iOS
-        # uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch-ios
         working-directory: packages/conferenceapp
         run: |
-          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
-        # with:
-        #   platform: ios
-        #   args: --allow-native-diffs --flutter-version=3.24.3
-        #   working-directory: packages/conferenceapp
-  
-  # patch-android:
-  #   if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
-  #   uses: ./.github/workflows/shared-workflow.yaml
-  #   with:
-  #     package-name: conferenceapp
-  #     build-version: ${{ github.event.inputs['build-version'] }}
-  #     build-number: ${{ github.event.inputs['build-number'] }}
-  #   secrets:
-  #     SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-  #     SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
-  #     KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-  #     KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-  #     KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-  #     KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-  #     ENV_BASE64: ${{ secrets.ENV_BASE64 }}
-  
-  # patch-ios:
-  #   if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
-  #   uses: ./.github/workflows/shared-workflow.yaml
-  #   with:
-  #     package-name: conferenceapp
-  #     build-version: ${{ github.event.inputs['build-version'] }}
-  #     build-number: ${{ github.event.inputs['build-number'] }}
-  #   secrets:
-  #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-  #     APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
-  #     APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
-  #     CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
-  #     APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
-  #     SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
-  #     ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --export-options-plist=$HOME/export_options.plist --dart-define-from-file=.env
