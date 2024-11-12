@@ -372,7 +372,7 @@ jobs:
         id: shorebird-patch-ios
         working-directory: packages/${{ inputs['package-name'] }}
         run: |
-          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
+          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env --export-options-plist=$HOME/export_options.plist
         # with:
         #   platform: ios
         #   args: --allow-native-diffs --flutter-version=3.24.3
