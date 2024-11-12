@@ -296,5 +296,5 @@ jobs:
         id: shorebird-patch-ios
         with:
           platform: ios
-          args: --allow-native-diffs
+          args: --allow-native-diffs --flutter-version=3.24.3
           working-directory: packages/${{ inputs['package-name'] }}
