@@ -288,7 +288,7 @@ jobs:
         id: shorebird-patch-android
         with:
           platform: android
-          args: --allow-native-diffs
+          args: --allow-native-diffs --flutter-version=3.24.3
           working-directory: packages/${{ inputs['package-name'] }}
 
       - name: 🛠️ Shorebird Patch for iOS
