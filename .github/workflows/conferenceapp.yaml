@@ -26,36 +26,38 @@ on:
         required: true
         type: string
 
-jobs:
+env:
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+  APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+  APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+  CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+  APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
 
+jobs:
   validate-inputs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate Inputs
         run: |
-          if [[ "${{ github.event.inputs['release-type'] }}" == "build" ]]; then
-            if [[ -z "${{ github.event.inputs['build-version'] }}" ]]; then
-              echo "Error: build-version is required for a build release."
-              exit 1
-            fi
-            if [[ -z "${{ github.event.inputs['build-number'] }}" ]]; then
-              echo "Error: build-number is required for a build release."
-              exit 1
-            fi
+          if [[ -z "${{ github.event.inputs['build-version'] }}" ]]; then
+            echo "Error: build-version is required for a release."
+            exit 1
           fi
-          if [[ "${{ github.event.inputs['release-type'] }}" == "patch" ]]; then
-            echo "Patch release selected. Skipping build-version and build-number validation."
+          if [[ -z "${{ github.event.inputs['build-number'] }}" ]]; then
+            echo "Error: build-number is required for a release."
+            exit 1
           fi
 
   check-formatting:
     if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/shared/shared-workflow.yaml
+    uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
 
   android-build:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
-    uses: ./.github/workflows/shared/shared-workflow.yaml
+    uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
       android-build: ${{ github.event.inputs['release-type'] == 'build' }}
@@ -72,7 +74,7 @@ jobs:
 
   ios-build:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
-    uses: ./.github/workflows/shared/shared-workflow.yaml
+    uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
       ios-build: ${{ github.event.inputs['release-type'] == 'build' }}
@@ -86,35 +88,157 @@ jobs:
       APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
       ENV_BASE64: ${{ secrets.ENV_BASE64 }}
-  
+
   patch-android:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
-    uses: ./.github/workflows/shared/shared-workflow.yaml
-    with:
-      package-name: conferenceapp
-      build-version: ${{ github.event.inputs['build-version'] }}
-      build-number: ${{ github.event.inputs['build-number'] }}
-    secrets:
-      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
-      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
-  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          cache: true
+      
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+      
+      - name: Decode Keystore File
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks
+
+      - name: Create key.properties File
+        run: |
+          echo "storeFile=${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks" > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+
+      - name: Enable melos
+        run: dart pub global activate melos
+
+      - name: Get packages
+        run: melos bootstrap
+
+      - name: Generate Files
+        run: melos generate
+
+      - name: 🛠️ Shorebird Patch for Android
+        # uses: shorebirdtech/shorebird-patch@v0
+        id: shorebird-patch-android
+        working-directory: packages/${{ inputs['package-name'] }}
+        run: |
+          shorebird patch android --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
+        # with:
+        #   platform: android
+        #   args: --allow-native-diffs --flutter-version=3.24.3
+        #   working-directory: packages/${{ inputs['package-name'] }}
+
   patch-ios:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
-    uses: ./.github/workflows/shared/shared-workflow.yaml
-    with:
-      package-name: conferenceapp
-      build-version: ${{ github.event.inputs['build-version'] }}
-      build-number: ${{ github.event.inputs['build-number'] }}
-    secrets:
-      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
-      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
-      CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
-      APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
-      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
-      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+      
+      - name: Debug Secrets
+        run: 'echo "Key Identifier: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}"'
+        shell: bash
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          cache: true
+
+      - name: Enable melos
+        run: dart pub global activate melos
+
+      - name: Get packages
+        run: melos bootstrap
+
+      - name: Generate Files
+        run: melos generate
+      
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+      
+      - name: Install Codemagic CLI tools
+        run: pip install codemagic-cli-tools
+        working-directory: packages/${{ inputs['package-name'] }}
+      
+      - name: Set up keychain
+        run: keychain initialize
+        working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: Fetch signing files from App Store Connect
+        run: |
+          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+          --type IOS_APP_STORE \
+          --create
+        working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: Set up signing certificate in keychain
+        run: keychain add-certificates
+        working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: Set up code signing in Xcode project
+        run: xcode-project use-profiles
+        working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: 🛠️ Shorebird Patch for iOS
+        # uses: shorebirdtech/shorebird-patch@v0
+        id: shorebird-patch-ios
+        working-directory: packages/${{ inputs['package-name'] }}
+        run: |
+          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
+        # with:
+        #   platform: ios
+        #   args: --allow-native-diffs --flutter-version=3.24.3
+        #   working-directory: packages/${{ inputs['package-name'] }}
+  
+  # patch-android:
+  #   if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
+  #   uses: ./.github/workflows/shared-workflow.yaml
+  #   with:
+  #     package-name: conferenceapp
+  #     build-version: ${{ github.event.inputs['build-version'] }}
+  #     build-number: ${{ github.event.inputs['build-number'] }}
+  #   secrets:
+  #     SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+  #     SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  #     KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+  #     KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+  #     KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+  #     KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+  #     ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+  
+  # patch-ios:
+  #   if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
+  #   uses: ./.github/workflows/shared-workflow.yaml
+  #   with:
+  #     package-name: conferenceapp
+  #     build-version: ${{ github.event.inputs['build-version'] }}
+  #     build-number: ${{ github.event.inputs['build-number'] }}
+  #   secrets:
+  #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+  #     APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+  #     APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+  #     CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+  #     APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
+  #     SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  #     ENV_BASE64: ${{ secrets.ENV_BASE64 }}
