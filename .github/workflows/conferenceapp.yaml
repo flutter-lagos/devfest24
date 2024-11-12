@@ -49,13 +49,13 @@ jobs:
 
   check-formatting:
     if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/shared-workflow.yaml
+    uses: ./.github/workflows/shared/shared-workflow.yaml
     with:
       package-name: conferenceapp
 
   android-build:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
-    uses: ./.github/workflows/shared-workflow.yaml
+    uses: ./.github/workflows/shared/shared-workflow.yaml
     with:
       package-name: conferenceapp
       android-build: ${{ github.event.inputs['release-type'] == 'build' }}
@@ -72,7 +72,7 @@ jobs:
 
   ios-build:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
-    uses: ./.github/workflows/shared-workflow.yaml
+    uses: ./.github/workflows/shared/shared-workflow.yaml
     with:
       package-name: conferenceapp
       ios-build: ${{ github.event.inputs['release-type'] == 'build' }}
@@ -89,7 +89,7 @@ jobs:
   
   patch-android:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
-    uses: ./.github/workflows/shared-workflow.yaml
+    uses: ./.github/workflows/shared/shared-workflow.yaml
     with:
       package-name: conferenceapp
       build-version: ${{ github.event.inputs['build-version'] }}
@@ -105,7 +105,7 @@ jobs:
   
   patch-ios:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
-    uses: ./.github/workflows/shared-workflow.yaml
+    uses: ./.github/workflows/shared/shared-workflow.yaml
     with:
       package-name: conferenceapp
       build-version: ${{ github.event.inputs['build-version'] }}
