@@ -4,7 +4,7 @@ final class ConferenceApis {
   const ConferenceApis._(this.baseUrl);
 
   static const ConferenceApis instance =
-      ConferenceApis._(String.fromEnvironment('BASE_URL'));
+      ConferenceApis._("https://asgard.devfestlagos.com");
 
   String get postInitiateUserSession => '$baseUrl/users/sessions';
 
