@@ -160,7 +160,9 @@ class SignedInUserHeaderTile extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _UserInitialTag(user.fullName.split(' ').first[0]),
+              _UserInitialTag((user.fullName.isNotEmpty)
+                  ? user.fullName.split(' ').first[0]
+                  : 'U'),
               Constants.smallVerticalGutter.verticalSpace,
               Text(
                 user.fullName,
