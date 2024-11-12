@@ -135,7 +135,7 @@ class _HiringScreenState extends ConsumerState<HiringScreen> {
                               contentPadding: EdgeInsets.zero,
                               title: InkWell(
                                 onTap: () => launchWebUrl(
-                                    'https://bit.ly/devfestlagos-hiringterms'),
+                                    'https://bit.ly/dflagos-hiring-terms'),
                                 child: Text(
                                   'Agree to participation terms',
                                   style: DevfestTheme.of(context)
