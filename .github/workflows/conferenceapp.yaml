@@ -109,18 +109,18 @@ jobs:
       
       - name: Prepare .env file
         run: |
-          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/conferenceapp/.env
       
       - name: Decode Keystore File
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/conferenceapp/upload.jks
 
       - name: Create key.properties File
         run: |
-          echo "storeFile=${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks" > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "storeFile=${{ github.workspace }}/packages/conferenceapp/upload.jks" > ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/conferenceapp/android/key.properties
 
       - name: Enable melos
         run: dart pub global activate melos
@@ -134,13 +134,13 @@ jobs:
       - name: 🛠️ Shorebird Patch for Android
         # uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch-android
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
         run: |
           shorebird patch android --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
         # with:
         #   platform: android
         #   args: --allow-native-diffs --flutter-version=3.24.3
-        #   working-directory: packages/${{ inputs['package-name'] }}
+        #   working-directory: packages/conferenceapp
 
   patch-ios:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
@@ -175,41 +175,41 @@ jobs:
       
       - name: Prepare .env file
         run: |
-          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/conferenceapp/.env
       
       - name: Install Codemagic CLI tools
         run: pip install codemagic-cli-tools
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
       
       - name: Set up keychain
         run: keychain initialize
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
 
       - name: Fetch signing files from App Store Connect
         run: |
           app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
           --type IOS_APP_STORE \
           --create
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
 
       - name: Set up signing certificate in keychain
         run: keychain add-certificates
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
 
       - name: Set up code signing in Xcode project
         run: xcode-project use-profiles
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
 
       - name: 🛠️ Shorebird Patch for iOS
         # uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch-ios
-        working-directory: packages/${{ inputs['package-name'] }}
+        working-directory: packages/conferenceapp
         run: |
           shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
         # with:
         #   platform: ios
         #   args: --allow-native-diffs --flutter-version=3.24.3
-        #   working-directory: packages/${{ inputs['package-name'] }}
+        #   working-directory: packages/conferenceapp
   
   # patch-android:
   #   if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
