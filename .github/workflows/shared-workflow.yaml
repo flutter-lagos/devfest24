@@ -50,6 +50,8 @@ on:
         required: false
       KEY_PASSWORD:
         required: false
+      ENV_BASE64:
+        required: false
 
 env:
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}

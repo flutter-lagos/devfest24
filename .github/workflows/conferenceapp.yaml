@@ -69,6 +69,7 @@ jobs:
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
 
   ios-build:
     needs: validate-inputs
@@ -86,6 +87,7 @@ jobs:
       CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
       APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
       SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
   
   patch-release:
     needs: validate-inputs
