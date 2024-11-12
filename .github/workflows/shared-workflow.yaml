@@ -301,6 +301,7 @@ jobs:
       - name: 🛠️ Shorebird Patch for Android
         # uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch-android
+        working-directory: packages/${{ inputs['package-name'] }}
         run: |
           shorebird patch android --allow-native-diffs -- --dart-define-from-file=.env
         # with:
@@ -365,6 +366,7 @@ jobs:
       - name: 🛠️ Shorebird Patch for iOS
         # uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch-ios
+        working-directory: packages/${{ inputs['package-name'] }}
         run: |
           shorebird patch ios --allow-native-diffs -- --dart-define-from-file=.env
         # with:
