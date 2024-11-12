@@ -167,7 +167,6 @@ jobs:
           track: production
           status: draft
           inAppUpdatePriority: 5
-          userFraction: 0.9
           debugSymbolsPath: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/symbols
 
   ios-build:
