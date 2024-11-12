@@ -322,7 +322,7 @@ jobs:
           cache: true
       
       - name: Debug Secrets
-        run: echo "Key Identifier: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}"
+        run: 'echo "Key Identifier: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}"'
         shell: bash
 
       - name: Set up Flutter
