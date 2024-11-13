@@ -26,26 +26,26 @@ final class CheckInState extends Devfest2024UiState {
           day: 1,
         );
 
-  CheckInState copyWith({
-    UiState? uiState,
-    Devfest2024Exception? error,
-    CheckInUserResponseDto? checkedInattendee,
-    String? userId,
-    num? day,
-    String? gender
-  }) {
+  CheckInState copyWith(
+      {UiState? uiState,
+      Devfest2024Exception? error,
+      CheckInUserResponseDto? checkedInattendee,
+      String? userId,
+      num? day,
+      String? gender}) {
     return CheckInState(
         userId: userId ?? this.userId,
         uiState: uiState ?? this.uiState,
         error: error ?? this.error,
         day: day ?? this.day,
-        gender: gender??this.gender,
+        gender: gender ?? this.gender,
         checkedInattendee: checkedInattendee ?? this.checkedInattendee);
   }
 
   @override
   // TODO: implement props
-  List<Object?> get props => [userId, uiState, error, day, checkedInattendee,gender];
+  List<Object?> get props =>
+      [userId, uiState, error, day, checkedInattendee, gender];
 }
 
 final class UserSearchState extends Devfest2024UiState {
@@ -73,28 +73,26 @@ final class UserSearchState extends Devfest2024UiState {
           day: 1,
         );
 
-  UserSearchState copyWith({
-    UiState? uiState,
-    Devfest2024Exception? error,
-    List<AttendeeResult>? attendees,
-    List<AttendeeResult>? fetchedAttendees,
-    String? userId,
-    num? day,
-    AttendeeResult? selectedAttendee
-  }) {
+  UserSearchState copyWith(
+      {UiState? uiState,
+      Devfest2024Exception? error,
+      List<AttendeeResult>? attendees,
+      List<AttendeeResult>? fetchedAttendees,
+      String? userId,
+      num? day,
+      AttendeeResult? selectedAttendee}) {
     return UserSearchState(
         userId: userId ?? this.userId,
         uiState: uiState ?? this.uiState,
         error: error ?? this.error,
         day: day ?? this.day,
-        selectedAttendee:selectedAttendee??this.selectedAttendee,
+        selectedAttendee: selectedAttendee ?? this.selectedAttendee,
         attendees: attendees ?? this.attendees,
-        fetchedAttendees: fetchedAttendees??this.fetchedAttendees
-        );
-        
+        fetchedAttendees: fetchedAttendees ?? this.fetchedAttendees);
   }
 
   @override
   // TODO: implement props
-  List<Object?> get props => [userId, uiState, error, day, attendees,fetchedAttendees];
+  List<Object?> get props =>
+      [userId, uiState, error, day, attendees, fetchedAttendees];
 }

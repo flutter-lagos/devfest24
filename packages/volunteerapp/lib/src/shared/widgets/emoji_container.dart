@@ -2,9 +2,7 @@ import 'package:cave/cave.dart';
 import 'package:flutter/material.dart';
 
 class EmojiContainer extends StatelessWidget {
-  const EmojiContainer({
-    super.key, required this.emoji
-  });
+  const EmojiContainer({super.key, required this.emoji});
   final String emoji;
 
   @override

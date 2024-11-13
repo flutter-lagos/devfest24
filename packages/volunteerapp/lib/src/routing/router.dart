@@ -3,15 +3,15 @@ import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboar
 import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_login.dart';
 import 'package:volunteerapp/src/features/search/presentation/screens/search_screen.dart';
 import 'package:flutter/material.dart';
- final rootNavigatorKey = GlobalKey<NavigatorState>();
-class Devfest2024Router {
- 
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
+class Devfest2024Router {
   Devfest2024Router._();
 
   static final Devfest2024Router instance = Devfest2024Router._();
 
-    static String initialRoute = HomeScreen.route;
+  static String initialRoute = HomeScreen.route;
 
   Route<dynamic> onGenerateRoutes(RouteSettings settings) {
     return switch (settings.name) {
@@ -19,12 +19,9 @@ class Devfest2024Router {
         MaterialPageRoute(builder: (_) => const OnboardingHomeScreen()),
       OnboardingLoginScreen.route =>
         MaterialPageRoute(builder: (_) => const OnboardingLoginScreen()),
-      HomeScreen.route =>
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      HomeScreen.route => MaterialPageRoute(builder: (_) => const HomeScreen()),
       SearchScreen.route =>
         MaterialPageRoute(builder: (_) => const SearchScreen()),
-   
-    
       _ => MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
@@ -34,13 +31,10 @@ class Devfest2024Router {
         ),
     };
   }
-
-  
-
 }
 
 extension BuildContextX on BuildContext {
-   void pop<T extends Object>([T? result]) => Navigator.of(this).pop<T>(result);
+  void pop<T extends Object>([T? result]) => Navigator.of(this).pop<T>(result);
 
   Future<dynamic> goNamed(String routeName, {Object? arguments}) =>
       Navigator.of(this).pushNamed(routeName, arguments: arguments);

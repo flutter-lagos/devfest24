@@ -37,6 +37,7 @@ final class AttendeesResponseDto extends Equatable {
   // TODO: implement props
   List<Object?> get props => [attendees];
 }
+
 final class AttendeeResult extends Equatable {
   final String id;
   final String fullname;
@@ -51,6 +52,8 @@ final class AttendeeResult extends Equatable {
   final dynamic gender;
   final List checkins;
   final String resumeUrl;
+  final String ticketTitle;
+  final String ticketTag;
 
   const AttendeeResult({
     required this.id,
@@ -65,7 +68,9 @@ final class AttendeeResult extends Equatable {
     required this.ticketUpdated,
     required this.gender,
     required this.checkins,
-    required this.resumeUrl
+    required this.resumeUrl,
+    required this.ticketTag,
+    required this.ticketTitle,
   });
 
   AttendeeResult.empty()
@@ -82,24 +87,27 @@ final class AttendeeResult extends Equatable {
             ticketUpdated: false,
             gender: '',
             checkins: [],
-            resumeUrl: ''
-            );
+            resumeUrl: '',
+            ticketTag: '',
+            ticketTitle: '');
 
-  AttendeeResult copyWith(
-      {String? id,
-      String? fullname,
-      String? emailAddress,
-      String? role,
-      String? levelOfExpertise,
-      String? ticketId,
-      String? createdAt,
-      List? interests,
-      List? sessions,
-      bool? ticketUpdated,
-      dynamic gender,
-      List? checkins,
-      String? resumeUrl,
-      }) {
+  AttendeeResult copyWith({
+    String? id,
+    String? fullname,
+    String? emailAddress,
+    String? role,
+    String? levelOfExpertise,
+    String? ticketId,
+    String? createdAt,
+    List? interests,
+    List? sessions,
+    bool? ticketUpdated,
+    dynamic gender,
+    List? checkins,
+    String? resumeUrl,
+    String? ticketTag,
+    String? ticketTitle,
+  }) {
     return AttendeeResult(
         id: id ?? this.id,
         fullname: fullname ?? this.fullname,
@@ -112,9 +120,10 @@ final class AttendeeResult extends Equatable {
         sessions: sessions ?? this.sessions,
         ticketUpdated: ticketUpdated ?? this.ticketUpdated,
         gender: gender ?? this.gender,
-        checkins: checkins??this.checkins,
-        resumeUrl: resumeUrl??this.resumeUrl
-        );
+        checkins: checkins ?? this.checkins,
+        resumeUrl: resumeUrl ?? this.resumeUrl,
+        ticketTag: ticketTag ?? this.ticketTag,
+        ticketTitle: ticketTitle ?? this.ticketTitle);
   }
 
   factory AttendeeResult.fromJson(dynamic json) {
@@ -130,8 +139,10 @@ final class AttendeeResult extends Equatable {
       sessions: json["sessions"] ?? [],
       ticketUpdated: json["ticket_updated"] ?? '',
       gender: json["role"] ?? '',
-      resumeUrl:  json["resume_url"] ?? '',
-      checkins:  json["checkins"]!=null?List.from(json["checkins"]):[]
+      resumeUrl: json["resume_url"] ?? '',
+      checkins: json["checkins"] != null ? List.from(json["checkins"]) : [],
+      ticketTag: json["ticket_tag"] ?? '',
+      ticketTitle: json["ticket_title"] ?? '',
     );
   }
   Map<String, dynamic> toJson() => {
@@ -146,8 +157,8 @@ final class AttendeeResult extends Equatable {
         "sessions": sessions.map((x) => x).toList(),
         "ticket_updated": ticketUpdated,
         "gender": gender,
-        "resume_url":resumeUrl,
-        "checkins":checkins.map((x)=>x).toList()
+        "resume_url": resumeUrl,
+        "checkins": checkins.map((x) => x).toList()
       };
   @override
   List<Object?> get props => [

@@ -77,7 +77,7 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Email Address cannot be empty';
                               }
-                              if (!_emailRegexp.hasMatch(value!)) {
+                              if (!_emailRegexp.hasMatch(value)) {
                                 return 'Please enter a valid email address';
                               }
                               return null;
@@ -95,7 +95,7 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'This field cannot be empty';
                                 }
-                                if (value!.length <= 3) {
+                                if (value.length <= 3) {
                                   return 'Please enter a valid ticket ID';
                                 }
 

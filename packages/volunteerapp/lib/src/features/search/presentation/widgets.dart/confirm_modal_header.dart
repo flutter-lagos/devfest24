@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:volunteerapp/src/shared/shared.dart';
 
 class ConfirmCheckInModalHeader extends StatelessWidget {
-  const ConfirmCheckInModalHeader({super.key,required this.fullName});
+  const ConfirmCheckInModalHeader({super.key, required this.fullName});
   final String fullName;
 
   @override

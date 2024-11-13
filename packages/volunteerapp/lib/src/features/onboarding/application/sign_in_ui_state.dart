@@ -6,17 +6,28 @@ final class SignInState extends Devfest2024UiState {
   final String email;
   final String ticketId;
   final SignInResponseDto user;
-  const SignInState({super.uiState, super.error, required this.user,required this.email,required this.ticketId});
-  SignInState.initial() : this(uiState: UiState.idle,error:const EmptyException() ,user: SignInResponseDto.empty(),ticketId: '',email: 
-     '',);
+  const SignInState(
+      {super.uiState,
+      super.error,
+      required this.user,
+      required this.email,
+      required this.ticketId});
+  SignInState.initial()
+      : this(
+          uiState: UiState.idle,
+          error: const EmptyException(),
+          user: SignInResponseDto.empty(),
+          ticketId: '',
+          email: '',
+        );
 
-  SignInState copyWith(
-      {UiState? uiState,
-      Devfest2024Exception? error,
-      SignInResponseDto? user,
-      String? ticketId,
-      String? email,
-      }) {
+  SignInState copyWith({
+    UiState? uiState,
+    Devfest2024Exception? error,
+    SignInResponseDto? user,
+    String? ticketId,
+    String? email,
+  }) {
     return SignInState(
       user: user ?? this.user,
       uiState: uiState ?? this.uiState,

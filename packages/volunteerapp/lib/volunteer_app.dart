@@ -18,14 +18,14 @@ class _ConferenceAppState extends ConsumerState<VolunteerApp> {
   @override
   void initState() {
     super.initState();
-      Future.microtask(() async {
+    Future.microtask(() async {
       final [dynamic isFirstLaunch, dynamic token] = await Future.wait([
         ConferenceAppStorageService.instance.isFirstLaunch,
         ConferenceAppStorageService.instance.userToken,
       ]);
 
       if (isFirstLaunch == true && (token.toString()).isEmpty) {
-       rootNavigatorKey.currentContext
+        rootNavigatorKey.currentContext
             ?.goNamedAndPopAll(OnboardingHomeScreen.route);
         return;
       }
@@ -48,14 +48,13 @@ class _ConferenceAppState extends ConsumerState<VolunteerApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Devfest24 Vounteer App',
-             navigatorKey: rootNavigatorKey,
+            navigatorKey: rootNavigatorKey,
             initialRoute: Devfest2024Router.initialRoute,
-            
             onGenerateRoute: Devfest2024Router.instance.onGenerateRoutes,
             builder: (context, child) => AccessibilityTools(
-              minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
-              checkFontOverflows: true,
-              child: child),
+                minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
+                checkFontOverflows: true,
+                child: child),
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.deepPurple,

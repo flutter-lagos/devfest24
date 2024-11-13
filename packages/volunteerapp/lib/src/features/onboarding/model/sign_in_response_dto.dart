@@ -16,7 +16,6 @@ final class SignInResponseDto extends Equatable {
       required this.role,
       required this.token});
 
-  
   SignInResponseDto.empty()
       : this(
             createdAt: DateTime.now(),
@@ -28,7 +27,7 @@ final class SignInResponseDto extends Equatable {
 
   factory SignInResponseDto.fromJson(dynamic json) {
     return SignInResponseDto(
-        createdAt:DateTime.parse(json['created_at']) ?? DateTime.now(),
+        createdAt: DateTime.parse(json['created_at']) ?? DateTime.now(),
         id: json['id'] ?? '',
         fullName: json['fullname'] ?? '',
         role: json['role'] ?? '',
@@ -37,7 +36,6 @@ final class SignInResponseDto extends Equatable {
   }
 
   @override
-  
   List<Object?> get props =>
       [createdAt, id, fullName, role, token, emailAddress];
 }

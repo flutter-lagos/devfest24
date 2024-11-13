@@ -7,7 +7,6 @@ import 'package:volunteerapp/src/features/home/application/user_seach_view_model
 import 'package:volunteerapp/src/features/home/model/model.dart';
 import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_login.dart';
 
-import 'package:volunteerapp/src/features/search/presentation/widgets.dart/widgets.dart';
 import 'package:volunteerapp/src/routing/router.dart';
 import 'package:volunteerapp/src/shared/shared.dart';
 
@@ -57,19 +56,15 @@ final class CheckInViewModel extends AutoDisposeNotifier<CheckInState> {
           userId: id, day: state.day, gender: state.gender);
       final result = await _apiService.checkInUser(dto);
       final selectedAttendee = ref.watch(usersearchVM).selectedAttendee;
-      state = model.emit(result
-          .fold((left) => state.copyWith(uiState: UiState.error, error: left),
-              (right) {
+      state = model.emit(result.fold((left) {
+        Navigator.of(context).pop();
+        FocusManager.instance.primaryFocus?.unfocus();
+        return state.copyWith(uiState: UiState.error, error: left);
+      }, (right) {
         print('hullo');
         print('right $right');
         Navigator.of(context).pop();
-        showDevfestBottomModal(context,
-            children: checkInSuccessContent(context,
-                attendee: selectedAttendee,
-                confetti: ConfettiWidget(
-                  confettiController: _contoller,
-                  blastDirectionality: BlastDirectionality.explosive,
-                )));
+
         return state.copyWith(
           uiState: UiState.success,
           checkedInattendee: right,

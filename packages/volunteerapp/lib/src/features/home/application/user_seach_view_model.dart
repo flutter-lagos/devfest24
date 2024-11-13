@@ -18,32 +18,48 @@ final class UserSeachViewModel extends AutoDisposeNotifier<UserSearchState> {
     return UserSearchState.initial();
   }
 
-  AttendeeResult getSearchedAttendeeById(String id,) {
-    final result = state.attendees.firstWhere((e) => e.id == id,orElse: () {
-      // Handle the case where the attendee is not found
-      throw StateError('Attendee with id $id not found');
-    },);
+  AttendeeResult getSearchedAttendeeById(
+    String id,
+  ) {
+    final result = state.attendees.firstWhere(
+      (e) => e.id == id,
+      orElse: () {
+        // Handle the case where the attendee is not found
+        throw StateError('Attendee with id $id not found');
+      },
+    );
     return result;
   }
 
-   AttendeeResult getAttendeeById(String id,) {
-    final result = state.fetchedAttendees.firstWhere((e) => e.id == id,orElse: () {
-      // Handle the case where the attendee is not found
-      throw StateError('Attendee with id $id not found');
-    },);
+  AttendeeResult getAttendeeById(
+    String id,
+  ) {
+    final result = state.fetchedAttendees.firstWhere(
+      (e) => e.id == id,
+      orElse: () {
+        // Handle the case where the attendee is not found
+        throw StateError('Attendee with id $id not found');
+      },
+    );
     return result;
   }
 
-  void onCheckboxClicked(bool isClicked, String id,) {
+  void onCheckboxClicked(
+    bool isClicked,
+    String id,
+  ) {
     //get the bool and index
     AttendeeResult updatedResult;
     final attendee = getSearchedAttendeeById(id);
     state = state.copyWith(selectedAttendee: attendee);
   }
 
-    void onHomePageCheckboxClicked(bool isClicked, String id,) {
+  void onHomePageCheckboxClicked(
+    bool isClicked,
+    String id,
+  ) {
     //get the bool and index
-    AttendeeResult updatedResult;  
+    AttendeeResult updatedResult;
     final attendee = getAttendeeById(id);
     state = state.copyWith(selectedAttendee: attendee);
   }
@@ -59,7 +75,7 @@ final class UserSeachViewModel extends AutoDisposeNotifier<UserSearchState> {
 
       final result = await _apiService.searchAttendees(searchString);
 
-      state = model.emit( result
+      state = model.emit(result
           .fold((left) => state.copyWith(uiState: UiState.error, error: left),
               (right) {
         print(right.toString());
@@ -69,13 +85,13 @@ final class UserSeachViewModel extends AutoDisposeNotifier<UserSearchState> {
     });
   }
 
-   Future<void> getAttendees() async {
+  Future<void> getAttendees() async {
     await launch(state.ref, (model) async {
       state = model.emit(state.copyWith(uiState: UiState.loading));
 
       final result = await _apiService.getAttendees();
 
-      state = model.emit( result
+      state = model.emit(result
           .fold((left) => state.copyWith(uiState: UiState.error, error: left),
               (right) {
         print(right.toString());

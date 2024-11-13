@@ -5,21 +5,15 @@ final class CheckUserInRequestDto extends Equatable {
   final num day;
   final String gender;
 
-  const CheckUserInRequestDto({
-    required this.userId,
-    required this.day,
-    required this.gender
-  });
+  const CheckUserInRequestDto(
+      {required this.userId, required this.day, required this.gender});
 
-  Map<String, dynamic> toJson() => {
-        'user_id': userId,
-        'day': day,
-        'gender':gender
-      };
+  Map<String, dynamic> toJson() =>
+      {'user_id': userId, 'day': day, 'gender': gender};
 
   @override
   // TODO: implement props
-  List<Object?> get props => [userId, day,gender];
+  List<Object?> get props => [userId, day, gender];
 }
 
 final class CheckInUserResponseDto extends Equatable {

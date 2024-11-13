@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cave/cave.dart';
 import 'package:volunteerapp/src/features/onboarding/model/model.dart';
 
@@ -16,9 +15,9 @@ final class VolunteerOnboardingApiService {
     );
 
     return await processData(
-      (p0) {    
-          //final result = jsonDecode(p0);
-          return SignInResponseDto.fromJson(p0); 
+      (p0) {
+        //final result = jsonDecode(p0);
+        return SignInResponseDto.fromJson(p0);
       },
       response,
     );

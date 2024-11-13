@@ -38,7 +38,7 @@ final class SignInViewModel extends AutoDisposeNotifier<SignInState> {
               (right) async {
         await ConferenceAppStorageService.instance.setUserToken(right.token);
         await ConferenceAppStorageService.instance.setuserName(right.fullName);
-       
+
         return state.copyWith(uiState: UiState.success, user: right);
       }));
     });

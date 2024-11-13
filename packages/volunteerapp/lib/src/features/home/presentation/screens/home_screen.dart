@@ -8,7 +8,9 @@ import 'package:volunteerapp/src/features/search/presentation/screens/search_scr
 import 'package:volunteerapp/src/features/search/presentation/widgets.dart/widgets.dart';
 import '../../../../routing/routing.dart';
 import '../widgets/widgets.dart';
+
 final GlobalKey<ScaffoldState> homeScaffoldKey = GlobalKey<ScaffoldState>();
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
   static const route = '/home';
@@ -19,15 +21,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   String userFullName = '';
-  List<Map<String, dynamic>> attendees = List.generate(
-    10,
-    (index) => {
-      'checkedIn': index % 2 == 0,
-      'fullName': 'John Doe${index + 1}',
-      'email': 'john${index + 1}@example.com',
-      'ticketId': 'T00${index + 1}'
-    },
-  );
 
   @override
   void initState() {
@@ -220,217 +213,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         DataColumn(label: Text('Email Address')),
                         DataColumn(label: Text('Ticket ID')),
                       ],
-                      rows: ref.watch(usersearchVM).fetchedAttendees.map((attendee) {
+                      rows: ref
+                          .watch(usersearchVM)
+                          .fetchedAttendees
+                          .map((attendee) {
                         return DataRow(
                           cells: <DataCell>[
                             DataCell(
                               Center(
                                 child:
-                                ///check if current day is contained in the users list of checked in days
-                                attendee.checkins.contains(ref.watch(checkInVMNotifier).day)?
-                                Checkbox(
-                                  semanticLabel: 'Checkin user',
-                                  value:true,
-                                  onChanged: (bool? value) {
-                                   
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  side: const BorderSide(
-                                    color: DevfestColors.backgroundDark,
-                                    width: 1.5,
-                                  ),
-                                  checkColor: DevfestColors.backgroundLight,
-                                  activeColor: const Color(0xFF141B34),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.padded,
-                                  visualDensity: VisualDensity.standard,
-                                )
-                                :
-                                Checkbox(
-                                  semanticLabel: 'Checkin user',
-                                  value: attendee.checkins.contains(ref.watch(checkInVMNotifier).day),
-                                  onChanged: (bool? value) {
-                                          ref
-                                        .read(usersearchVM.notifier)
-                                        .onHomePageCheckboxClicked(value ?? false,
-                                           attendee.id,);
 
-                                    ///show the modal if checkbox is selected
-
-                                    if (value == true) {
-                                      //show modal
-                                      showDevfestBottomModal(homeScaffoldKey.currentContext!,
-                                          children: [
-                                            ConfirmCheckInModalHeader(fullName:attendee.fullname),
-                                            
-                                            Constants.smallVerticalGutter
-                                                .verticalSpace,
-                                            StatefulBuilder(
-                                              builder: (context,StateSetter
-                                                                    setModalState) {
-                                                return Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        DevfestCheckbox(
-                                                          semanticLabel:
-                                                              'Select Female Gender',
-                                                          value: ref.watch(
-                                                              checkInVMNotifier
-                                                                  .select((vm) =>
-                                                                      vm.gender ==
-                                                                      'female')),
-                                                          onChanged: (value) {
-                                                            ref
-                                                                .read(
-                                                                    checkInVMNotifier
-                                                                        .notifier)
-                                                                .onGenderChanged(
-                                                                    'female');
-                                                                                                        
-                                                            setModalState(() {});
-                                                          },
-                                                        ),
-                                                        8.horizontalSpace,
-                                                        Text(
-                                                          'Female',
-                                                          style: DevfestTheme.of(
-                                                                  context)
-                                                              .textTheme!
-                                                              .bodyBody2Medium!
-                                                              .copyWith(
-                                                                  color:
-                                                                      DevfestColors
-                                                                          .grey60),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    35.horizontalSpace,
-                                                    Row(
-                                                      children: [
-                                                        DevfestCheckbox(
-                                                          semanticLabel:
-                                                              'Select Male Gender',
-                                                          value: ref
-                                                                  .watch(
-                                                                      checkInVMNotifier)
-                                                                  .gender ==
-                                                              'male',
-                                                          onChanged: (value) {
-                                                            ref
-                                                                .read(
-                                                                    checkInVMNotifier
-                                                                        .notifier)
-                                                                .onGenderChanged(
-                                                                    'male');
-                                                            setModalState(() {});
-                                                          },
-                                                        ),
-                                                        8.horizontalSpace,
-                                                        Text(
-                                                          'Male',
-                                                          style: DevfestTheme.of(
-                                                                  context)
-                                                              .textTheme!
-                                                              .bodyBody2Medium!
-                                                              .copyWith(
-                                                                  color:
-                                                                      DevfestColors
-                                                                          .grey60),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                );
-                                              }
+                                    ///check if current day is contained in the users list of checked in days
+                                    attendee.checkins.contains(
+                                            ref.watch(checkInVMNotifier).day)
+                                        ? Checkbox(
+                                            semanticLabel: 'Checkin user',
+                                            value: true,
+                                            onChanged: (bool? value) {},
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
-                                            Constants
-                                                .verticalGutter.verticalSpace,
-                                            DevfestOutlinedButton(
-                                              onPressed: () {
+                                            side: const BorderSide(
+                                              color:
+                                                  DevfestColors.backgroundDark,
+                                              width: 1.5,
+                                            ),
+                                            checkColor:
+                                                DevfestColors.backgroundLight,
+                                            activeColor:
+                                                const Color(0xFF141B34),
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize.padded,
+                                            visualDensity:
+                                                VisualDensity.standard,
+                                          )
+                                        : Checkbox(
+                                            semanticLabel: 'Checkin user',
+                                            value: attendee.checkins.contains(
                                                 ref
-                                                    .read(checkInVMNotifier
-                                                        .notifier)
-                                                    .onGenderChanged('');
+                                                    .watch(checkInVMNotifier)
+                                                    .day),
+                                            onChanged: (bool? value) {
+                                              ref
+                                                  .read(usersearchVM.notifier)
+                                                  .onHomePageCheckboxClicked(
+                                                    value ?? false,
+                                                    attendee.id,
+                                                  );
 
-                                                Navigator.of(context)
-                                                    .pop();
-                                              },
-                                              title: Text(
-                                                'Cancel',
-                                                style: DevfestTheme.of(context)
-                                                    .textTheme
-                                                    ?.buttonMediumBold
-                                                    ?.copyWith(
-                                                        color: DevfestColors
-                                                            .grey10),
-                                              ),
+                                              ///show the modal if checkbox is selected
+
+                                              if (value == true) {
+                                                //show modal
+                                                showModalBottomSheet(
+                                                    isScrollControlled: true,
+                                                    isDismissible: false,
+                                                    backgroundColor:
+                                                        DevfestColors
+                                                            .warning100,
+                                                    showDragHandle: true,
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return CheckInAttendeeModal(
+                                                        attendee: attendee,
+                                                      );
+                                                    });
+                                              }
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
-                                            Constants
-                                                .verticalGutter.verticalSpace,
-                                            Consumer(
-                                                builder: (context, ref, _) {
-                                              return DevfestFilledButton(
-                                                onPressed: () {
-                                                  ref
-                                                      .read(checkInVMNotifier
-                                                          .notifier)
-                                                      .checkInUser(homeScaffoldKey
-                                                        .currentContext!,
-                                                          attendee.id);
-                                                },
-                                                title: ref.watch(
-                                                        checkInVMNotifier
-                                                            .select((vm) => vm
-                                                                .uiState
-                                                                .isLoading))
-                                                    ? CircularProgressIndicator
-                                                        .adaptive(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation(
-                                                                Colors.white),
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        strokeWidth: 2.0,
-                                                      )
-                                                    : Text(
-                                                        'Yes check in',
-                                                        style: DevfestTheme.of(
-                                                                context)
-                                                            .textTheme
-                                                            ?.buttonMediumBold
-                                                            ?.copyWith(
-                                                                color:
-                                                                    DevfestColors
-                                                                        .grey100),
-                                                      ),
-                                              );
-                                            }),
-                                          ]);
-                                    }
-                                  
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  side: const BorderSide(
-                                    color: DevfestColors.backgroundDark,
-                                    width: 1.5,
-                                  ),
-                                  checkColor: DevfestColors.backgroundLight,
-                                  activeColor: const Color(0xFF141B34),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.padded,
-                                  visualDensity: VisualDensity.standard,
-                                ),
-
-                                
-                                
-                                 
+                                            side: const BorderSide(
+                                              color:
+                                                  DevfestColors.backgroundDark,
+                                              width: 1.5,
+                                            ),
+                                            checkColor:
+                                                DevfestColors.backgroundLight,
+                                            activeColor:
+                                                const Color(0xFF141B34),
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize.padded,
+                                            visualDensity:
+                                                VisualDensity.standard,
+                                          ),
                               ),
                             ),
                             DataCell(

@@ -8,7 +8,6 @@ class Debouncer {
   void run(VoidCallback action) {
     if (_timer != null) {
       _timer!.cancel();
-      
     }
 
     _timer = Timer(Duration(milliseconds: 800), action);

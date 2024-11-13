@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-final class SignInRequestDto extends Equatable{
+final class SignInRequestDto extends Equatable {
   final String id;
   final String emailAddress;
 
@@ -13,10 +13,8 @@ final class SignInRequestDto extends Equatable{
         'id': id,
         'email_address': emailAddress,
       };
-      
-        @override
-        // TODO: implement props
-        List<Object?> get props => [
-          id,emailAddress
-        ];
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [id, emailAddress];
 }
