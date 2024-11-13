@@ -5,12 +5,15 @@ import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../../dashboard/presentation/screens/dashboard.dart';
 
 final _emailRegexp = RegExp(
     r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
 class OnboardingLoginScreen extends ConsumerStatefulWidget {
+  static const route = '/onboarding/login';
+
   const OnboardingLoginScreen({super.key});
 
   @override
@@ -26,7 +29,7 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
     super.initState();
     ref.listenManual(sessionSignInVMNotifier, (previous, next) {
       if (next.uiState.isSuccess) {
-        context.goNamed(Devfest2024Routes.dashboard.name);
+        context.goNamedAndPopAll(DashboardScreen.route);
         return;
       }
     });
@@ -170,7 +173,7 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                         titleStyle: TextStyle(
                             color: DevfestColors.grey10.possibleDarkVariant),
                         onPressed: () {
-                          context.goNamed(Devfest2024Routes.dashboard.name);
+                          context.goNamedAndPopAll(DashboardScreen.route);
                         },
                       ),
                     ],

@@ -6,12 +6,14 @@ import 'package:devfest24/src/features/onboarding/presentation/widgets/widgets.d
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../routing/routing.dart';
+import '../../../dashboard/presentation/screens/dashboard.dart';
 import '../widgets/path_to_svg_parser.dart';
 
 class OnboardingSignatureScreen extends StatefulWidget {
+  static const route = '/onboarding/login/signature';
+
   const OnboardingSignatureScreen({super.key});
 
   @override
@@ -47,7 +49,7 @@ class _OnboardingSignatureScreenState extends State<OnboardingSignatureScreen> {
                     color: DevfestColors.grey50.possibleDarkVariant,
                   ).semi,
                   onPressed: () {
-                    context.goNamed(Devfest2024Routes.dashboard.name);
+                    context.goNamedAndPopAll(DashboardScreen.route);
                   },
                 ),
               ),

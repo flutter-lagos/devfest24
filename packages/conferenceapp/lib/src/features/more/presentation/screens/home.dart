@@ -1,16 +1,19 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
-import 'package:devfest24/src/features/more/presentation/widgets/widgets.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MoreHomeScreen extends StatelessWidget {
+import '../../../dashboard/application/application.dart';
+import '../../../onboarding/presentation/presentation.dart';
+import '../presentation.dart';
+
+class MoreHomeScreen extends ConsumerWidget {
   const MoreHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: Column(
@@ -21,7 +24,17 @@ class MoreHomeScreen extends StatelessWidget {
                   horizontal: Constants.horizontalMargin.w),
               child: Column(
                 children: [
-                  const SignedInUserHeaderTile(),
+                  if (ref.watch(userViewModelNotifier
+                      .select((vm) => vm.user.id.isNotEmpty)))
+                    const SignedInUserHeaderTile()
+                  else
+                    SignedOutUserHeaderTile(
+                      signInOnTap: () {
+                        context.goNamedAndPopAll(OnboardingLoginScreen.route);
+                        ConferenceAppStorageService.instance
+                            .setIsFirstLaunch(true);
+                      },
+                    ),
                   MoreSection(
                     title: const Text('GENERAL'),
                     options: [
@@ -32,7 +45,7 @@ class MoreHomeScreen extends StatelessWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.profile.name);
+                          context.goNamed(ProfileScreen.route);
                         },
                       ),
                       MoreButton(
@@ -42,7 +55,7 @@ class MoreHomeScreen extends StatelessWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.myQrCode.name);
+                          context.goNamed(MyQrCodeScreen.route);
                         },
                       ),
                       MoreButton(
@@ -60,7 +73,7 @@ class MoreHomeScreen extends StatelessWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.venueMap.name);
+                          context.goNamed(VenueMapScreen.route);
                         },
                       ),
                     ],

@@ -17,9 +17,9 @@ class AnalyticsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = DevfestTheme.of(context).textTheme;
     return Container(
-      width: 170.w,
+    //  width: 170.w,
       margin: EdgeInsets.only(right: 8.w),
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsets.fromLTRB(16.w,16.h,66.w,16.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(

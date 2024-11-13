@@ -1,18 +1,20 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteerapp/src/features/home/application/check_in_view_model.dart';
 import 'package:volunteerapp/src/shared/extensions.dart';
 
-class DayMenuBar extends StatefulWidget {
+class DayMenuBar extends ConsumerStatefulWidget {
   const DayMenuBar({
     super.key,
   });
 
   @override
-  State<DayMenuBar> createState() => _DayMenuBarState();
+  ConsumerState<DayMenuBar> createState() => _DayMenuBarState();
 }
 
-class _DayMenuBarState extends State<DayMenuBar> {
+class _DayMenuBarState extends ConsumerState<DayMenuBar> {
   String selectedDay = 'Day 1';
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,7 @@ class _DayMenuBarState extends State<DayMenuBar> {
                 setState(() {
                   selectedDay = 'Day 1';
                 });
+                ref.read(checkInVMNotifier.notifier).onDayChanged(1);
               },
               child: Text(
                 'Day 1',
@@ -65,6 +68,7 @@ class _DayMenuBarState extends State<DayMenuBar> {
                 setState(() {
                   selectedDay = 'Day 2';
                 });
+                ref.read(checkInVMNotifier.notifier).onDayChanged(2);
               },
               child: Text(
                 'Day 2',

@@ -1,11 +1,13 @@
 import 'package:cave/cave.dart';
 import 'package:cave/constants.dart';
+import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:flutter/material.dart';
 import '../../../../shared/shared.dart';
 
 class SpeakerTile extends StatelessWidget {
-  const SpeakerTile({super.key, this.onTap});
+  const SpeakerTile({super.key, required this.speaker, this.onTap});
 
+  final SpeakerDto speaker;
   final VoidCallback? onTap;
 
   @override
@@ -18,10 +20,10 @@ class SpeakerTile extends StatelessWidget {
         borderRadius: const BorderRadius.all(
           Radius.circular(Constants.verticalGutter),
         ),
-        child: const SpeakerInfo(
-          name: 'Samuel Abada',
-          shortBio: 'Flutter Engineer, Tesla',
-          avatarUrl: '',
+        child: SpeakerInfo(
+          name: speaker.name,
+          shortBio: speaker.title,
+          avatarUrl: speaker.imageUrl,
         ),
       ),
     );
@@ -45,17 +47,26 @@ class SpeakerInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Material(
+        Material(
           color: DevfestColors.primariesGreen80,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(Constants.smallVerticalGutter),
             ),
             side: BorderSide(color: DevfestColors.primariesBlue50, width: 2),
           ),
           child: Padding(
-            padding: EdgeInsets.all(2),
-            child: FlutterLogo(size: 48),
+            padding: const EdgeInsets.all(2),
+            child: Semantics(
+              label: 'Speaker avatar',
+              child: CachedNetworkImage(
+                imageUrl: avatarUrl,
+                height: 48.h,
+                width: 48.w,
+                fit: BoxFit.cover,
+              ),
+            ),
+            // FlutterLogo(size: 48),
           ),
         ),
         Constants.horizontalGutter.horizontalSpace,
@@ -73,6 +84,8 @@ class SpeakerInfo extends StatelessWidget {
               (Constants.smallVerticalGutter / 2).verticalSpace,
               Text(
                 shortBio,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.bodyBody3Medium

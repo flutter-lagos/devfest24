@@ -2,7 +2,8 @@ import 'package:cave/cave.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../model/model.dart';
+import '../../model/model.dart' hide SpeakerDto;
+import '../../model/speakers_dto.dart';
 
 part 'ui_state.dart';
 
@@ -10,6 +11,19 @@ final speakersViewModelNotifier =
     AutoDisposeNotifierProvider<SpeakersViewModel, SpeakersUiState>(
   () => SpeakersViewModel(),
 );
+
+final dayOneSpeakersProvider = Provider.autoDispose<List<SpeakerDto>>((ref) {
+  return ref
+      .watch(speakersViewModelNotifier
+          .select((vm) => vm.speakers.where((speaker) => speaker.day == 1)))
+      .toList();
+}, dependencies: [speakersViewModelNotifier]);
+final dayTwoSpeakersProvider = Provider.autoDispose<List<SpeakerDto>>((ref) {
+  return ref
+      .watch(speakersViewModelNotifier
+          .select((vm) => vm.speakers.where((speaker) => speaker.day == 2)))
+      .toList();
+}, dependencies: [speakersViewModelNotifier]);
 
 final class SpeakersViewModel extends AutoDisposeNotifier<SpeakersUiState> {
   late DashboardApiService _apiService;

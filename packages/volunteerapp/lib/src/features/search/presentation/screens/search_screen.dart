@@ -1,46 +1,63 @@
 import 'package:cave/constants.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:cave/cave.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteerapp/src/features/home/application/check_in_view_model.dart';
+import 'package:volunteerapp/src/features/home/application/user_seach_view_model.dart';
+import 'package:volunteerapp/src/features/search/presentation/widgets.dart/widgets.dart';
+import 'package:volunteerapp/src/routing/router.dart';
+import 'package:volunteerapp/src/shared/debouncer.dart';
+import 'package:volunteerapp/src/shared/shared.dart';
 
-class SearchScreen extends StatefulWidget {
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+enum Gender { male, female, empty }
+
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
+  static const route = '/home/search-screen';
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   bool noResults = false;
+  final debouncer = Debouncer();
+  final ConfettiController _contoller =
+      ConfettiController(duration: Duration(seconds: 20));
+  Gender? gender = Gender.empty;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _contoller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = DevfestTheme.of(context).textTheme;
 
-    // Sample data for search
-    final List<String> searchItems = [
-      ...List.generate(
-        10,
-        (index) => 'John Doe$index',
-      ),
-      'Jane Smith',
-      'Bob Johnson',
-      'Alice Brown',
-      'Charlie Wilson',
-    ];
+    final selectedAttendee = ref.watch(usersearchVM).selectedAttendee;
 
-    List<Map<String, dynamic>> attendees = List.generate(
-      searchItems.length,
-      (index) => {
-        'checkedIn': index % 2 == 0,
-        'fullName': searchItems.elementAt(index),
-        'email':
-            '${searchItems.elementAt(index)}@example.com'.replaceAll(" ", ""),
-        'ticketId': 'T00${index + 1}'
-      },
-    );
+    ref.listen(checkInVMNotifier, (previous, next) {
+      if (next.uiState.isSuccess) {
+        Navigator.of(scaffoldKey.currentContext!).pop();
+        showDevfestBottomModal(context,
+            children: checkInSuccessContent(context,
+                attendee: selectedAttendee,
+                confetti: ConfettiWidget(
+                  confettiController: _contoller,
+                  blastDirectionality: BlastDirectionality.explosive,
+                )));
+        return;
+      }
+    });
 
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         leading: GoBackButton(
           label: 'Search',
@@ -61,20 +78,34 @@ class _SearchScreenState extends State<SearchScreen> {
                     setState(() {
                       noResults = false;
                     });
+
+                    ref.read(usersearchVM.notifier).clearSearchList();
                     return const Iterable<Map>.empty();
                   }
 
-                  final filteredOptions = attendees.where((item) {
-                    return item['fullName']
-                            .toLowerCase()
-                            .contains(textEditingValue.text.toLowerCase()) ||
-                        item['ticketId']
-                            .toLowerCase()
-                            .contains(textEditingValue.text.toLowerCase());
-                  }).toList();
+                  debouncer.run(() {
+                    ref
+                        .read(usersearchVM.notifier)
+                        .searchAttendee(textEditingValue.text.toLowerCase());
+                  });
+                  final filteredOptions = ref
+                      .watch(usersearchVM)
+                      .attendees
+                      .map((e) => e.toJson())
+                      .toList();
+                  print('filteredOptions ${filteredOptions.toString()}');
+
+                  // final filteredOptions = attendees.where((item) {
+                  //   return item['fullName']
+                  //           .toLowerCase
+                  //           .contains(textEditingValue.text.toLowerCase()) ||
+                  //       item['ticketId']
+                  //           .toLowerCase()
+                  //           .contains(textEditingValue.text.toLowerCase());
+                  // }).toList();
 
                   setState(() {
-                    noResults = filteredOptions.isEmpty;
+                    noResults = ref.watch(usersearchVM).attendees.isEmpty;
                   });
 
                   return filteredOptions;
@@ -96,6 +127,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         IconsaxOutline.search_normal_1,
                         size: 20,
                       ),
+                      suffixIcon: GestureDetector(
+                          onTap: () {
+                            textEditingController.clear();
+                          },
+                          child: Icon(
+                            IconsaxOutline.close_square,
+                            semanticLabel: 'Clear search text field',
+                            size: 20,
+                          )),
                       hintText: 'Search for name, email, ticket id',
                       hintStyle: textTheme?.bodyBody4Medium?.copyWith(
                         color: DevfestColors.grey60,
@@ -125,12 +165,17 @@ class _SearchScreenState extends State<SearchScreen> {
                     AutocompleteOnSelected<Map> onSelected,
                     Iterable<Map> options) {
                   return Padding(
-                    padding: EdgeInsets.only(right: 24.w, bottom: 8.h),
+                    padding: EdgeInsets.only(
+                      right: 24.w,
+                      bottom: 8.h,
+                    ),
                     child: Material(
-                      child: ListView.builder(
+                      child: ListView.separated(
                         padding: EdgeInsets.symmetric(
                             horizontal: 8.w, vertical: 8.h),
                         itemCount: options.length,
+                        separatorBuilder: (context, index) =>
+                            Constants.verticalGutter.verticalSpace,
                         itemBuilder: (BuildContext context, int index) {
                           final Map option = options.elementAt(index);
                           return Row(
@@ -152,7 +197,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        option['fullName']
+                                        option['fullname']
                                             .split(' ')
                                             .map((e) => e[0])
                                             .take(2)
@@ -169,7 +214,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        option['fullName'],
+                                        option['fullname'],
                                         style: textTheme?.bodyBody4Regular
                                             ?.copyWith(
                                           fontWeight: FontWeight.w500,
@@ -179,7 +224,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       (Constants.smallVerticalGutter / 2)
                                           .verticalSpace,
                                       Text(
-                                        option['email'],
+                                        option['email_address'],
                                         style: textTheme?.bodyBody4Regular
                                             ?.copyWith(
                                           color: const Color(0xFF1E1E1E),
@@ -189,27 +234,224 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                 ],
                               ),
-                              Checkbox(
-                                semanticLabel: 'Checkin user',
-                                value: option['checkedIn'],
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    option['checkedIn'] = value ?? false;
-                                  });
-                                },
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                side: const BorderSide(
-                                  color: DevfestColors.grey60,
-                                  width: 2,
-                                ),
-                                checkColor: DevfestColors.backgroundLight,
-                                activeColor: const Color(0xFF141B34),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.padded,
-                                visualDensity: VisualDensity.standard,
-                              )
+
+                              ///if the current conference day is among the days returned from the server then the user has been checked in
+                              if (option['checkins'].contains(
+                                  ref.watch(checkInVMNotifier).day)) ...[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 2.h, horizontal: 4.w),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(56.r),
+                                        color: DevfestColors.success90,
+                                      ),
+                                      child: Text(
+                                        'Checked In',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody5Medium
+                                            ?.medium
+                                            .copyWith(
+                                                color: DevfestColors.success10),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 2.h,
+                                    ),
+                                    Text(
+                                        option['created_at']
+                                            .toString()
+                                            .formattedDate,
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody4Regular
+                                            ?.regular)
+                                  ],
+                                )
+                              ] else ...[
+                                Checkbox(
+                                  semanticLabel: 'Checkin user',
+                                  value: false,
+                                  onChanged: (bool? value) {
+                                    ref
+                                        .read(usersearchVM.notifier)
+                                        .onCheckboxClicked(value ?? false,
+                                            option['id'],);
+
+                                    ///show the modal if checkbox is selected
+
+                                    if (value == true) {
+                                      //show modal
+                                      showDevfestBottomModal(scaffoldKey.currentContext!,
+                                          children: [
+                                            ConfirmCheckInModalHeader(fullName: ' ${option['fullname']}, '),
+                                            
+                                            Constants.smallVerticalGutter
+                                                .verticalSpace,
+                                            StatefulBuilder(
+                                              builder: (context,StateSetter
+                                                                    setModalState) {
+                                                return Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        DevfestCheckbox(
+                                                          semanticLabel:
+                                                              'Select Female Gender',
+                                                          value: ref.watch(
+                                                              checkInVMNotifier
+                                                                  .select((vm) =>
+                                                                      vm.gender ==
+                                                                      'female')),
+                                                          onChanged: (value) {
+                                                            ref
+                                                                .read(
+                                                                    checkInVMNotifier
+                                                                        .notifier)
+                                                                .onGenderChanged(
+                                                                    'female');
+                                                                                                        
+                                                            setModalState(() {});
+                                                          },
+                                                        ),
+                                                        8.horizontalSpace,
+                                                        Text(
+                                                          'Female',
+                                                          style: DevfestTheme.of(
+                                                                  context)
+                                                              .textTheme!
+                                                              .bodyBody2Medium!
+                                                              .copyWith(
+                                                                  color:
+                                                                      DevfestColors
+                                                                          .grey60),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    35.horizontalSpace,
+                                                    Row(
+                                                      children: [
+                                                        DevfestCheckbox(
+                                                          semanticLabel:
+                                                              'Select Male Gender',
+                                                          value: ref
+                                                                  .watch(
+                                                                      checkInVMNotifier)
+                                                                  .gender ==
+                                                              'male',
+                                                          onChanged: (value) {
+                                                            ref
+                                                                .read(
+                                                                    checkInVMNotifier
+                                                                        .notifier)
+                                                                .onGenderChanged(
+                                                                    'male');
+                                                            setModalState(() {});
+                                                          },
+                                                        ),
+                                                        8.horizontalSpace,
+                                                        Text(
+                                                          'Male',
+                                                          style: DevfestTheme.of(
+                                                                  context)
+                                                              .textTheme!
+                                                              .bodyBody2Medium!
+                                                              .copyWith(
+                                                                  color:
+                                                                      DevfestColors
+                                                                          .grey60),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                );
+                                              }
+                                            ),
+                                            Constants
+                                                .verticalGutter.verticalSpace,
+                                            DevfestOutlinedButton(
+                                              onPressed: () {
+                                                ref
+                                                    .read(checkInVMNotifier
+                                                        .notifier)
+                                                    .onGenderChanged('');
+
+                                                Navigator.of(context)
+                                                    .pop();
+                                              },
+                                              title: Text(
+                                                'Cancel',
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.buttonMediumBold
+                                                    ?.copyWith(
+                                                        color: DevfestColors
+                                                            .grey10),
+                                              ),
+                                            ),
+                                            Constants
+                                                .verticalGutter.verticalSpace,
+                                            Consumer(
+                                                builder: (context, ref, _) {
+                                              return DevfestFilledButton(
+                                                onPressed: () {
+                                                  ref
+                                                      .read(checkInVMNotifier
+                                                          .notifier)
+                                                      .checkInUser(scaffoldKey
+                                                        .currentContext!,
+                                                          option['id']);
+                                                },
+                                                title: ref.watch(
+                                                        checkInVMNotifier
+                                                            .select((vm) => vm
+                                                                .uiState
+                                                                .isLoading))
+                                                    ? CircularProgressIndicator
+                                                        .adaptive(
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation(
+                                                                Colors.white),
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        strokeWidth: 2.0,
+                                                      )
+                                                    : Text(
+                                                        'Yes check in',
+                                                        style: DevfestTheme.of(
+                                                                context)
+                                                            .textTheme
+                                                            ?.buttonMediumBold
+                                                            ?.copyWith(
+                                                                color:
+                                                                    DevfestColors
+                                                                        .grey100),
+                                                      ),
+                                              );
+                                            }),
+                                          ]);
+                                    }
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  side: const BorderSide(
+                                    color: DevfestColors.grey60,
+                                    width: 2,
+                                  ),
+                                  checkColor: DevfestColors.backgroundLight,
+                                  activeColor: const Color(0xFF141B34),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.padded,
+                                  visualDensity: VisualDensity.standard,
+                                )
+                              ]
                             ],
                           );
                         },
@@ -219,45 +461,59 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
               ),
             ),
-            if (noResults) // Show custom message when no results are found
+            if (ref.watch(usersearchVM).uiState.isLoading)
               Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 42.r,
-                      backgroundColor: DevfestColors.warning80,
-                      child: Text(
-                        "🤨",
-                        textAlign: TextAlign.center,
-                        style: textTheme?.bodyBody4Medium?.copyWith(
-                          color: DevfestColors.grey60,
-                          fontSize: 42.sp,
-                        ),
-                      ),
-                    ),
-                    Constants.verticalGutter.verticalSpace,
-                    Text(
-                      "Oops, No result",
-                      textAlign: TextAlign.center,
-                      style: textTheme?.headerH5?.copyWith(
-                        color: DevfestColors.grey10,
-                      ),
-                    ),
-                    Constants.smallVerticalGutter.verticalSpace,
-                    Text(
-                      "It seems you have encountered a Sodiq.\nThis ticket ID is invalid or cannot be found in our system.",
-                      textAlign: TextAlign.center,
-                      style: textTheme?.bodyBody2Medium?.copyWith(
-                        color: DevfestColors.grey60,
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Center(
+                  child: CircularProgressIndicator.adaptive(
+                    valueColor: AlwaysStoppedAnimation(DevfestColors.grey10),
+                    backgroundColor: DevfestColors.grey10,
+                    strokeWidth: 4.0,
+                  ),
                 ),
               ),
+            if (noResults &&
+                !ref.watch(usersearchVM).uiState.isLoading &&
+                ref
+                    .watch(usersearchVM)
+                    .attendees
+                    .isEmpty) // Show custom message when no results are found
+              NoResult(textTheme: textTheme),
           ],
         ),
       ),
+    );
+  }
+}
+
+class DevfestCheckbox extends StatelessWidget {
+  const DevfestCheckbox(
+      {super.key,
+      required this.value,
+      required this.onChanged,
+      required this.semanticLabel});
+
+  final bool? value;
+  final String semanticLabel;
+  final ValueChanged? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: value,
+      onChanged: onChanged,
+      semanticLabel: semanticLabel,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+      ),
+      side: const BorderSide(
+        color: DevfestColors.grey60,
+        width: 2,
+      ),
+      checkColor: DevfestColors.backgroundLight,
+      activeColor: const Color(0xFF141B34),
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      visualDensity: VisualDensity.standard,
     );
   }
 }

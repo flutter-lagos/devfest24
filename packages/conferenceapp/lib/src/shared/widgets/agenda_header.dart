@@ -100,8 +100,8 @@ class AgendaHeader extends StatelessWidget {
                 ),
               ],
             ),
-            Constants.verticalGutter.verticalSpace,
           ],
+          Constants.verticalGutter.verticalSpace,
         ],
       ),
     );
@@ -183,6 +183,7 @@ class _SliverAgendaHeaderState extends State<SliverAgendaHeader> {
         color: DevfestTheme.of(context).backgroundColor,
         child: AgendaHeader(
           title: widget.title,
+          eventDay: widget.eventDay,
           subtitle: switch (hideHeaders) {
             true => null,
             false => widget.subtitle,
@@ -213,6 +214,7 @@ class _SliverAgendaHeaderState extends State<SliverAgendaHeader> {
           },
           titleStyle: widget.titleStyle,
           onFilterSelected: widget.onFilterSelected,
+          eventDay: widget.eventDay,
           onEventDayChanged: widget.onEventDayChanged,
           gutter: switch (hideHeaders) {
             true => Constants.smallVerticalGutter.verticalSpace,
@@ -233,6 +235,7 @@ class _SliverAgendaHeaderState extends State<SliverAgendaHeader> {
           },
           titleStyle: widget.titleStyle,
           onFilterSelected: widget.onFilterSelected,
+          eventDay: widget.eventDay,
           onEventDayChanged: widget.onEventDayChanged,
           gutter: switch (hideHeaders) {
             true => Constants.smallVerticalGutter.verticalSpace,

@@ -3,7 +3,6 @@ import 'package:cave/cave.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 part 'ui_state_model_mutex.dart';
 
@@ -80,10 +79,6 @@ extension ViewModelX<T extends Devfest2024UiState> on T {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
-
-    if (error is UnauthorizedUserException) {
-      context.go(Devfest2024Routes.onboardingHome.name);
-    }
   }
 }
 

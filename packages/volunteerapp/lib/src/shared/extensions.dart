@@ -8,7 +8,7 @@ extension DevfestColorsX on Color {
   ///  converts colors passed in light mode to their respective dark-mode
   ///  variants
   Color get possibleDarkVariant {
-    final context = Devfest2024Router.rootNavigatorKey.currentContext;
+    final context = rootNavigatorKey.currentContext;
     if (context == null) return this;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -30,4 +30,42 @@ extension DevfestColorsX on Color {
 extension NumberFormatExtension on num {
   String get formattedWithDecimalPattern =>
       NumberFormat.decimalPattern().format(this);
+}
+
+extension DateFomatExtension on String {
+  String get formattedDate => formatDate(this);
+
+  String formatDate(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    DateTime now = DateTime.now();
+
+    // Calculate difference in days
+    int dayDifference = now.difference(dateTime).inDays;
+
+    // Format time as "9:45am"
+    String formattedTime = DateFormat('h:mma').format(dateTime).toLowerCase();
+
+    if (dayDifference == 0) {
+      return 'Today, $formattedTime';
+    } else if (dayDifference == 1) {
+      return 'Yesterday, $formattedTime';
+    } else {
+      // For other dates, format as "Sep 16, 9:45am"
+      String formattedDate = DateFormat('MMM d').format(dateTime);
+      return '$formattedDate, $formattedTime';
+    }
+  }
+}
+
+extension NameInitialsX on String {
+  String get getInitials => getNameInitials(this);
+
+  String getNameInitials(String fullName) {
+    final names = fullName.split(' ');
+    if (names.length >= 2) {
+      return names[0][0] + names[1][0];
+    } else {
+      return names[0][0];
+    }
+  }
 }

@@ -65,7 +65,7 @@ extension ViewModelX<T extends Devfest2024UiState> on T {
     if (uiState != UiState.error) return;
     assert(error is! EmptyException, 'Please pass appropriate exception');
 
-    final context = Devfest2024Router.rootNavigatorKey.currentContext!;
+    final context =rootNavigatorKey.currentContext!;
 
     final snackbar = SnackBar(
       content: Text(error.toString()),

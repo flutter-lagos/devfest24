@@ -11,6 +11,10 @@ final sponsorsViewModelNotifier =
   () => SponsorsViewModel(),
 );
 
+final sponsorsProvider = Provider.autoDispose<List<SponsorDto>>((ref) {
+  return ref.watch(sponsorsViewModelNotifier.select((vm) => vm.sponsors));
+}, dependencies: [sponsorsViewModelNotifier]);
+
 final class SponsorsViewModel extends AutoDisposeNotifier<SponsorsUiState> {
   late DashboardApiService _apiService;
 
@@ -31,9 +35,7 @@ final class SponsorsViewModel extends AutoDisposeNotifier<SponsorsUiState> {
           result.fold(
             (left) => state.copyWith(uiState: UiState.error, error: left),
             (right) => state.copyWith(
-              uiState: UiState.success,
-              sponsorCategories: right.sponsorCategories,
-            ),
+                uiState: UiState.success, sponsors: right.sponsors),
           ),
         );
       },
