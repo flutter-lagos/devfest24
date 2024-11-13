@@ -36,20 +36,6 @@ env:
   ENV_BASE64: ${{ secrets.ENV_BASE64 }}
 
 jobs:
-  validate-inputs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validate Inputs
-        run: |
-          if [[ -z "${{ github.event.inputs['build-version'] }}" ]]; then
-            echo "Error: build-version is required for a release."
-            exit 1
-          fi
-          if [[ -z "${{ github.event.inputs['build-number'] }}" ]]; then
-            echo "Error: build-number is required for a release."
-            exit 1
-          fi
-
   check-formatting:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/shared-workflow.yaml
