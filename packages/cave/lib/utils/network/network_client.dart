@@ -129,7 +129,7 @@ extension CallX on Dio {
           );
         case _:
           return Left(ClientException(
-              detail: exception.message ?? 'An error occurred...'));
+              detail: exception.message ?? 'An error occurred'));
       }
     } on Exception catch (e) {
       return Left(GroundException(e.toString()));

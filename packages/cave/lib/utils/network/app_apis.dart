@@ -26,4 +26,12 @@ final class ConferenceApis {
       'https://raw.githubusercontent.com/GDG-W/Gotham/a40964c56dadc6b8b7b1399143ae31af4138b895/src/app/schedule/data/schedule.json';
 
   String getSingleSession(String id) => '$baseUrl/events/sessions/$id';
+
+  //Volunteer endpoints
+
+  String get postSignin => '$baseUrl/volunteers/sessions';
+  String get getAttendees => '$baseUrl/users/';
+  String get postCheckUserIn => '$baseUrl/volunteers/checkins';
+  String get volunteerLogout => '$baseUrl/volunteers/sessions';
+  String get getHealthChecker => baseUrl;
 }
