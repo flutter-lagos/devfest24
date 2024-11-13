@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'src/features/more/application/theme_vm.dart';
 import 'src/features/onboarding/presentation/presentation.dart';
+import 'src/features/updater/widgets/update_listener.dart';
 
 class ConferenceApp extends ConsumerStatefulWidget {
   const ConferenceApp({super.key});
@@ -54,10 +55,12 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
             navigatorKey: Devfest2024Router.rootNavigatorKey,
             initialRoute: Devfest2024Router.initialRoute,
             onGenerateRoute: Devfest2024Router.instance.onGenerateRoutes,
-            builder: (context, child) => AccessibilityTools(
-              minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
-              checkFontOverflows: true,
-              child: child,
+            builder: (context, child) => UpdateListener(
+              child: AccessibilityTools(
+                minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
+                checkFontOverflows: true,
+                child: child,
+              ),
             ),
             themeMode: themeMode.theme,
             theme: ThemeData(
