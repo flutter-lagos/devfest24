@@ -34,6 +34,8 @@ env:
   APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
   ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+  FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+  FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
 
 jobs:
   check-formatting:
@@ -58,6 +60,8 @@ jobs:
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+      FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
 
   ios-build:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
