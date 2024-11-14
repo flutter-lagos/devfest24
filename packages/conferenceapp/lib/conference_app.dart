@@ -4,6 +4,10 @@ import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'src/features/more/application/theme_vm.dart';
+import 'src/features/onboarding/presentation/presentation.dart';
+import 'src/features/updater/widgets/update_listener.dart';
+
 class ConferenceApp extends ConsumerStatefulWidget {
   const ConferenceApp({super.key});
 
@@ -17,14 +21,25 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
   @override
   void initState() {
     super.initState();
-    Devfest2024Router.instance.initialiseRouter(ref);
+
+    Future.microtask(() async {
+      final [dynamic isFirstLaunch, dynamic token] = await Future.wait([
+        ConferenceAppStorageService.instance.isFirstLaunch,
+        ConferenceAppStorageService.instance.userToken,
+      ]);
+
+      if (isFirstLaunch == true && (token.toString()).isEmpty) {
+        Devfest2024Router.rootNavigatorKey.currentContext
+            ?.goNamedAndPopAll(OnboardingHomeScreen.route);
+        return;
+      }
+    });
   }
 
   void _unfocus() {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -33,14 +48,21 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
         designSize: designSize,
         minTextAdapt: true,
         builder: (_, child) {
-          return MaterialApp.router(
+          final themeMode = ref.watch(themeVMNotifier);
+          return MaterialApp(
             title: 'Devfest24 Conference App',
-            routerConfig: Devfest2024Router.instance.router,
-            builder: (context, child) => AccessibilityTools(
-              minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
-              checkFontOverflows: true,
-              child: child,
+            debugShowCheckedModeBanner: false,
+            navigatorKey: Devfest2024Router.rootNavigatorKey,
+            initialRoute: Devfest2024Router.initialRoute,
+            onGenerateRoute: Devfest2024Router.instance.onGenerateRoutes,
+            builder: (context, child) => UpdateListener(
+              child: AccessibilityTools(
+                minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
+                checkFontOverflows: true,
+                child: child,
+              ),
             ),
+            themeMode: themeMode.theme,
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.deepPurple,
@@ -59,9 +81,13 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
                 shadowColor: Colors.transparent,
                 scrolledUnderElevation: 0,
               ),
+              bottomSheetTheme: BottomSheetThemeData(
+                backgroundColor: DevfestColors.warning100,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                ),
+              ),
               extensions: <ThemeExtension<dynamic>>[
-                /// Use the below format for raw theme data
-                /// DevFestTheme(textTheme: DevfestTextTheme()),
                 DevFestThemeData.light(),
               ],
             ),
@@ -82,9 +108,15 @@ class _ConferenceAppState extends ConsumerState<ConferenceApp> {
               textTheme: const TextTheme(
                 displayMedium: TextStyle(color: DevfestColors.grey100),
               ),
+              bottomSheetTheme: BottomSheetThemeData(
+                backgroundColor: DevfestColors.backgroundDark,
+                shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(40)),
+                    side: BorderSide(
+                        color: DevfestColors.backgroundLight, width: 1)),
+              ),
               extensions: <ThemeExtension<dynamic>>[
-                /// Use the below format for raw theme data
-                /// DevFestTheme(textTheme: DevfestTextTheme()),
                 DevFestThemeData.dark(),
               ],
             ),

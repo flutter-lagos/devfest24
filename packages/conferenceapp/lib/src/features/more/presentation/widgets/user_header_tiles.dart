@@ -1,7 +1,8 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
+import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SignedOutUserHeaderTile extends StatelessWidget {
   const SignedOutUserHeaderTile({super.key, this.signInOnTap});
@@ -10,6 +11,7 @@ class SignedOutUserHeaderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = DevfestTheme.of(context).headerTileTheme;
     return Padding(
       padding: const EdgeInsets.only(
         top: Constants.smallVerticalGutter,
@@ -25,10 +27,11 @@ class SignedOutUserHeaderTile extends StatelessWidget {
                 height: 188.h,
                 padding: const EdgeInsets.all(Constants.verticalGutter).r,
                 decoration: BoxDecoration(
-                  color: DevfestColors.grey10.possibleDarkVariant,
+                  color: DevfestColors.grey10,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(Constants.largeVerticalGutter),
                   ),
+                  border: theme?.border,
                 ),
                 child: Column(
                   children: [
@@ -59,19 +62,17 @@ class SignedOutUserHeaderTile extends StatelessWidget {
                           .textTheme
                           ?.titleTitle2Semibold
                           ?.semi
-                          .applyColor(
-                              DevfestColors.grey100.possibleDarkVariant),
+                          .applyColor(theme?.titleColor),
                     ),
                     Constants.smallVerticalGutter.verticalSpace,
                     Text(
-                      'You have not logged yet to access\nyour profile',
+                      'You have not logged in yet to access\nyour profile',
                       textAlign: TextAlign.center,
                       style: DevfestTheme.of(context)
                           .textTheme
                           ?.bodyBody3Medium
                           ?.medium
-                          .applyColor(
-                              DevfestColors.grey100.possibleDarkVariant),
+                          .applyColor(theme?.subtitleColor),
                     ),
                   ],
                 ),
@@ -154,57 +155,62 @@ class SignedInUserHeaderTile extends StatelessWidget {
                 Radius.circular(Constants.largeVerticalGutter),
               ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const _UserInitialTag('s'),
-            Constants.smallVerticalGutter.verticalSpace,
-            Text(
-              'Samuel Abada',
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.titleTitle2Semibold
-                  ?.semi
-                  .applyColor(DevfestColors.grey100),
-            ),
-            gap ?? const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: _TicketInfoTile(
-                    title: IconText(
-                      IconsaxOutline.ticket_star,
-                      'Type: 2 Day Ticket',
-                      textStyle: DevfestTheme.of(context)
-                          .textTheme
-                          ?.bodyBody4Semibold
-                          ?.semi
-                          .applyColor(DevfestColors.grey100),
-                      iconColor: DevfestColors.grey100,
-                      iconSize: 24,
+        child: Consumer(builder: (context, ref, child) {
+          final user = ref.watch(userViewModelNotifier.select((vm) => vm.user));
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _UserInitialTag((user.fullName.isNotEmpty)
+                  ? user.fullName.split(' ').first[0]
+                  : 'U'),
+              Constants.smallVerticalGutter.verticalSpace,
+              Text(
+                user.fullName,
+                style: DevfestTheme.of(context)
+                    .textTheme
+                    ?.titleTitle2Semibold
+                    ?.semi
+                    .applyColor(DevfestColors.grey100),
+              ),
+              gap ?? const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: _TicketInfoTile(
+                      title: IconText(
+                        IconsaxOutline.ticket_star,
+                        'Type: ${user.ticket['title'] ?? ''}',
+                        textStyle: DevfestTheme.of(context)
+                            .textTheme
+                            ?.bodyBody4Semibold
+                            ?.semi
+                            .applyColor(DevfestColors.grey100),
+                        iconColor: DevfestColors.grey100,
+                        iconSize: 24,
+                      ),
                     ),
                   ),
-                ),
-                Constants.horizontalGutter.horizontalSpace,
-                Expanded(
-                  child: _TicketInfoTile(
-                    title: IconText(
-                      IconsaxOutline.ticket_star,
-                      'ID: 413 012 123',
-                      textStyle: DevfestTheme.of(context)
-                          .textTheme
-                          ?.bodyBody4Semibold
-                          ?.semi
-                          .applyColor(DevfestColors.grey100),
-                      iconColor: DevfestColors.grey100,
-                      iconSize: 24,
+                  Constants.horizontalGutter.horizontalSpace,
+                  Expanded(
+                    child: _TicketInfoTile(
+                      title: IconText(
+                        IconsaxOutline.ticket_star,
+                        'ID: ${user.id}',
+                        textStyle: DevfestTheme.of(context)
+                            .textTheme
+                            ?.bodyBody4Semibold
+                            ?.semi
+                            .applyColor(DevfestColors.grey100),
+                        iconColor: DevfestColors.grey100,
+                        iconSize: 24,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                ],
+              ),
+            ],
+          );
+        }),
       ),
     );
   }

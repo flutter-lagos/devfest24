@@ -8,15 +8,32 @@ on:
       - 'packages/conferenceapp/**'
   workflow_dispatch:
     inputs:
-      changelog:
-        description: 'Changelog for this release'
+      release-type:
+        description: 'Type of release'
         required: true
+        type: choice
+        options:
+          - build
+          - patch
+        default: patch
+
       build-version:
         description: 'Version number for the release'
         required: true
+        type: string
+
       build-number:
-        description: 'Build number for the release'
         required: true
+        type: string
+
+env:
+  APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+  APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+  APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+  CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+  APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  ENV_BASE64: ${{ secrets.ENV_BASE64 }}
 
 jobs:
   check-formatting:
@@ -26,22 +43,153 @@ jobs:
       package-name: conferenceapp
 
   android-build:
-    if: github.event_name == 'workflow_dispatch'
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
     uses: ./.github/workflows/shared-workflow.yaml
     with:
       package-name: conferenceapp
-      android-build: true
-      changelog: ${{ github.event.inputs.changelog }}
-      build-number: ${{ github.event.inputs.build-number }}
-      build-version: ${{ github.event.inputs.build-version }}
+      android-build: ${{ github.event.inputs['release-type'] == 'build' }}
+      build-number: ${{ github.event.inputs['build-number'] }}
+      build-version: ${{ github.event.inputs['build-version'] }}
     secrets:
-      CREDENTIAL_FILE_CONTENT: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
 
-  # ios-build:
-  #   if: github.event_name == 'workflow_dispatch'
-  #   uses: ./.github/workflows/shared-workflow.yaml
-  #   with:
-  #     package-name: conferenceapp
-  #     ios-build: true
-  #     changelog: ${{ github.event.inputs.changelog }}
+  ios-build:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
+    uses: ./.github/workflows/shared-workflow.yaml
+    with:
+      package-name: conferenceapp
+      ios-build: ${{ github.event.inputs['release-type'] == 'build' }}
+      build-number: ${{ github.event.inputs['build-number'] }}
+      build-version: ${{ github.event.inputs['build-version'] }}
+    secrets:
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+      APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
+      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+
+  patch-android:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          cache: true
+      
+      - name: Setup Java 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/conferenceapp/.env
+      
+      - name: Decode Keystore File
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/conferenceapp/upload.jks
+
+      - name: Create key.properties File
+        run: |
+          echo "storeFile=${{ github.workspace }}/packages/conferenceapp/upload.jks" > ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/conferenceapp/android/key.properties
+
+      - name: Enable melos
+        run: dart pub global activate melos
+
+      - name: Get packages
+        run: melos bootstrap
+
+      - name: Generate Files
+        run: melos generate
+
+      - name: 🛠️ Shorebird Patch for Android
+        id: shorebird-patch-android
+        working-directory: packages/conferenceapp
+        run: |
+          shorebird patch android --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --dart-define-from-file=.env
+
+  patch-ios:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'patch' }}
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+      
+      - name: Debug Secrets
+        run: 'echo "Key Identifier: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}"'
+        shell: bash
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          cache: true
+
+      - name: Enable melos
+        run: dart pub global activate melos
+
+      - name: Get packages
+        run: melos bootstrap
+
+      - name: Generate Files
+        run: melos generate
+      
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/conferenceapp/.env
+      
+      - name: Install Codemagic CLI tools
+        run: pip install codemagic-cli-tools
+        working-directory: packages/conferenceapp
+      
+      - name: Set up keychain
+        run: keychain initialize
+        working-directory: packages/conferenceapp
+
+      - name: Fetch signing files from App Store Connect
+        run: |
+          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+          --type IOS_APP_STORE \
+          --create
+        working-directory: packages/conferenceapp
+
+      - name: Set up signing certificate in keychain
+        run: keychain add-certificates
+        working-directory: packages/conferenceapp
+
+      - name: Set up code signing in Xcode project
+        run: xcode-project use-profiles
+        working-directory: packages/conferenceapp
+
+      - name: 🛠️ Shorebird Patch for iOS
+        id: shorebird-patch-ios
+        working-directory: packages/conferenceapp
+        run: |
+          shorebird patch ios --allow-native-diffs --release-version ${{ inputs.build-version }}+${{ inputs.build-number }} -- --export-options-plist=$HOME/export_options.plist --dart-define-from-file=.env

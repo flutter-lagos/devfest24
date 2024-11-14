@@ -1,5 +1,8 @@
 import 'package:cave/cave.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:flutter/material.dart';
+
+import '../../features/onboarding/presentation/presentation.dart';
 
 class CheckInButton extends StatelessWidget {
   const CheckInButton({
@@ -19,7 +22,10 @@ class CheckInButton extends StatelessWidget {
       width: 113.w,
       child: isLoggedIn
           ? _CheckInButton(onCheckInTap)
-          : _LoginCheckInButton(onCheckInTap),
+          : _LoginCheckInButton(() {
+              context.goNamedAndPopAll(OnboardingLoginScreen.route);
+              ConferenceAppStorageService.instance.setIsFirstLaunch(true);
+            }),
     );
   }
 }

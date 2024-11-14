@@ -30,6 +30,6 @@ final class UserViewModel extends AutoDisposeNotifier<UserUiState> {
           (right) => state.copyWith(uiState: UiState.success, user: right),
         ),
       );
-    });
+    }, displayError: false);
   }
 }

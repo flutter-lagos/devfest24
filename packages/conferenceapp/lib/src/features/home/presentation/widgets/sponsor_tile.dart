@@ -1,11 +1,15 @@
+import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 
-class ConferenceSponsorTile extends StatelessWidget {
-  const ConferenceSponsorTile({super.key, this.linkOnTap});
+import '../../../dashboard/model/model.dart';
 
+class ConferenceSponsorTile extends StatelessWidget {
+  const ConferenceSponsorTile(
+      {super.key, required this.sponsor, this.linkOnTap});
+
+  final SponsorDto sponsor;
   final VoidCallback? linkOnTap;
 
   @override
@@ -28,14 +32,28 @@ class ConferenceSponsorTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _SponsorTierTag('Platinum Sponsor'),
+                  _SponsorTierTag(sponsor.level),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                             vertical: Constants.largeVerticalGutter)
                         .h,
                     child: Center(
-                      child: SvgPicture.asset(
-                        'assets/svgs/Google.svg',
+                      child: Semantics(
+                        label: sponsor.name,
+                        child: sponsor.logo.contains('.svg')
+                            ? CachedNetworkSVGImage(
+                                sponsor.logo,
+                                height: 122.h,
+                                fadeDuration: const Duration(milliseconds: 500),
+                              )
+                            : CachedNetworkImage(
+                                imageUrl: sponsor.logo,
+                                height: 122.h,
+                                fadeInDuration:
+                                    const Duration(milliseconds: 500),
+                                fadeOutDuration:
+                                    const Duration(milliseconds: 500),
+                              ),
                       ),
                     ),
                   ),
@@ -50,7 +68,7 @@ class ConferenceSponsorTile extends StatelessWidget {
         ),
         Constants.smallVerticalGutter.verticalSpace,
         Text(
-          'Google',
+          sponsor.name,
           style: DevfestTheme.of(context)
               .textTheme
               ?.bodyBody1Medium

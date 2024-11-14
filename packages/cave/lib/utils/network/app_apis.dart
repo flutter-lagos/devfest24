@@ -4,21 +4,18 @@ final class ConferenceApis {
   const ConferenceApis._(this.baseUrl);
 
   static const ConferenceApis instance =
-      ConferenceApis._(String.fromEnvironment('BASE_URL'));
+      ConferenceApis._("https://asgard.devfestlagos.com");
 
   String get postInitiateUserSession => '$baseUrl/users/sessions';
 
   String get getUserProfile => '$baseUrl/users/profile';
 
-  String get getEventSessions => '$baseUrl/events/sessions';
+  String updateUserProfile(String userId) => '$baseUrl/users/$userId';
 
-  String get getEventSponsors => '$baseUrl/events/sponsors';
+  String get getEventSponsors =>
+      'https://devfestlagos.com/app-assets/sponsors.json';
 
-  String get postReserveSession => '$baseUrl/events/reservations';
+  String get getSpeakers => 'https://devfestlagos.com/app-assets/speakers.json';
 
-  String deleteSession(String id) => '$baseUrl/events/reservations/$id';
-
-  String get getSpeakers => '$baseUrl/events/speakers';
-
-  String getSingleSession(String id) => '$baseUrl/events/sessions/$id';
+  String get getSchedule => 'https://devfestlagos.com/app-assets/schedule.json';
 }

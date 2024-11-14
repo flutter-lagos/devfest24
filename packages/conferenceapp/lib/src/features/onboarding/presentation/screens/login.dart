@@ -1,16 +1,18 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/onboarding/application/session_sign_in_vm.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../../dashboard/presentation/screens/dashboard.dart';
 
 final _emailRegexp = RegExp(
     r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
 class OnboardingLoginScreen extends ConsumerStatefulWidget {
+  static const route = '/onboarding/login';
+
   const OnboardingLoginScreen({super.key});
 
   @override
@@ -26,7 +28,7 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
     super.initState();
     ref.listenManual(sessionSignInVMNotifier, (previous, next) {
       if (next.uiState.isSuccess) {
-        context.goNamed(Devfest2024Routes.dashboard.name);
+        context.goNamedAndPopAll(DashboardScreen.route);
         return;
       }
     });
@@ -114,27 +116,31 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                     },
                                   ),
                                   Constants.largeVerticalGutter.verticalSpace,
-                                  Text.rich(
-                                    TextSpan(
-                                      text: 'Looking for your ticket ID? ',
-                                      style: DevfestTheme.of(context)
-                                          .textTheme
-                                          ?.bodyBody2Medium
-                                          ?.medium
-                                          .apply(
-                                              color: DevfestColors
-                                                  .grey60.possibleDarkVariant),
-                                      children: [
-                                        TextSpan(
-                                          text: 'Click Here',
-                                          style: TextStyle(
-                                                  color: DevfestColors.grey10
-                                                      .possibleDarkVariant)
-                                              .semi,
-                                        ),
-                                      ],
+                                  InkWell(
+                                    onTap: () =>
+                                        launchWebUrl('https://x.com/gdglagos'),
+                                    child: Text.rich(
+                                      TextSpan(
+                                        text: 'Looking for your ticket ID? ',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody2Medium
+                                            ?.medium
+                                            .apply(
+                                                color: DevfestColors.grey60
+                                                    .possibleDarkVariant),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Click Here',
+                                            style: TextStyle(
+                                                    color: DevfestColors.grey10
+                                                        .possibleDarkVariant)
+                                                .semi,
+                                          ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.start,
                                     ),
-                                    textAlign: TextAlign.start,
                                   ),
                                 ],
                               ),
@@ -160,8 +166,6 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                 .read(sessionSignInVMNotifier.notifier)
                                 .initialiseUserSession();
                           }
-                          // context.goNamed(
-                          //     Devfest2024Routes.onboardingSignature.name);
                         },
                       ),
                       DevfestFilledButton(
@@ -170,7 +174,7 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                         titleStyle: TextStyle(
                             color: DevfestColors.grey10.possibleDarkVariant),
                         onPressed: () {
-                          context.goNamed(Devfest2024Routes.dashboard.name);
+                          context.goNamedAndPopAll(DashboardScreen.route);
                         },
                       ),
                     ],

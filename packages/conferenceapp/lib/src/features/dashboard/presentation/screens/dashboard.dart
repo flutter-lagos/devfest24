@@ -2,7 +2,6 @@ import 'package:cave/cave.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/features/home/presentation/presentation.dart';
 import 'package:devfest24/src/features/more/presentation/presentation.dart';
-import 'package:devfest24/src/features/reserve/presentation/presentation.dart';
 import 'package:devfest24/src/features/schedule/presentation/presentation.dart';
 import 'package:devfest24/src/features/speakers/presentation/presentation.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +10,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/shared.dart';
 
 class DashboardScreen extends StatelessWidget {
+  static const route = 'home';
+
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(length: 5, child: _View());
+    return DefaultTabController(
+      length: _ViewState._tabs.length,
+      child: _View(),
+    );
   }
 }
 
@@ -32,7 +36,6 @@ class _ViewState extends ConsumerState<_View> {
     KeepAliveWidget(child: HomeScreen()),
     KeepAliveWidget(child: ScheduleHomeScreen()),
     KeepAliveWidget(child: SpeakersHomeScreen()),
-    KeepAliveWidget(child: ReserveHomeScreen()),
     KeepAliveWidget(child: MoreHomeScreen()),
   ];
 
@@ -50,13 +53,20 @@ class _ViewState extends ConsumerState<_View> {
   void initState() {
     super.initState();
 
+    ref.listenManual(dayOneScheduleProvider, (_, next) {});
+    ref.listenManual(dayTwoScheduleProvider, (_, next) {});
+    ref.listenManual(sponsorsProvider, (_, next) {});
+    ref.listenManual(dayOneSpeakersProvider, (_, next) {});
+    ref.listenManual(dayTwoSpeakersProvider, (_, next) {});
+
     Future.microtask(() {
       Future.wait([
         ref.read(userViewModelNotifier.notifier).fetchUserProfile(),
         ref.read(sponsorsViewModelNotifier.notifier).fetchSponsors(),
         ref.read(speakersViewModelNotifier.notifier).fetchSpeakers(),
-        ref.read(agendasViewModelNotifier.notifier).fetchAgenda(),
+        ref.read(scheduleViewModelNotifier.notifier).fetchSchedule(),
       ]);
+      ConferenceAppStorageService.instance.setIsFirstLaunch(false);
     });
   }
 
@@ -93,10 +103,6 @@ class _ViewState extends ConsumerState<_View> {
             DevfestBottomNavItem(
               label: 'Speakers',
               icon: Icon(IconsaxOutline.microphone),
-            ),
-            DevfestBottomNavItem(
-              label: 'Reserve',
-              icon: Icon(IconsaxOutline.ticket),
             ),
             DevfestBottomNavItem(
               label: 'More',

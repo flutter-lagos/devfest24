@@ -1,20 +1,25 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum ScheduleTileType { session, breakout }
+import '../../../dashboard/application/application.dart';
+import 'package:collection/collection.dart';
+
+enum ScheduleTileType { breakOut, general }
 
 class ConferenceScheduleTile extends StatefulWidget {
   const ConferenceScheduleTile({
     super.key,
     this.onTap,
-    required this.type,
+    required this.session,
   });
 
   final VoidCallback? onTap;
-  final ScheduleTileType type;
+
+  final SessionEvent session;
 
   @override
   State<ConferenceScheduleTile> createState() => _ConferenceScheduleTileState();
@@ -29,10 +34,11 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
     super.initState();
 
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
-      final RenderBox renderBox =
-          _expandedTileKey.currentContext!.findRenderObject() as RenderBox;
+      final RenderBox? renderBox =
+          _expandedTileKey.currentContext?.findRenderObject() as RenderBox?;
+      if (!mounted) return;
       setState(() {
-        maxHeightOfTile = renderBox.size.height;
+        if (renderBox != null) maxHeightOfTile = renderBox.size.height;
       });
     });
   }
@@ -42,13 +48,12 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
     super.didChangeDependencies();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        maxHeightOfTile = 0;
-      });
+      maxHeightOfTile = 0;
 
       Future.microtask(() {
-        final RenderBox renderBox =
-            _expandedTileKey.currentContext!.findRenderObject() as RenderBox;
+        final RenderBox? renderBox =
+            _expandedTileKey.currentContext?.findRenderObject() as RenderBox?;
+        if (!mounted || renderBox == null) return;
         if (maxHeightOfTile != renderBox.size.height) {
           setState(() {
             maxHeightOfTile = renderBox.size.height;
@@ -60,8 +65,6 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('hh:mm a');
-
     return InkWell(
       onTap: widget.onTap,
       borderRadius: const BorderRadius.horizontal(
@@ -77,15 +80,14 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  dateFormat.format(
-                      DateTime.now().subtract(const Duration(hours: 5))),
+                  widget.session.startTime,
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody4Medium
                       ?.medium,
                 ),
                 Text(
-                  dateFormat.format(DateTime.now()),
+                  widget.session.endTime,
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody4Medium
@@ -96,9 +98,11 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
             (Constants.horizontalGutter * 1.5).horizontalSpace,
             Expanded(
               key: _expandedTileKey,
-              child: switch (widget.type) {
-                ScheduleTileType.session => const _SessionInfo(),
-                ScheduleTileType.breakout => const _BreakoutScheduleInfo(),
+              child: switch (widget.session.eventType) {
+                EventType.breakout => _BreakoutScheduleInfo(widget.session),
+                EventType.general ||
+                EventType.postBreakout =>
+                  _GeneralScheduleInfo(widget.session),
               },
             ),
           ],
@@ -108,11 +112,16 @@ class _ConferenceScheduleTileState extends State<ConferenceScheduleTile> {
   }
 }
 
-class _SessionInfo extends StatelessWidget {
-  const _SessionInfo();
+class _BreakoutScheduleInfo extends ConsumerWidget {
+  const _BreakoutScheduleInfo(this.session);
+
+  final SessionEvent session;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final speakerInfo = ref.watch(speakersViewModelNotifier.select((vm) => vm
+        .speakers
+        .firstWhereOrNull((speaker) => speaker.id == session.facilitator)));
     return Material(
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.all(
@@ -134,21 +143,20 @@ class _SessionInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'mobile development'.toUpperCase(),
+                  session.category.toUpperCase(),
                   style: DevfestTheme.of(context)
                       .textTheme
                       ?.bodyBody3Medium
                       ?.medium
                       .applyColor(DevfestColors.grey60.possibleDarkVariant),
                 ),
-                FavouriteIcon(
-                  onTap: () {},
-                ),
               ],
             ),
             Constants.verticalGutter.verticalSpace,
             Text(
-              'Appreciating the usefulness of football memes in decoding intent',
+              session.title,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: DevfestTheme.of(context)
                   .textTheme
                   ?.bodyBody1Semibold
@@ -156,22 +164,14 @@ class _SessionInfo extends StatelessWidget {
                   .applyColor(DevfestColors.grey10.possibleDarkVariant),
             ),
             Constants.smallVerticalGutter.verticalSpace,
-            Text(
-              'Celebrate the women tech makers at their annual breakfast',
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.bodyBody2Medium
-                  ?.semi
-                  .applyColor(DevfestColors.grey50.possibleDarkVariant),
+            SpeakerInfo(
+              name: speakerInfo?.name.toTitleCase ??
+                  session.facilitator.split("-").join(" ").toTitleCase,
+              shortBio: speakerInfo?.shortbio ?? '',
+              avatarUrl: speakerInfo?.imageUrl ?? '',
             ),
             Constants.verticalGutter.verticalSpace,
-            const SpeakerInfo(
-              name: 'Samuel Abada',
-              shortBio: 'Flutter Engineer, Tesla',
-              avatarUrl: '',
-            ),
-            Constants.verticalGutter.verticalSpace,
-            const IconText(IconsaxOutline.location, 'Hall A'),
+            IconText(IconsaxOutline.location, session.venue.name.capitalize),
           ],
         ),
       ),
@@ -196,17 +196,26 @@ class SpeakerInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Material(
+        Material(
           color: DevfestColors.primariesGreen80,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(Constants.smallVerticalGutter),
             ),
             side: BorderSide(color: DevfestColors.primariesBlue50, width: 2),
           ),
           child: Padding(
-            padding: EdgeInsets.all(2),
-            child: FlutterLogo(size: 48),
+            padding: const EdgeInsets.all(2),
+            child: Semantics(
+              label: 'Speaker avatar',
+              child: CachedNetworkImage(
+                imageUrl: avatarUrl,
+                height: 48.h,
+                width: 48.w,
+                fit: BoxFit.cover,
+              ),
+            ),
+            // FlutterLogo(size: 48),
           ),
         ),
         Constants.horizontalGutter.horizontalSpace,
@@ -224,6 +233,8 @@ class SpeakerInfo extends StatelessWidget {
               (Constants.smallVerticalGutter / 2).verticalSpace,
               Text(
                 shortBio,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.bodyBody3Medium
@@ -238,8 +249,10 @@ class SpeakerInfo extends StatelessWidget {
   }
 }
 
-class _BreakoutScheduleInfo extends StatelessWidget {
-  const _BreakoutScheduleInfo();
+class _GeneralScheduleInfo extends StatelessWidget {
+  const _GeneralScheduleInfo(this.session);
+
+  final SessionEvent session;
 
   @override
   Widget build(BuildContext context) {
@@ -255,24 +268,17 @@ class _BreakoutScheduleInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _Initials(initial: 'W'),
+            _Initials(initial: session.title[0]),
             Constants.verticalGutter.verticalSpace,
             Text(
-              '😘  Women Tech Makers Breakfast',
+              session.title,
+              maxLines: null,
+              // overflow: TextOverflow.ellipsis,
               style:
                   DevfestTheme.of(context).textTheme?.titleTitle2Semibold?.semi,
             ),
-            Constants.smallVerticalGutter.verticalSpace,
-            Text(
-              'Celebrate the women tech makers at their annual breakfast',
-              style: DevfestTheme.of(context)
-                  .textTheme
-                  ?.bodyBody2Medium
-                  ?.medium
-                  .copyWith(color: DevfestColors.grey50.possibleDarkVariant),
-            ),
             Constants.verticalGutter.verticalSpace,
-            const IconText(IconsaxOutline.location, 'Hall A'),
+            IconText(IconsaxOutline.location, session.venue.name.capitalize),
           ],
         ),
       ),

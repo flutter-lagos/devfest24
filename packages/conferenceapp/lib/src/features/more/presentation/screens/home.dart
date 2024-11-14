@@ -1,16 +1,20 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
-import 'package:devfest24/src/features/more/presentation/widgets/widgets.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MoreHomeScreen extends StatelessWidget {
+import '../../../dashboard/application/application.dart';
+import '../../../onboarding/presentation/presentation.dart';
+import '../../application/theme_vm.dart';
+import '../presentation.dart';
+
+class MoreHomeScreen extends ConsumerWidget {
   const MoreHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final themeVM = ref.read(themeVMNotifier.notifier);
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: Column(
@@ -21,37 +25,132 @@ class MoreHomeScreen extends StatelessWidget {
                   horizontal: Constants.horizontalMargin.w),
               child: Column(
                 children: [
-                  const SignedInUserHeaderTile(),
+                  if (ref.watch(userViewModelNotifier
+                      .select((vm) => vm.user.id.isNotEmpty)))
+                    const SignedInUserHeaderTile()
+                  else
+                    SignedOutUserHeaderTile(
+                      signInOnTap: () {
+                        context.goNamed(OnboardingLoginScreen.route);
+                        ConferenceAppStorageService.instance
+                            .setIsFirstLaunch(true);
+                      },
+                    ),
                   MoreSection(
                     title: const Text('GENERAL'),
                     options: [
-                      MoreButton(
-                        title: const Text('Profile'),
-                        icon: Icon(
-                          IconsaxOutline.user,
-                          size: 22.r,
+                      if (ref.watch(userViewModelNotifier
+                          .select((vm) => vm.user.id.isNotEmpty)))
+                        MoreButton(
+                          title: const Text('Profile'),
+                          icon: Icon(
+                            IconsaxOutline.user,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(ProfileScreen.route);
+                          },
                         ),
-                        onTap: () {
-                          context.goNamed(Devfest2024Routes.profile.name);
-                        },
-                      ),
-                      MoreButton(
-                        title: const Text('My QR Code'),
-                        icon: Icon(
-                          IconsaxOutline.shield,
-                          size: 22.r,
+                      if (ref.watch(userViewModelNotifier
+                          .select((vm) => vm.user.id.isNotEmpty))) ...[
+                        MoreButton(
+                          title: const Text('My QR Code'),
+                          icon: Icon(
+                            IconsaxOutline.shield,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(MyQrCodeScreen.route);
+                          },
                         ),
-                        onTap: () {
-                          context.goNamed(Devfest2024Routes.myQrCode.name);
-                        },
-                      ),
+                        if (ref.watch(userViewModelNotifier
+                            .select((vm) => vm.user.resumeUrl.isEmpty)))
+                          MoreButton(
+                            title: const Text('Upload Resume'),
+                            icon: Icon(
+                              IconsaxOutline.document,
+                              size: 22.r,
+                            ),
+                            onTap: () {
+                              context.goNamed(HiringScreen.route);
+                            },
+                          ),
+                      ],
                       MoreButton(
                         title: const Text('Theme Settings'),
                         icon: Icon(
                           IconsaxOutline.component,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          showDevfestBottomModal(
+                            context,
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                final currentTheme = ref.watch(themeVMNotifier);
+
+                                return SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Select App Theme',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody1Semibold
+                                            ?.semi,
+                                      ),
+                                      Constants
+                                          .largeHorizontalGutter.verticalSpace,
+                                      ...ThemeMode.values.map(
+                                        (theme) => _CustomRadioTile<ThemeMode>(
+                                          value: theme,
+                                          activeColor:
+                                              DevfestColors.primariesYellow50,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 8.0),
+                                          groupValue: currentTheme.theme,
+                                          onChanged: (ThemeMode? newTheme) {
+                                            if (newTheme != null) {
+                                              themeVM.onThemeChange(newTheme);
+                                              context.pop();
+                                            }
+                                          },
+                                          title: Row(
+                                            children: [
+                                              Text(
+                                                switch (ThemeMode.values
+                                                    .indexOf(theme)) {
+                                                  1 => '😎',
+                                                  2 => '🌚',
+                                                  _ => '💫',
+                                                },
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.bodyBody1Medium
+                                                    ?.medium,
+                                              ),
+                                              Constants.horizontalGutter
+                                                  .horizontalSpace,
+                                              Text(
+                                                '${theme.name.capitalize} Theme',
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.bodyBody1Medium
+                                                    ?.medium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                       MoreButton(
                         title: const Text('Venue Map'),
@@ -60,7 +159,7 @@ class MoreHomeScreen extends StatelessWidget {
                           size: 22.r,
                         ),
                         onTap: () {
-                          context.goNamed(Devfest2024Routes.venueMap.name);
+                          context.goNamed(VenueMapScreen.route);
                         },
                       ),
                     ],
@@ -74,7 +173,7 @@ class MoreHomeScreen extends StatelessWidget {
                           IconsaxOutline.heart,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () => launchWebUrl('https://devfestlagos.com'),
                       ),
                       MoreButton(
                         title: const Text('Contact Us'),
@@ -82,7 +181,7 @@ class MoreHomeScreen extends StatelessWidget {
                           IconsaxOutline.info_circle,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () => launchWebUrl('https://x.com/gdglagos'),
                       ),
                     ],
                   ),
@@ -155,6 +254,59 @@ class MoreButton extends StatelessWidget {
                 color: DevfestColors.grey60.possibleDarkVariant,
               ),
             ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
+class _CustomRadioTile<T> extends StatelessWidget {
+  final T value;
+  final T groupValue;
+  final ValueChanged<T?> onChanged;
+  final Widget title;
+  final Color activeColor;
+  final EdgeInsetsGeometry contentPadding;
+  final BorderRadius? borderRadius;
+
+  const _CustomRadioTile({
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+    required this.title,
+    this.activeColor = Colors.yellow,
+    this.contentPadding = const EdgeInsets.all(0),
+    this.borderRadius = const BorderRadius.all(Radius.circular(20)),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onChanged(value),
+      borderRadius: borderRadius,
+      child: Container(
+        padding: contentPadding,
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+        ),
+        child: Row(
+          children: [
+            Semantics(
+              label: 'theme radio button',
+              child: Transform.scale(
+                scale: 1.5,
+                child: Radio<T>(
+                  value: value,
+                  groupValue: groupValue,
+                  onChanged: onChanged,
+                  activeColor: activeColor,
+                ),
+              ),
+            ),
+            Constants.largeHorizontalGutter.horizontalSpace,
+            Expanded(child: title),
           ],
         ),
       ),

@@ -62,29 +62,6 @@ class _ConferenceAppState extends ConsumerState<VolunteerApp> {
                 DevFestThemeData.light(),
               ],
             ),
-            darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.deepPurple,
-                brightness: Brightness.dark,
-                surface: DevFestThemeData.dark().backgroundColor,
-              ),
-              appBarTheme: AppBarTheme(
-                elevation: 0,
-                color: DevFestThemeData.dark().backgroundColor,
-                surfaceTintColor: Colors.transparent,
-                scrolledUnderElevation: 0,
-              ),
-              scaffoldBackgroundColor: DevFestThemeData.dark().backgroundColor,
-              useMaterial3: true,
-              textTheme: const TextTheme(
-                displayMedium: TextStyle(color: DevfestColors.grey100),
-              ),
-              extensions: <ThemeExtension<dynamic>>[
-                /// Use the below format for raw theme data
-                /// DevFestTheme(textTheme: DevfestTextTheme()),
-                DevFestThemeData.dark(),
-              ],
-            ),
           );
         },
       ),

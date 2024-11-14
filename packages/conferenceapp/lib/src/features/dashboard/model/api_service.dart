@@ -1,9 +1,10 @@
-import 'package:cave/cave.dart';
-import 'profile_dto.dart';
+import 'dart:convert';
 
-import 'speakers_dto.dart';
-import 'sessions_dto.dart';
+import 'package:cave/cave.dart';
+import 'schedule_dto.dart';
 import 'sponsors_dto.dart';
+import 'speakers_dto.dart';
+import 'profile_dto.dart';
 
 final class DashboardApiService {
   const DashboardApiService(this._networkClient);
@@ -21,17 +22,6 @@ final class DashboardApiService {
     return await processData((p0) => ProfileResponseDto.fromJson(p0), response);
   }
 
-  FutureDevfest2024ExceptionOr<AgendasDto> fetchAgenda(
-      {bool refresh = false}) async {
-    final response = await _networkClient.call(
-      path: ConferenceApis.instance.getEventSessions,
-      method: RequestMethod.get,
-      forceRefresh: refresh,
-    );
-
-    return await processData(AgendasDto.fromJson, response);
-  }
-
   FutureDevfest2024ExceptionOr<SponsorsDto> getSponsors(
       {bool refresh = false}) async {
     final response = await _networkClient.call(
@@ -40,7 +30,10 @@ final class DashboardApiService {
       forceRefresh: refresh,
     );
 
-    return await processData(SponsorsDto.fromJson, response);
+    return await processData((p0) {
+      final result = p0 is String ? jsonDecode(p0) : p0;
+      return SponsorsDto.fromJson(result);
+    }, response);
   }
 
   FutureDevfest2024ExceptionOr<SpeakersDto> getSpeakers(
@@ -51,6 +44,23 @@ final class DashboardApiService {
       forceRefresh: refresh,
     );
 
-    return await processData(SpeakersDto.fromJson, response);
+    return await processData((p0) {
+      final result = p0 is String ? jsonDecode(p0) : p0;
+      return SpeakersDto.fromJson(result);
+    }, response);
+  }
+
+  FutureDevfest2024ExceptionOr<ScheduleDto> getSchedule(
+      {bool refresh = false}) async {
+    final response = await _networkClient.call(
+      path: ConferenceApis.instance.getSchedule,
+      method: RequestMethod.get,
+      forceRefresh: refresh,
+    );
+
+    return await processData((p0) {
+      final result = p0 is String ? jsonDecode(p0) : p0;
+      return ScheduleDto.fromJson(result);
+    }, response);
   }
 }

@@ -1,13 +1,17 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
+import 'package:devfest24/src/features/dashboard/application/schedule/view_model.dart';
+import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/shared.dart';
 
 class AgendaTalkTile extends StatelessWidget {
-  const AgendaTalkTile({super.key, this.onTap});
+  const AgendaTalkTile(
+      {super.key, required this.speaker, required this.session, this.onTap});
 
+  final SpeakerDto speaker;
+  final SessionEvent session;
   final VoidCallback? onTap;
 
   @override
@@ -39,26 +43,26 @@ class AgendaTalkTile extends StatelessWidget {
                   horizontal: Constants.largeHorizontalGutter, vertical: 14)
               .r,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'mobile development'.toUpperCase(),
+                    session.category.toUpperCase(),
                     style: DevfestTheme.of(context)
                         .textTheme
                         ?.bodyBody3Medium
                         ?.medium
                         .applyColor(DevfestColors.grey60.possibleDarkVariant),
                   ),
-                  FavouriteIcon(
-                    onTap: () {},
-                  ),
                 ],
               ),
               Constants.verticalGutter.verticalSpace,
               Text(
-                'Appreciating the usefulness of football memes in decoding intent',
+                session.title,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: DevfestTheme.of(context)
                     .textTheme
                     ?.bodyBody1Semibold
@@ -66,19 +70,10 @@ class AgendaTalkTile extends StatelessWidget {
                     .applyColor(DevfestColors.grey10.possibleDarkVariant),
               ),
               Constants.smallVerticalGutter.verticalSpace,
-              Text(
-                'Celebrate the women tech makers at their annual breakfast',
-                style: DevfestTheme.of(context)
-                    .textTheme
-                    ?.bodyBody2Medium
-                    ?.semi
-                    .applyColor(DevfestColors.grey50.possibleDarkVariant),
-              ),
-              Constants.verticalGutter.verticalSpace,
-              const SpeakerInfo(
-                name: 'Samuel Abada',
-                shortBio: 'Flutter Engineer, Tesla',
-                avatarUrl: '',
+              SpeakerInfo(
+                name: speaker.name,
+                shortBio: speaker.title,
+                avatarUrl: speaker.imageUrl,
               ),
               Constants.verticalGutter.verticalSpace,
               Row(
@@ -116,7 +111,7 @@ class SpeakerInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Material(
+        Material(
           color: DevfestColors.primariesGreen80,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
@@ -126,7 +121,15 @@ class SpeakerInfo extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.all(2),
-            child: FlutterLogo(size: 48),
+            child: Semantics(
+              label: 'Speaker avatar',
+              child: CachedNetworkImage(
+                imageUrl: avatarUrl,
+                height: 48,
+                width: 48,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         ),
         Constants.horizontalGutter.horizontalSpace,

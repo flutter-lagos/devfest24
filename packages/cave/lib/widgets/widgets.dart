@@ -5,3 +5,4 @@ export 'text_field.dart';
 export 'gdg_animated_logo.dart';
 export 'qr_scanner.dart';
 export 'overlay_loading_indicator.dart';
+export 'bottom_modal.dart';

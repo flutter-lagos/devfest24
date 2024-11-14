@@ -56,3 +56,9 @@ unlinked_spec.ds
 # FVM Version Cache
 .fvm/
 .vscode/launch.json
+**/*.env
+**/*.jks
+**/*.p8
+**/cert_key.*
+**/cert_key
+**/&.pub

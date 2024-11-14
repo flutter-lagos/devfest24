@@ -1,6 +1,5 @@
 import 'package:cave/cave.dart';
 import 'package:flutter/foundation.dart';
-import '../exceptions/exceptions.dart';
 
 typedef Devfest2024ExceptionOr<T> = Either<Devfest2024Exception, T>;
 typedef FutureDevfest2024ExceptionOr<T> = Future<Devfest2024ExceptionOr<T>>;

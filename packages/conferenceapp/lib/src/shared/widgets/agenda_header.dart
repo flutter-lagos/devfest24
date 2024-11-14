@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -44,31 +43,31 @@ class AgendaHeader extends StatelessWidget {
           HeaderText(
             title: title,
             titleStyle: titleStyle,
-            titleAction: onFilterSelected == null
-                ? null
-                : SizedBox(
-                    width: 87.w,
-                    child: DevfestFilledButton.small(
-                      onPressed: onFilterSelected,
-                      backgroundColor:
-                          DevfestColors.primariesYellow90.possibleDarkVariant,
-                      prefixIcon: Icon(
-                        IconsaxOutline.filter,
-                        color: DevfestTheme.of(context)
-                            .textTheme
-                            ?.titleTitle2Semibold
-                            ?.color,
-                      ),
-                      title: const Text('Filter'),
-                      titleStyle: TextStyle(
-                        color: DevfestTheme.of(context)
-                            .textTheme
-                            ?.titleTitle2Semibold
-                            ?.color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+            // titleAction: onFilterSelected == null
+            //     ? null
+            //     : SizedBox(
+            //         width: 87.w,
+            //         child: DevfestFilledButton.small(
+            //           onPressed: onFilterSelected,
+            //           backgroundColor:
+            //               DevfestColors.primariesYellow90.possibleDarkVariant,
+            //           prefixIcon: Icon(
+            //             IconsaxOutline.filter,
+            //             color: DevfestTheme.of(context)
+            //                 .textTheme
+            //                 ?.titleTitle2Semibold
+            //                 ?.color,
+            //           ),
+            //           title: const Text('Filter'),
+            //           titleStyle: TextStyle(
+            //             color: DevfestTheme.of(context)
+            //                 .textTheme
+            //                 ?.titleTitle2Semibold
+            //                 ?.color,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ),
             subtitle: subtitle,
             subtitleStyle: DevfestTheme.of(context)
                 .textTheme
@@ -100,8 +99,8 @@ class AgendaHeader extends StatelessWidget {
                 ),
               ],
             ),
-            Constants.verticalGutter.verticalSpace,
           ],
+          Constants.verticalGutter.verticalSpace,
         ],
       ),
     );
@@ -183,6 +182,7 @@ class _SliverAgendaHeaderState extends State<SliverAgendaHeader> {
         color: DevfestTheme.of(context).backgroundColor,
         child: AgendaHeader(
           title: widget.title,
+          eventDay: widget.eventDay,
           subtitle: switch (hideHeaders) {
             true => null,
             false => widget.subtitle,
@@ -213,6 +213,7 @@ class _SliverAgendaHeaderState extends State<SliverAgendaHeader> {
           },
           titleStyle: widget.titleStyle,
           onFilterSelected: widget.onFilterSelected,
+          eventDay: widget.eventDay,
           onEventDayChanged: widget.onEventDayChanged,
           gutter: switch (hideHeaders) {
             true => Constants.smallVerticalGutter.verticalSpace,
@@ -233,6 +234,7 @@ class _SliverAgendaHeaderState extends State<SliverAgendaHeader> {
           },
           titleStyle: widget.titleStyle,
           onFilterSelected: widget.onFilterSelected,
+          eventDay: widget.eventDay,
           onEventDayChanged: widget.onEventDayChanged,
           gutter: switch (hideHeaders) {
             true => Constants.smallVerticalGutter.verticalSpace,

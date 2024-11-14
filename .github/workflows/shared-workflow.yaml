@@ -17,10 +17,6 @@ on:
         required: false
         default: false
         type: boolean
-      changelog:
-        description: 'Changelog for the release'
-        required: false
-        type: string
       build-version:
         description: 'Version number for the release'
         required: false
@@ -32,43 +28,52 @@ on:
         default: '1'
         type: string
     secrets:
-      CREDENTIAL_FILE_CONTENT:
+      SERVICE_ACCOUNT_JSON:
         required: false
-      FIREBASE_APP_ID:
+      APP_STORE_CONNECT_ISSUER_ID:
         required: false
-      # APP_STORE_CONNECT_ISSUER_ID:
-      #   required: false
-      # APP_STORE_CONNECT_KEY_IDENTIFIER:
-      #   required: false
-      # APP_STORE_CONNECT_PRIVATE_KEY:
-      #   required: false
-      # CERTIFICATE_PRIVATE_KEY:
-      #   required: false
-      # SSH_PRIVATE_KEY:
-      #   required: false
+      APP_STORE_CONNECT_KEY_IDENTIFIER:
+        required: false
+      APP_STORE_CONNECT_PRIVATE_KEY:
+        required: false
+      CERTIFICATE_PRIVATE_KEY:
+        required: false
+      APP_STORE_APP_ID:
+        required: false
+      SHOREBIRD_TOKEN:
+        required: false
+      KEYSTORE_BASE64:
+        required: false
+      KEYSTORE_PASSWORD:
+        required: false
+      KEY_ALIAS:
+        required: false
+      KEY_PASSWORD:
+        required: false
+      ENV_BASE64:
+        required: false
+
+env:
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+  APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+  APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+  CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+  APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
 
 jobs:
   check-formatting:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.3'
           cache: true
-
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            packages/${{ inputs['package-name'] }}/.dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
       
       - name: Enable melos
         run: dart pub global activate melos
@@ -88,27 +93,22 @@ jobs:
         working-directory: packages/${{ inputs['package-name'] }}
 
   android-build:
-    if: inputs.android-build == 'true'
+    if: inputs.android-build == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
       
       - name: Setup Java 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'temurin'
-      
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            packages/${{ inputs['package-name'] }}/.dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
       
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
@@ -126,6 +126,80 @@ jobs:
           flutter-version: '3.24.3'
           cache: true
       
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+      
+      - name: Decode Keystore File
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks
+
+      - name: Create key.properties File
+        run: |
+          echo "storeFile=${{ github.workspace }}/packages/${{ inputs['package-name'] }}/upload.jks" > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/android/key.properties
+      
+      - name: Enable melos
+        run: dart pub global activate melos
+
+      - name: Get packages 
+        run: melos bootstrap
+
+      - name: Generate Files  
+        run: melos generate
+      
+      - name: 🚀 Shorebird Release
+        id: shorebird-release
+        uses: shorebirdtech/shorebird-release@v0
+        with:
+          working-directory: packages/${{ inputs['package-name'] }}
+          platform: android
+          args: --flutter-version=3.24.3 -- --dart-define-from-file=.env --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }} --obfuscate --split-debug-info=./symbols
+      
+      - name: Upload AAB to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: com.devfestlagos.${{ inputs['package-name'] }}
+          releaseFiles: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/build/app/outputs/bundle/release/app-release.aab
+          track: production
+          status: draft
+          inAppUpdatePriority: 5
+          debugSymbolsPath: ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/symbols
+
+  ios-build:
+    if: inputs.ios-build == true
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.sha }}
+          fetch-depth: 0
+      
+      - name: 🐦 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+      
+      - name: Cache CocoaPods dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cocoapods
+            ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          cache: true
+
       - name: Enable melos
         run: dart pub global activate melos
 
@@ -135,96 +209,48 @@ jobs:
       - name: Generate Files  
         run: melos generate
 
-      - name: Build Android
-        run: flutter build apk --release --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: packages/${{ inputs['package-name'] }}
+      
+      - name: Prepare .env file
+        run: |
+          echo "${{ secrets.ENV_BASE64 }}" | base64 -d > ${{ github.workspace }}/packages/${{ inputs['package-name'] }}/.env
+      
+      - name: Install Codemagic CLI tools
+        run: pip install codemagic-cli-tools
+        working-directory: packages/${{ inputs['package-name'] }}
+      
+      - name: Set up keychain
+        run: keychain initialize
         working-directory: packages/${{ inputs['package-name'] }}
 
-      - name: Deploy Android to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+      - name: Fetch signing files from App Store Connect
+        run: |
+          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+          --type IOS_APP_STORE \
+          --create
+        working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: Set up signing certificate in keychain
+        run: keychain add-certificates
+        working-directory: packages/${{ inputs['package-name'] }}
+
+      - name: Set up code signing in Xcode project
+        run: xcode-project use-profiles
+        working-directory: packages/${{ inputs['package-name'] }}
+      
+      - name: 🚀 Shorebird Release
+        id: shorebird-release
+        uses: shorebirdtech/shorebird-release@v0
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-          groups: testers
-          file: packages/${{ inputs['package-name'] }}/build/app/outputs/flutter-apk/app-release.apk
-          releaseNotes: ${{ inputs.changelog }}
-
-  # ios-build:
-  #   if: inputs.ios-build == 'true'
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+          working-directory: packages/${{ inputs['package-name'] }}
+          platform: ios
+          args: --flutter-version=3.24.3 -- --dart-define-from-file=.env --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
       
-  #     - name: Cache CocoaPods dependencies
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: |
-  #           ~/.cocoapods
-  #           ios/Pods
-  #         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-pods-
-      
-  #     - name: Cache Flutter dependencies
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: |
-  #           ~/.pub-cache
-  #           packages/${{ inputs['package-name'] }}/.dart_tool
-  #         key: ${{ runner.os }}-pub-${{ hashFiles('packages/${{ inputs["package-name"] }}/pubspec.yaml') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-pub-
-
-  #     - name: Set up Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: '3.24.3'
-
-  #     - name: Enable melos
-  #       run: dart pub global activate melos
-
-  #     - name: Get packages 
-  #       run: melos bootstrap
-
-  #     - name: Generate Files  
-  #       run: melos generate
-
-  #     - name: Install dependencies
-  #       run: flutter pub get
-  #       working-directory: packages/${{ inputs['package-name'] }}
-      
-  #     - name: Install Codemagic CLI tools
-  #       run: pip install codemagic-cli-tools
-  #       working-directory: packages/${{ inputs['package-name'] }}
-      
-  #     - name: Set up keychain
-  #       run: keychain initialize
-  #       working-directory: packages/${{ inputs['package-name'] }}
-
-  #     - name: Fetch signing files from App Store Connect
-  #       run: |
-  #         app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
-  #         --type IOS_APP_STORE \
-  #         --create
-  #       working-directory: packages/${{ inputs['package-name'] }}
-
-  #     - name: Set up signing certificate in keychain
-  #       run: keychain add-certificates
-  #       working-directory: packages/${{ inputs['package-name'] }}
-
-  #     - name: Set up code signing in Xcode project
-  #       run: xcode-project use-profiles
-  #       working-directory: packages/${{ inputs['package-name'] }}
-
-  #     - name: Build iOS
-  #       run: flutter build ipa --export-options-plist=$HOME/export_options.plist --build-name=${{ inputs.build-version }} --build-number=${{ inputs.build-number }}
-  #       working-directory: packages/${{ inputs['package-name'] }}
-      
-  #     - name: Deploy iOS to Firebase
-  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
-  #       with:
-  #         appId: ${{ secrets.FIREBASE_APP_ID }}
-  #         serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-  #         groups: testers
-  #         file: packages/${{ inputs['package-name'] }}/build/ios/ipa/*.ipa
-  #         releaseNotes: ${{ inputs.changelog }}
+      - name: Publish the app to App Store Connect
+        working-directory: packages/${{ inputs['package-name'] }}
+        run: |
+          APP_FILE=$(find $(pwd) -name "*.ipa")
+          app-store-connect publish \
+          --path "$APP_FILE"
