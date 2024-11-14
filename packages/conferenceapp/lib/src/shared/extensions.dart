@@ -25,6 +25,7 @@ extension DevfestColorsX on Color {
         DevfestColors.grey80 ||
         DevfestColors.warning100 =>
           DevfestColors.backgroundDark,
+        const Color(0xfffffaeb) => DevfestColors.backgroundDark,
         _ => this,
       };
     }

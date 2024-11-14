@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^2.1.4
   shared_preferences: ^2.3.3
   url_launcher: ^6.3.1
+  schematics: ^1.0.0-dev.1.5
 
 dependency_overrides:
   firebase_core: 3.3.0
