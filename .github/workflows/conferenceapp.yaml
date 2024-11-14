@@ -44,25 +44,6 @@ jobs:
     with:
       package-name: conferenceapp
 
-  android-build:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
-    uses: ./.github/workflows/shared-workflow.yaml
-    with:
-      package-name: conferenceapp
-      android-build: ${{ github.event.inputs['release-type'] == 'build' }}
-      build-number: ${{ github.event.inputs['build-number'] }}
-      build-version: ${{ github.event.inputs['build-version'] }}
-    secrets:
-      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-      SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
-      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      ENV_BASE64: ${{ secrets.ENV_BASE64 }}
-      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-      FIREBASE_CREDENTIAL_FILE_CONTENT: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
-
   ios-build:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs['release-type'] == 'build' }}
     uses: ./.github/workflows/shared-workflow.yaml
