@@ -22,6 +22,17 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   EventDay _day = EventDay.one;
 
+  String get _getGreeting {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return '🌤️ Good morning';
+    } else if (hour < 17) {
+      return '🌞 Good afternoon';
+    } else {
+      return '🌙 Good evening';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               SliverToBoxAdapter(
                 child: HeaderText(
                   title: Text(
-                      '🌤️ Good morning, ${ref.watch(userViewModelNotifier.select((value) => value.user.fullName.split(' ').first))}'),
+                      '$_getGreeting, ${ref.watch(userViewModelNotifier.select((value) => value.user.fullName.split(' ').first))}'),
                   subtitle: Text(
                       'You start on the street, work till you are eleniyan.'),
                 ),
