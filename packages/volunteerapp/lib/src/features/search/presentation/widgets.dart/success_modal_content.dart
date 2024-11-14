@@ -173,6 +173,7 @@ class _CheckInSuccessModalState extends ConsumerState<CheckInSuccessModal> {
               Constants.verticalGutter.verticalSpace,
               DevfestFilledButton(
                 onPressed: () {
+                  ref.read(checkInVMNotifier.notifier).onGenderChanged('');
                   context.goNamed(HomeScreen.route);
                   var day = ref.watch(checkInVMNotifier).day;
 

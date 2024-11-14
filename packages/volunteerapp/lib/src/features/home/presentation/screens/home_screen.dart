@@ -217,8 +217,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         DataColumn(label: Text('Ticket ID')),
                       ],
                       rows: ref
-                          .watch(usersearchVM)
-                          .fetchedAttendees
+                          .watch(
+                              usersearchVM.select((vm) => vm.fetchedAttendees))
                           .map((attendee) {
                         return DataRow(
                           cells: <DataCell>[

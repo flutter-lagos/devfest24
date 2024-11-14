@@ -40,7 +40,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final textTheme = DevfestTheme.of(context).textTheme;
 
     final selectedAttendee = ref.watch(usersearchVM).selectedAttendee;
-
+    dynamic filteredOptions;
     return Scaffold(
       appBar: AppBar(
         leading: GoBackButton(
@@ -72,7 +72,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         .read(usersearchVM.notifier)
                         .searchAttendee(textEditingValue.text.toLowerCase());
                   });
-                  final filteredOptions = ref
+                  filteredOptions = ref
                       .watch(usersearchVM)
                       .attendees
                       .map((e) => e.toJson())
@@ -152,9 +152,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         separatorBuilder: (context, index) =>
                             Constants.verticalGutter.verticalSpace,
                         itemBuilder: (BuildContext context, int index) {
-                          // final Map option = options.elementAt(index);
-                          final option =
-                              ref.watch(usersearchVM).attendees[index];
+                          final Map option = options.elementAt(index);
+
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,7 +173,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        option.fullname
+                                        option['fullname']
                                             .split(' ')
                                             .map((e) => e[0])
                                             .take(2)
@@ -191,7 +190,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        option.fullname,
+                                        option['fullname'],
                                         style: textTheme?.bodyBody4Regular
                                             ?.copyWith(
                                           fontWeight: FontWeight.w500,
@@ -201,7 +200,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                       (Constants.smallVerticalGutter / 2)
                                           .verticalSpace,
                                       Text(
-                                        option.emailAddress,
+                                        option['email_address'],
                                         style: textTheme?.bodyBody4Regular
                                             ?.copyWith(
                                           color: const Color(0xFF1E1E1E),
@@ -213,7 +212,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               ),
 
                               ///if the current conference day is among the days returned from the server then the user has been checked in
-                              if (option.checkins.contains(
+                              if (option['checkins'].contains(
                                   ref.watch(checkInVMNotifier).day)) ...[
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -240,7 +239,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                       height: 2.h,
                                     ),
                                     Text(
-                                        option.createdAt
+                                        option['created_at']
                                             .toString()
                                             .formattedDate,
                                         style: DevfestTheme.of(context)
@@ -258,12 +257,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                         .read(usersearchVM.notifier)
                                         .onCheckboxClicked(
                                           value ?? false,
-                                          option.id,
+                                          option['id'],
                                         );
 
                                     ///show the modal if checkbox is selected
 
                                     if (value == true) {
+                                      var attendee = ref.watch(usersearchVM
+                                          .select((vm) => vm.selectedAttendee));
                                       //show modal
                                       showModalBottomSheet(
                                           isScrollControlled: true,
@@ -274,7 +275,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                           context: context,
                                           builder: (context) {
                                             return CheckInAttendeeModal(
-                                              attendee: option,
+                                              attendee: attendee,
                                             );
                                           });
                                     }

@@ -66,6 +66,8 @@ final class CheckInViewModel extends AutoDisposeNotifier<CheckInState> {
         );
       }));
     });
+    state = state.copyWith(uiState: UiState.idle);
+    return;
   }
 
   Future<void> logout(BuildContext context) async {
