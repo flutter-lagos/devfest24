@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 final class CheckUserInRequestDto extends Equatable {
   final String userId;
-  final num day;
+  final int day;
   final String gender;
 
   const CheckUserInRequestDto(
@@ -41,8 +41,8 @@ final class CheckInUserResponseDto extends Equatable {
         );
   factory CheckInUserResponseDto.fromJson(dynamic json) {
     return CheckInUserResponseDto(
-      id: json["id"] ?? DateTime.now(),
-      createdAt: json["created_at"] ?? DateTime.now(),
+      id: json["id"] ?? '',
+      createdAt: DateTime.parse(json["created_at"]) ?? DateTime.now(),
       day: json["day"] ?? 1,
       checkedInBy: json["checked_in_by"] ?? '',
       userId: json["user_id"] ?? '',

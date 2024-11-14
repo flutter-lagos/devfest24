@@ -85,11 +85,11 @@ final class UserSeachViewModel extends AutoDisposeNotifier<UserSearchState> {
     });
   }
 
-  Future<void> getAttendees() async {
+  Future<void> getAttendees(int day) async {
     await launch(state.ref, (model) async {
       state = model.emit(state.copyWith(uiState: UiState.loading));
 
-      final result = await _apiService.getAttendees();
+      final result = await _apiService.getAttendees(day);
 
       state = model.emit(result
           .fold((left) => state.copyWith(uiState: UiState.error, error: left),

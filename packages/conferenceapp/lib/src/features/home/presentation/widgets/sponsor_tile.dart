@@ -1,5 +1,5 @@
+import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 
@@ -40,10 +40,20 @@ class ConferenceSponsorTile extends StatelessWidget {
                     child: Center(
                       child: Semantics(
                         label: sponsor.name,
-                        child: CachedNetworkImage(
-                          imageUrl: sponsor.logo,
-                          height: 122.h,
-                        ),
+                        child: sponsor.logo.contains('.svg')
+                            ? CachedNetworkSVGImage(
+                                sponsor.logo,
+                                height: 122.h,
+                                fadeDuration: const Duration(milliseconds: 500),
+                              )
+                            : CachedNetworkImage(
+                                imageUrl: sponsor.logo,
+                                height: 122.h,
+                                fadeInDuration:
+                                    const Duration(milliseconds: 500),
+                                fadeOutDuration:
+                                    const Duration(milliseconds: 500),
+                              ),
                       ),
                     ),
                   ),

@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
@@ -13,6 +12,7 @@ class MyQrCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = DevfestTheme.of(context).onBackgroundColor;
     return Scaffold(
       appBar: AppBar(
         leading: GoBackButton(onTap: context.pop),
@@ -53,6 +53,8 @@ class MyQrCodeScreen extends StatelessWidget {
                   data: ref
                       .watch(userViewModelNotifier.select((vm) => vm.user.id)),
                   size: 296.w,
+                  // ignore: deprecated_member_use
+                  foregroundColor: color,
                 );
               },
             ),

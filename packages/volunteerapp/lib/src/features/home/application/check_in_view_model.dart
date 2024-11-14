@@ -3,7 +3,6 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteerapp/src/features/home/application/ui_state.dart';
-import 'package:volunteerapp/src/features/home/application/user_seach_view_model.dart';
 import 'package:volunteerapp/src/features/home/model/model.dart';
 import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_login.dart';
 
@@ -29,11 +28,11 @@ final class CheckInViewModel extends AutoDisposeNotifier<CheckInState> {
     return CheckInState.initial();
   }
 
-  void onUserIdChanged(num input) {
+  void onUserIdChanged(int input) {
     state = state.copyWith(day: input);
   }
 
-  void onDayChanged(num input) {
+  void onDayChanged(int input) {
     state = state.copyWith(day: input);
     print('day ${state.day}');
   }
@@ -49,22 +48,18 @@ final class CheckInViewModel extends AutoDisposeNotifier<CheckInState> {
   }
 
   Future<void> checkInUser(BuildContext context, String id) async {
-    print('hullo1');
+    final updatedDay = state.day;
     await launch(state.ref, (model) async {
       state = model.emit(state.copyWith(uiState: UiState.loading));
       final dto = CheckUserInRequestDto(
-          userId: id, day: state.day, gender: state.gender);
+          userId: id, day: updatedDay, gender: state.gender);
       final result = await _apiService.checkInUser(dto);
-      final selectedAttendee = ref.watch(usersearchVM).selectedAttendee;
+
       state = model.emit(result.fold((left) {
         Navigator.of(context).pop();
         FocusManager.instance.primaryFocus?.unfocus();
         return state.copyWith(uiState: UiState.error, error: left);
       }, (right) {
-        print('hullo');
-        print('right $right');
-        Navigator.of(context).pop();
-
         return state.copyWith(
           uiState: UiState.success,
           checkedInattendee: right,

@@ -1,7 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -166,12 +165,13 @@ class _BreakoutScheduleInfo extends ConsumerWidget {
             ),
             Constants.smallVerticalGutter.verticalSpace,
             SpeakerInfo(
-              name: speakerInfo?.name ?? session.facilitator,
+              name: speakerInfo?.name.toTitleCase ??
+                  session.facilitator.split("-").join(" ").toTitleCase,
               shortBio: speakerInfo?.shortbio ?? '',
               avatarUrl: speakerInfo?.imageUrl ?? '',
             ),
             Constants.verticalGutter.verticalSpace,
-            IconText(IconsaxOutline.location, session.venue.name),
+            IconText(IconsaxOutline.location, session.venue.name.capitalize),
           ],
         ),
       ),
@@ -196,17 +196,26 @@ class SpeakerInfo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Material(
+        Material(
           color: DevfestColors.primariesGreen80,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(Constants.smallVerticalGutter),
             ),
             side: BorderSide(color: DevfestColors.primariesBlue50, width: 2),
           ),
           child: Padding(
-            padding: EdgeInsets.all(2),
-            child: FlutterLogo(size: 48),
+            padding: const EdgeInsets.all(2),
+            child: Semantics(
+              label: 'Speaker avatar',
+              child: CachedNetworkImage(
+                imageUrl: avatarUrl,
+                height: 48.h,
+                width: 48.w,
+                fit: BoxFit.cover,
+              ),
+            ),
+            // FlutterLogo(size: 48),
           ),
         ),
         Constants.horizontalGutter.horizontalSpace,
@@ -263,13 +272,13 @@ class _GeneralScheduleInfo extends StatelessWidget {
             Constants.verticalGutter.verticalSpace,
             Text(
               session.title,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
+              maxLines: null,
+              // overflow: TextOverflow.ellipsis,
               style:
                   DevfestTheme.of(context).textTheme?.titleTitle2Semibold?.semi,
             ),
             Constants.verticalGutter.verticalSpace,
-            IconText(IconsaxOutline.location, session.venue.name),
+            IconText(IconsaxOutline.location, session.venue.name.capitalize),
           ],
         ),
       ),

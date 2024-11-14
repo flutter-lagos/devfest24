@@ -31,7 +31,7 @@ final class DashboardApiService {
     );
 
     return await processData((p0) {
-      final result = jsonDecode(p0);
+      final result = p0 is String ? jsonDecode(p0) : p0;
       return SponsorsDto.fromJson(result);
     }, response);
   }
@@ -45,7 +45,7 @@ final class DashboardApiService {
     );
 
     return await processData((p0) {
-      final result = jsonDecode(p0);
+      final result = p0 is String ? jsonDecode(p0) : p0;
       return SpeakersDto.fromJson(result);
     }, response);
   }
@@ -59,7 +59,7 @@ final class DashboardApiService {
     );
 
     return await processData((p0) {
-      final result = jsonDecode(p0);
+      final result = p0 is String ? jsonDecode(p0) : p0;
       return ScheduleDto.fromJson(result);
     }, response);
   }

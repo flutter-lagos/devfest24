@@ -1,4 +1,3 @@
-import 'package:cave/constants.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:cave/cave.dart';
@@ -43,7 +42,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final selectedAttendee = ref.watch(usersearchVM).selectedAttendee;
 
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         leading: GoBackButton(
           label: 'Search',
@@ -267,156 +265,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
                                     if (value == true) {
                                       //show modal
-                                      showDevfestBottomModal(
-                                          scaffoldKey.currentContext!,
-                                          children: [
-                                            ConfirmCheckInModalHeader(
-                                                fullName:
-                                                    ' ${option.fullname}, '),
-                                            Constants.smallVerticalGutter
-                                                .verticalSpace,
-                                            StatefulBuilder(builder: (context,
-                                                StateSetter setModalState) {
-                                              return Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      DevfestCheckbox(
-                                                        semanticLabel:
-                                                            'Select Female Gender',
-                                                        value: ref.watch(
-                                                            checkInVMNotifier
-                                                                .select((vm) =>
-                                                                    vm.gender ==
-                                                                    'female')),
-                                                        onChanged: (value) {
-                                                          ref
-                                                              .read(
-                                                                  checkInVMNotifier
-                                                                      .notifier)
-                                                              .onGenderChanged(
-                                                                  'female');
-
-                                                          setModalState(() {});
-                                                        },
-                                                      ),
-                                                      8.horizontalSpace,
-                                                      Text(
-                                                        'Female',
-                                                        style: DevfestTheme.of(
-                                                                context)
-                                                            .textTheme!
-                                                            .bodyBody2Medium!
-                                                            .copyWith(
-                                                                color:
-                                                                    DevfestColors
-                                                                        .grey60),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  35.horizontalSpace,
-                                                  Row(
-                                                    children: [
-                                                      DevfestCheckbox(
-                                                        semanticLabel:
-                                                            'Select Male Gender',
-                                                        value: ref
-                                                                .watch(
-                                                                    checkInVMNotifier)
-                                                                .gender ==
-                                                            'male',
-                                                        onChanged: (value) {
-                                                          ref
-                                                              .read(
-                                                                  checkInVMNotifier
-                                                                      .notifier)
-                                                              .onGenderChanged(
-                                                                  'male');
-                                                          setModalState(() {});
-                                                        },
-                                                      ),
-                                                      8.horizontalSpace,
-                                                      Text(
-                                                        'Male',
-                                                        style: DevfestTheme.of(
-                                                                context)
-                                                            .textTheme!
-                                                            .bodyBody2Medium!
-                                                            .copyWith(
-                                                                color:
-                                                                    DevfestColors
-                                                                        .grey60),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              );
-                                            }),
-                                            Constants
-                                                .verticalGutter.verticalSpace,
-                                            DevfestOutlinedButton(
-                                              onPressed: () {
-                                                ref
-                                                    .read(checkInVMNotifier
-                                                        .notifier)
-                                                    .onGenderChanged('');
-
-                                                Navigator.of(context).pop();
-                                              },
-                                              title: Text(
-                                                'Cancel',
-                                                style: DevfestTheme.of(context)
-                                                    .textTheme
-                                                    ?.buttonMediumBold
-                                                    ?.copyWith(
-                                                        color: DevfestColors
-                                                            .grey10),
-                                              ),
-                                            ),
-                                            Constants
-                                                .verticalGutter.verticalSpace,
-                                            Consumer(
-                                                builder: (context, ref, _) {
-                                              return DevfestFilledButton(
-                                                onPressed: () {
-                                                  ref
-                                                      .read(checkInVMNotifier
-                                                          .notifier)
-                                                      .checkInUser(
-                                                          scaffoldKey
-                                                              .currentContext!,
-                                                          option.id);
-                                                },
-                                                title: ref.watch(
-                                                        checkInVMNotifier
-                                                            .select((vm) => vm
-                                                                .uiState
-                                                                .isLoading))
-                                                    ? CircularProgressIndicator
-                                                        .adaptive(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation(
-                                                                Colors.white),
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        strokeWidth: 2.0,
-                                                      )
-                                                    : Text(
-                                                        'Yes check in',
-                                                        style: DevfestTheme.of(
-                                                                context)
-                                                            .textTheme
-                                                            ?.buttonMediumBold
-                                                            ?.copyWith(
-                                                                color:
-                                                                    DevfestColors
-                                                                        .grey100),
-                                                      ),
-                                              );
-                                            }),
-                                          ]);
+                                      showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          isDismissible: false,
+                                          backgroundColor:
+                                              DevfestColors.warning100,
+                                          showDragHandle: true,
+                                          context: context,
+                                          builder: (context) {
+                                            return CheckInAttendeeModal(
+                                              attendee: option,
+                                            );
+                                          });
                                     }
                                   },
                                   shape: RoundedRectangleBorder(

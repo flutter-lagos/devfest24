@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/onboarding/application/session_sign_in_vm.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
@@ -117,27 +116,31 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                     },
                                   ),
                                   Constants.largeVerticalGutter.verticalSpace,
-                                  Text.rich(
-                                    TextSpan(
-                                      text: 'Looking for your ticket ID? ',
-                                      style: DevfestTheme.of(context)
-                                          .textTheme
-                                          ?.bodyBody2Medium
-                                          ?.medium
-                                          .apply(
-                                              color: DevfestColors
-                                                  .grey60.possibleDarkVariant),
-                                      children: [
-                                        TextSpan(
-                                          text: 'Click Here',
-                                          style: TextStyle(
-                                                  color: DevfestColors.grey10
-                                                      .possibleDarkVariant)
-                                              .semi,
-                                        ),
-                                      ],
+                                  InkWell(
+                                    onTap: () =>
+                                        launchWebUrl('https://x.com/gdglagos'),
+                                    child: Text.rich(
+                                      TextSpan(
+                                        text: 'Looking for your ticket ID? ',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody2Medium
+                                            ?.medium
+                                            .apply(
+                                                color: DevfestColors.grey60
+                                                    .possibleDarkVariant),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Click Here',
+                                            style: TextStyle(
+                                                    color: DevfestColors.grey10
+                                                        .possibleDarkVariant)
+                                                .semi,
+                                          ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.start,
                                     ),
-                                    textAlign: TextAlign.start,
                                   ),
                                 ],
                               ),
@@ -163,8 +166,6 @@ class _OnboardingLoginScreenState extends ConsumerState<OnboardingLoginScreen> {
                                 .read(sessionSignInVMNotifier.notifier)
                                 .initialiseUserSession();
                           }
-                          // context.goNamed(
-                          //     Devfest2024Routes.onboardingSignature.name);
                         },
                       ),
                       DevfestFilledButton(

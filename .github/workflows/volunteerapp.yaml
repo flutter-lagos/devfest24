@@ -8,9 +8,6 @@ on:
       - 'packages/volunteerapp/**'
   workflow_dispatch:
     inputs:
-      changelog:
-        description: 'Changelog for this release'
-        required: true
       build-version:
         description: 'Version number for the release'
         required: true
@@ -31,7 +28,6 @@ jobs:
     with:
       package-name: volunteerapp
       android-build: true
-      changelog: ${{ github.event.inputs.changelog }}
       build-number: ${{ github.event.inputs.build-number }}
       build-version: ${{ github.event.inputs.build-version }}
     secrets:
@@ -44,4 +40,3 @@ jobs:
   #   with:
   #     package-name: volunteerapp
   #     ios-build: true
-  #     changelog: ${{ github.event.inputs.changelog }}

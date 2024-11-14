@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'bottom_nav_theme.dart';
 import 'button_theme.dart';
 import 'colors.dart';
+import 'signedout_tile_theme.dart';
 import 'text_field_theme.dart';
 import 'typography.dart';
 
@@ -13,6 +14,7 @@ class DevFestThemeData extends ThemeExtension<DevFestThemeData> {
   final DevfestOutlinedButtonTheme? outlinedButtonTheme;
   final DevfestBottomNavTheme? bottomNavTheme;
   final DevfestTextFieldTheme? textFieldTheme;
+  final DevfestUserHeaderTile? headerTileTheme;
   final Color? backgroundColor;
   final Color? onBackgroundColor;
 
@@ -24,18 +26,19 @@ class DevFestThemeData extends ThemeExtension<DevFestThemeData> {
     this.outlinedButtonTheme,
     this.textFieldTheme,
     this.onBackgroundColor,
+    this.headerTileTheme,
   });
 
   DevFestThemeData.light()
       : this(
-          textTheme: DevfestTextTheme.light(),
-          backgroundColor: DevfestColors.primariesYellow100,
-          buttonTheme: DevfestButtonTheme.light(),
-          outlinedButtonTheme: DevfestOutlinedButtonTheme.light(),
-          bottomNavTheme: DevfestBottomNavTheme.light(),
-          textFieldTheme: DevfestTextFieldTheme.light(),
-          onBackgroundColor: DevfestColors.grey10,
-        );
+            textTheme: DevfestTextTheme.light(),
+            backgroundColor: DevfestColors.primariesYellow100,
+            buttonTheme: DevfestButtonTheme.light(),
+            outlinedButtonTheme: DevfestOutlinedButtonTheme.light(),
+            bottomNavTheme: DevfestBottomNavTheme.light(),
+            textFieldTheme: DevfestTextFieldTheme.light(),
+            onBackgroundColor: DevfestColors.grey10,
+            headerTileTheme: DevfestUserHeaderTile.light());
 
   DevFestThemeData.dark()
       : this(
@@ -46,6 +49,7 @@ class DevFestThemeData extends ThemeExtension<DevFestThemeData> {
           outlinedButtonTheme: DevfestOutlinedButtonTheme.dark(),
           bottomNavTheme: DevfestBottomNavTheme.dark(),
           onBackgroundColor: DevfestColors.backgroundLight,
+          headerTileTheme: DevfestUserHeaderTile.dark(),
         );
 
   @override
@@ -56,6 +60,7 @@ class DevFestThemeData extends ThemeExtension<DevFestThemeData> {
     DevfestBottomNavTheme? bottomNavTheme,
     DevfestTextFieldTheme? textFieldTheme,
     Color? onBackgroundColor,
+    DevfestUserHeaderTile? headerTileTheme,
   }) {
     return DevFestThemeData(
       textTheme: textTheme ?? this.textTheme,
@@ -64,6 +69,7 @@ class DevFestThemeData extends ThemeExtension<DevFestThemeData> {
       bottomNavTheme: bottomNavTheme ?? this.bottomNavTheme,
       textFieldTheme: textFieldTheme ?? this.textFieldTheme,
       onBackgroundColor: onBackgroundColor ?? this.onBackgroundColor,
+      headerTileTheme: headerTileTheme ?? this.headerTileTheme,
     );
   }
 
@@ -80,6 +86,7 @@ class DevFestThemeData extends ThemeExtension<DevFestThemeData> {
           outlinedButtonTheme?.lerp(other.outlinedButtonTheme, t),
       bottomNavTheme: bottomNavTheme?.lerp(other.bottomNavTheme, t),
       textFieldTheme: textFieldTheme?.lerp(other.textFieldTheme, t),
+      headerTileTheme: headerTileTheme?.lerp(other.headerTileTheme, t),
     );
   }
 }

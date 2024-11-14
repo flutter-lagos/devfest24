@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:cave/cave.dart';
 import 'package:volunteerapp/src/features/home/model/model.dart';
@@ -24,12 +23,12 @@ final class VolunteerHomeApiService {
     );
   }
 
-  Future<Either<Devfest2024Exception, AttendeesResponseDto>>
-      getAttendees() async {
+  Future<Either<Devfest2024Exception, AttendeesResponseDto>> getAttendees(
+      int day) async {
     final response = await _networkClient.call(
-      path: ConferenceApis.instance.getAttendees,
-      method: RequestMethod.get,
-    );
+        path: ConferenceApis.instance.getAttendees,
+        method: RequestMethod.get,
+        queryParams: {'day': day});
 
     return await processData(
       (p0) {
@@ -49,8 +48,8 @@ final class VolunteerHomeApiService {
 
     return await processData(
       (p0) {
-        final result = jsonDecode(p0);
-        return CheckInUserResponseDto.fromJson(result);
+        // final result = jsonDecode(p0);
+        return CheckInUserResponseDto.fromJson(p0);
       },
       response,
     );

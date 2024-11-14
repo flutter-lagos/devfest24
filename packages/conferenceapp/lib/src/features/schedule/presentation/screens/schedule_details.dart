@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/routing/routing.dart';
@@ -7,7 +6,7 @@ import 'package:devfest24/src/shared/widgets/speaker_talk_info_pill.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleDetailsScreen extends StatelessWidget {
-  static const route = '/home/schedule-details';
+  static const route = 'home/schedule-details';
 
   const ScheduleDetailsScreen({super.key, required this.session});
 

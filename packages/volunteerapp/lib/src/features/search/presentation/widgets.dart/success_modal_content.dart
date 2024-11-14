@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteerapp/src/features/home/application/check_in_view_model.dart';
 import 'package:volunteerapp/src/features/home/application/user_seach_view_model.dart';
 import 'package:volunteerapp/src/features/home/model/model.dart';
 import 'package:volunteerapp/src/features/home/presentation/screens/home_screen.dart';
@@ -174,7 +174,9 @@ class _CheckInSuccessModalState extends ConsumerState<CheckInSuccessModal> {
               DevfestFilledButton(
                 onPressed: () {
                   context.goNamed(HomeScreen.route);
-                  ref.read(usersearchVM.notifier).getAttendees();
+                  var day = ref.watch(checkInVMNotifier).day;
+
+                  ref.read(usersearchVM.notifier).getAttendees(day);
                 },
                 title: Text(
                   'Go back home',

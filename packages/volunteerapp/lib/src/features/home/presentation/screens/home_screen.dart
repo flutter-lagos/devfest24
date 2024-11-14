@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteerapp/src/features/home/application/check_in_view_model.dart';
@@ -25,7 +24,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(usersearchVM.notifier).getAttendees();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref
+          .read(usersearchVM.notifier)
+          .getAttendees(ref.watch(checkInVMNotifier).day);
+    });
+
     _loadUserName();
   }
 
@@ -41,7 +45,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ?.copyWith(fontWeight: FontWeight.w600, color: const Color(0xFF1E1E1E));
 
     return Scaffold(
-      key: homeScaffoldKey,
       appBar: AppBar(
         leadingWidth: 100.w,
         leading: Row(

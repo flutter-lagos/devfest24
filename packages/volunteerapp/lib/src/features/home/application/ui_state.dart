@@ -5,7 +5,7 @@ import 'package:volunteerapp/src/shared/ui_model/ui_state_model.dart';
 
 final class CheckInState extends Devfest2024UiState {
   final String userId;
-  final num day;
+  final int day;
   final String gender;
 
   final CheckInUserResponseDto checkedInattendee;
@@ -31,7 +31,7 @@ final class CheckInState extends Devfest2024UiState {
       Devfest2024Exception? error,
       CheckInUserResponseDto? checkedInattendee,
       String? userId,
-      num? day,
+      int? day,
       String? gender}) {
     return CheckInState(
         userId: userId ?? this.userId,

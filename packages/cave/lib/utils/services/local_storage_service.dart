@@ -36,12 +36,4 @@ final class ConferenceAppStorageService {
   Future<bool> get isFirstLaunch async {
     return await _sharedPreferencesInstance.getBool('is-first-launch') ?? true;
   }
-
-  Future<void> setuserName(String userName) async {
-    return await _sharedPreferencesInstance.setString('username', userName);
-  }
-
-  Future<String> get userName async {
-    return await _sharedPreferencesInstance.getString('username') ?? '';
-  }
 }

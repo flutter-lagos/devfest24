@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:cave/ui_utils/container_properties.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/features/speakers/presentation/widgets/speaker_social_media.dart';
@@ -15,7 +14,7 @@ import '../../../dashboard/model/model.dart';
 import 'package:collection/collection.dart';
 
 class SpeakerDetailsScreen extends ConsumerStatefulWidget {
-  static const route = '/home/speaker-details';
+  static const route = 'home/speaker-details';
 
   const SpeakerDetailsScreen({super.key, required this.speaker});
 
@@ -138,7 +137,7 @@ class _SpeakerDetailsScreenState extends ConsumerState<SpeakerDetailsScreen> {
                 ),
                 SpeakersTalkInfoPill(
                   icon: IconsaxOutline.location,
-                  title: session?.venue.name ?? 'N\\A',
+                  title: session?.venue.name.capitalize ?? 'N\\A',
                 ),
               ],
             ),

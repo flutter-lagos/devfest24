@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/model/model.dart';
 import 'package:devfest24/src/features/speakers/presentation/widgets/widgets.dart';
 import 'package:devfest24/src/routing/routing.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/shared.dart';
 import '../../../dashboard/application/application.dart';
+import '../../../more/presentation/screens/my_qr_code.dart';
 import 'screens.dart';
 
 class SpeakersHomeScreen extends ConsumerStatefulWidget {
@@ -55,6 +55,9 @@ class _SpeakersHomeScreenState extends ConsumerState<SpeakersHomeScreen> {
           CheckInButton(
             isLoggedIn: ref.watch(
                 userViewModelNotifier.select((vm) => vm.user.id.isNotEmpty)),
+            onCheckInTap: () {
+              context.goNamed(MyQrCodeScreen.route);
+            },
           ),
           Constants.horizontalMargin.horizontalSpace,
         ],

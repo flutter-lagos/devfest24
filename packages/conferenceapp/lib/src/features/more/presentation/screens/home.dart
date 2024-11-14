@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../dashboard/application/application.dart';
 import '../../../onboarding/presentation/presentation.dart';
+import '../../application/theme_vm.dart';
 import '../presentation.dart';
 
 class MoreHomeScreen extends ConsumerWidget {
@@ -14,6 +14,7 @@ class MoreHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final themeVM = ref.read(themeVMNotifier.notifier);
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: Column(
@@ -30,7 +31,7 @@ class MoreHomeScreen extends ConsumerWidget {
                   else
                     SignedOutUserHeaderTile(
                       signInOnTap: () {
-                        context.goNamedAndPopAll(OnboardingLoginScreen.route);
+                        context.goNamed(OnboardingLoginScreen.route);
                         ConferenceAppStorageService.instance
                             .setIsFirstLaunch(true);
                       },
@@ -38,33 +39,118 @@ class MoreHomeScreen extends ConsumerWidget {
                   MoreSection(
                     title: const Text('GENERAL'),
                     options: [
-                      MoreButton(
-                        title: const Text('Profile'),
-                        icon: Icon(
-                          IconsaxOutline.user,
-                          size: 22.r,
+                      if (ref.watch(userViewModelNotifier
+                          .select((vm) => vm.user.id.isNotEmpty)))
+                        MoreButton(
+                          title: const Text('Profile'),
+                          icon: Icon(
+                            IconsaxOutline.user,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(ProfileScreen.route);
+                          },
                         ),
-                        onTap: () {
-                          context.goNamed(ProfileScreen.route);
-                        },
-                      ),
-                      MoreButton(
-                        title: const Text('My QR Code'),
-                        icon: Icon(
-                          IconsaxOutline.shield,
-                          size: 22.r,
+                      if (ref.watch(userViewModelNotifier
+                          .select((vm) => vm.user.id.isNotEmpty))) ...[
+                        MoreButton(
+                          title: const Text('My QR Code'),
+                          icon: Icon(
+                            IconsaxOutline.shield,
+                            size: 22.r,
+                          ),
+                          onTap: () {
+                            context.goNamed(MyQrCodeScreen.route);
+                          },
                         ),
-                        onTap: () {
-                          context.goNamed(MyQrCodeScreen.route);
-                        },
-                      ),
+                        if (ref.watch(userViewModelNotifier
+                            .select((vm) => vm.user.resumeUrl.isEmpty)))
+                          MoreButton(
+                            title: const Text('Upload Resume'),
+                            icon: Icon(
+                              IconsaxOutline.document,
+                              size: 22.r,
+                            ),
+                            onTap: () {
+                              context.goNamed(HiringScreen.route);
+                            },
+                          ),
+                      ],
                       MoreButton(
                         title: const Text('Theme Settings'),
                         icon: Icon(
                           IconsaxOutline.component,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          showDevfestBottomModal(
+                            context,
+                            child: Consumer(
+                              builder: (context, ref, child) {
+                                final currentTheme = ref.watch(themeVMNotifier);
+
+                                return SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Select App Theme',
+                                        style: DevfestTheme.of(context)
+                                            .textTheme
+                                            ?.bodyBody1Semibold
+                                            ?.semi,
+                                      ),
+                                      Constants
+                                          .largeHorizontalGutter.verticalSpace,
+                                      ...ThemeMode.values.map(
+                                        (theme) => _CustomRadioTile<ThemeMode>(
+                                          value: theme,
+                                          activeColor:
+                                              DevfestColors.primariesYellow50,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 8.0),
+                                          groupValue: currentTheme.theme,
+                                          onChanged: (ThemeMode? newTheme) {
+                                            if (newTheme != null) {
+                                              themeVM.onThemeChange(newTheme);
+                                              context.pop();
+                                            }
+                                          },
+                                          title: Row(
+                                            children: [
+                                              Text(
+                                                switch (ThemeMode.values
+                                                    .indexOf(theme)) {
+                                                  1 => '😎',
+                                                  2 => '🌚',
+                                                  _ => '💫',
+                                                },
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.bodyBody1Medium
+                                                    ?.medium,
+                                              ),
+                                              Constants.horizontalGutter
+                                                  .horizontalSpace,
+                                              Text(
+                                                '${theme.name.capitalize} Theme',
+                                                style: DevfestTheme.of(context)
+                                                    .textTheme
+                                                    ?.bodyBody1Medium
+                                                    ?.medium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                       MoreButton(
                         title: const Text('Venue Map'),
@@ -87,7 +173,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           IconsaxOutline.heart,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () => launchWebUrl('https://devfestlagos.com'),
                       ),
                       MoreButton(
                         title: const Text('Contact Us'),
@@ -95,7 +181,7 @@ class MoreHomeScreen extends ConsumerWidget {
                           IconsaxOutline.info_circle,
                           size: 22.r,
                         ),
-                        onTap: () {},
+                        onTap: () => launchWebUrl('https://x.com/gdglagos'),
                       ),
                     ],
                   ),
@@ -168,6 +254,59 @@ class MoreButton extends StatelessWidget {
                 color: DevfestColors.grey60.possibleDarkVariant,
               ),
             ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
+class _CustomRadioTile<T> extends StatelessWidget {
+  final T value;
+  final T groupValue;
+  final ValueChanged<T?> onChanged;
+  final Widget title;
+  final Color activeColor;
+  final EdgeInsetsGeometry contentPadding;
+  final BorderRadius? borderRadius;
+
+  const _CustomRadioTile({
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+    required this.title,
+    this.activeColor = Colors.yellow,
+    this.contentPadding = const EdgeInsets.all(0),
+    this.borderRadius = const BorderRadius.all(Radius.circular(20)),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onChanged(value),
+      borderRadius: borderRadius,
+      child: Container(
+        padding: contentPadding,
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+        ),
+        child: Row(
+          children: [
+            Semantics(
+              label: 'theme radio button',
+              child: Transform.scale(
+                scale: 1.5,
+                child: Radio<T>(
+                  value: value,
+                  groupValue: groupValue,
+                  onChanged: onChanged,
+                  activeColor: activeColor,
+                ),
+              ),
+            ),
+            Constants.largeHorizontalGutter.horizontalSpace,
+            Expanded(child: title),
           ],
         ),
       ),

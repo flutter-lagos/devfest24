@@ -1,13 +1,14 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/dashboard/application/application.dart';
 import 'package:devfest24/src/features/dashboard/model/model.dart';
+import 'package:devfest24/src/routing/routing.dart';
 import 'package:devfest24/src/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../more/presentation/screens/my_qr_code.dart';
 import '../widgets/widgets.dart';
 import 'package:collection/collection.dart';
 
@@ -38,6 +39,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           CheckInButton(
             isLoggedIn: ref.watch(
                 userViewModelNotifier.select((vm) => vm.user.id.isNotEmpty)),
+            onCheckInTap: () {
+              context.goNamed(MyQrCodeScreen.route);
+            },
           ),
           Constants.horizontalMargin.horizontalSpace,
         ],
@@ -50,6 +54,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ref
                   .read(userViewModelNotifier.notifier)
                   .fetchUserProfile(refresh: true),
+              ref
+                  .read(scheduleViewModelNotifier.notifier)
+                  .fetchSchedule(refresh: true),
+              ref
+                  .read(speakersViewModelNotifier.notifier)
+                  .fetchSpeakers(refresh: true),
               ref
                   .read(sponsorsViewModelNotifier.notifier)
                   .fetchSponsors(refresh: true),

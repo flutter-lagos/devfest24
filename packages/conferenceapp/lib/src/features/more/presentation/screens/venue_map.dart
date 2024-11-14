@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:devfest24/src/features/more/presentation/map/map.dart';
 import 'package:devfest24/src/features/more/presentation/widgets/map.dart';
 import 'package:devfest24/src/routing/routing.dart';
@@ -22,7 +21,7 @@ final showBlocksProvider = StateProvider.autoDispose<bool>((ref) {
 });
 
 class VenueMapScreen extends ConsumerStatefulWidget {
-  static const route = '/home/venue-map';
+  static const route = 'home/venue-map';
 
   const VenueMapScreen({super.key});
 
@@ -264,7 +263,7 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen> {
                 Expanded(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: const Color(0xfffffaeb),
+                      color: DevfestTheme.of(context).backgroundColor,
                       border: Border(
                         top: BorderSide(
                           color: DevfestColors.grey80.possibleDarkVariant,

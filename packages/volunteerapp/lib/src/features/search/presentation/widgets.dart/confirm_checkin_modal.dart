@@ -1,5 +1,4 @@
 import 'package:cave/cave.dart';
-import 'package:cave/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volunteerapp/src/features/home/application/check_in_view_model.dart';
@@ -21,7 +20,7 @@ class _CheckInAttendeeModalState extends ConsumerState<CheckInAttendeeModal> {
     ref.listen(checkInVMNotifier, (previous, next) {
       if (next.uiState.isSuccess) {
         Navigator.of(context).pop();
-
+        FocusScope.of(context).unfocus();
         showCheckinSuccessBottomModal(context,
             attendee: ref.watch(usersearchVM).selectedAttendee);
         return;
