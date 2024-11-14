@@ -98,6 +98,8 @@ class DevfestTextFormField extends StatelessWidget {
         if (title != null) ...[
           Text(
             title!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: DevfestTheme.of(context).textTheme?.bodyBody3Medium,
           ),
           Constants.smallVerticalGutter.verticalSpace,

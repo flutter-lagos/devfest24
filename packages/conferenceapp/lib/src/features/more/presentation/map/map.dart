@@ -1,5 +1,5 @@
 //GENERATED BARREL FILE
 export 'action.dart';
-export 'grid.dart';
-export 'map_utils.dart';
 export 'robot.dart';
+export 'room.dart';
+export 'walker_grid_painter.dart';

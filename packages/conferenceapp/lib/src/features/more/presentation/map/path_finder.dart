@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:schematics/schematics.dart';
 
-import '../widgets/map.dart';
-import 'map.dart';
+import 'walker_grid_painter.dart';
+import 'action.dart';
+import 'robot.dart';
 
 class _PathFinderRequest {
   final Completer<List<Action>> completer = Completer();
