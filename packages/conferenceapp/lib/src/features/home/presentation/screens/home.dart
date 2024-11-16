@@ -82,8 +82,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: HeaderText(
                   title: Text(
                       '$_getGreeting, ${ref.watch(userViewModelNotifier.select((value) => value.user.fullName.split(' ').first))}'),
-                  subtitle: Text(
-                      'You start on the street, work till you are eleniyan.'),
+                  subtitle: Text('Eat, code, sleep'),
                 ),
               ),
               SliverToBoxAdapter(
