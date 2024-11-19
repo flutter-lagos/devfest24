@@ -37,7 +37,7 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen>
 
   late Animation<double> speedProgressAnim;
 
-  late List<BlockLayoutArea> roomsLayouts;
+  late List<BlockArea> roomsLayouts;
   GridCellRange? navigationBlock;
   ({RoomType? from, RoomType? to}) instructions = (from: null, to: null);
   Grid<int>? grid;
@@ -317,13 +317,15 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen>
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: SchemaWidget(
-                        onInitiateAxesScale: (blockAreaConstraints) =>
-                            (xScale: 1.w, yScale: 0.85.h, openingScale: 1.w),
-                        schemaSize: (cellSize: 8, openingRadius: 22),
-                        layoutDirection: LayoutDirection.bottomRight,
-                        showGrid: ref.watch(showGridStateProvider),
-                        showBlocks: ref.watch(showBlocksProvider),
+                      child: Schema(
+                        config: SchemaConfiguration(
+                          initiateAxesScale: (blockAreaConstraints) =>
+                              AxesScale(x: 1.w, y: 0.85.h, opening: 1.w),
+                          size: SchemaSize(cell: 8, opening: 22),
+                          layoutDirection: LayoutDirection.bottomRight,
+                          showGrid: ref.watch(showGridStateProvider),
+                          showBlocks: ref.watch(showBlocksProvider),
+                        ),
                         onBlocksLayout: (blocksLayout) {
                           WidgetsFlutterBinding.ensureInitialized()
                               .addPostFrameCallback((_) {
@@ -395,21 +397,41 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen>
                           DevfestBlock.withContext(
                             context,
                             height: 242,
-                            width: 76,
+                            width: 46,
                             blockLabel: 'HALLWAY',
                             room: RoomType.entranceHallway,
                             blockLabelStyle: TextStyle(fontSize: 10).medium,
                             alignmentToPreviousBlock:
-                                BlockAlignment.bottomRight.alignRight -
-                                    BlockAlignment(0.4, 0),
-                            entranceLabel: 'ENTRANCE/EXIT',
+                                BlockAlignment.bottomRight.alignRight,
+                            // entranceLabel: 'ENTRANCE/EXIT',
                             hideFenceBorder: HideFenceBorder.right,
-                            entranceOpeningRadius: 16.5,
+                            // entranceOpeningRadius: 16.5,
                             blockColor: Color(0xffd9d0c3),
                             openings: [
-                              Offset(39, 242).opening,
+                              Offset(9, 242).opening,
                               Offset(0, 124).oSize(33),
-                              Offset(0.001, 0).oSize(76),
+                              Offset(0.001, 0).oSize(46),
+                            ],
+                            arcOpenings: [
+                              Offset(46, 188).arcSize(16.5).withLabel(
+                                    'ENTRANCE',
+                                    allowTextOverflow: true,
+                                    labelMargin: 3,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: DevfestTheme.of(context)
+                                            .onBackgroundColor),
+                                  ),
+                              Offset(46, 82).arcSize(16.5).withLabel(
+                                    'EXIT',
+                                    allowTextOverflow: true,
+                                    labelMargin: 3,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: DevfestTheme.of(context)
+                                          .onBackgroundColor,
+                                    ),
+                                  ),
                             ],
                           ),
                           DevfestBlock.withContext(
@@ -419,10 +441,10 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen>
                             alignmentToPreviousBlock:
                                 BlockAlignment.bottomLeft.alignTop.alignRight,
                             height: 242,
-                            width: 195,
+                            width: 198,
                             blockColor: Color(0xffffffff),
                             openings: [
-                              Offset(195, 124).oSize(33),
+                              Offset(198, 124).oSize(33),
                               Offset(90, 0).oSize(36),
                             ],
                           ),
@@ -619,32 +641,30 @@ extension type DevfestBlock._(Block i) implements Block {
     double width = 100,
     double height = 100,
     HideFenceBorder hideFenceBorder = HideFenceBorder.none,
-    String? entranceLabel,
-    TextStyle? entranceLabelStyle,
-    double? entranceOpeningRadius,
     required String blockLabel,
     TextStyle? blockLabelStyle,
     Color? blockColor,
     Offset? position,
     List<BlockOpening> openings = const [],
+    List<BlockArcOpening> arcOpenings = const [],
     BlockAlignment? alignmentToPreviousBlock,
   }) : this._(
           Block<RoomType>(
             identifier: room,
-            blockLabel: blockLabel,
-            entranceLabel: entranceLabel,
-            blockColor: blockColor ?? DevfestColors.primariesYellow60,
+            label: blockLabel,
+            // entranceLabel: entranceLabel,
+            color: blockColor ?? DevfestColors.primariesYellow60,
             height: height,
             width: width,
-            hideFenceBorder: hideFenceBorder,
-            entranceLabelStyle: DevfestTheme.of(context)
-                .textTheme
-                ?.bodyBody4Regular
-                ?.medium
-                .applyColor(DevfestColors.grey10)
-                .merge(entranceLabelStyle),
-            entranceOpeningRadius: entranceOpeningRadius,
-            blockLabelStyle: DevfestTheme.of(context)
+            fenceBorder: hideFenceBorder,
+            // entranceLabelStyle: DevfestTheme.of(context)
+            //     .textTheme
+            //     ?.bodyBody4Regular
+            //     ?.medium
+            //     .applyColor(DevfestColors.grey10)
+            //     .merge(entranceLabelStyle),
+            // entranceOpeningRadius: entranceOpeningRadius,
+            labelStyle: DevfestTheme.of(context)
                 .textTheme
                 ?.bodyBody3Regular
                 ?.semi
@@ -653,6 +673,7 @@ extension type DevfestBlock._(Block i) implements Block {
             position: position,
             openings: openings,
             alignmentToPreviousBlock: alignmentToPreviousBlock,
+            arcOpenings: arcOpenings,
           ),
         );
 }
