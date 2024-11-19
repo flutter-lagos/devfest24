@@ -403,9 +403,7 @@ class _VenueMapScreenState extends ConsumerState<VenueMapScreen>
                             blockLabelStyle: TextStyle(fontSize: 10).medium,
                             alignmentToPreviousBlock:
                                 BlockAlignment.bottomRight.alignRight,
-                            // entranceLabel: 'ENTRANCE/EXIT',
                             hideFenceBorder: HideFenceBorder.right,
-                            // entranceOpeningRadius: 16.5,
                             blockColor: Color(0xffd9d0c3),
                             openings: [
                               Offset(9, 242).opening,
@@ -652,18 +650,10 @@ extension type DevfestBlock._(Block i) implements Block {
           Block<RoomType>(
             identifier: room,
             label: blockLabel,
-            // entranceLabel: entranceLabel,
             color: blockColor ?? DevfestColors.primariesYellow60,
             height: height,
             width: width,
             fenceBorder: hideFenceBorder,
-            // entranceLabelStyle: DevfestTheme.of(context)
-            //     .textTheme
-            //     ?.bodyBody4Regular
-            //     ?.medium
-            //     .applyColor(DevfestColors.grey10)
-            //     .merge(entranceLabelStyle),
-            // entranceOpeningRadius: entranceOpeningRadius,
             labelStyle: DevfestTheme.of(context)
                 .textTheme
                 ?.bodyBody3Regular
