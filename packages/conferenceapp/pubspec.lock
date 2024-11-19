@@ -643,10 +643,10 @@ packages:
     dependency: "direct main"
     description:
       name: schematics
-      sha256: "4914d8f85b4462b8d61bedfd26a4656bb32ec1bceec920ed792d0f5edc112c2c"
+      sha256: "2fa2289838706bde711034b81d1f0e78d5c1e3061782f5b39f4f58ee93c8e415"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0-dev.1.5"
+    version: "1.0.2"
   shared_preferences:
     dependency: "direct main"
     description:
