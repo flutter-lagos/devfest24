@@ -1,11 +1,12 @@
 import 'package:cave/cave.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_login.dart';
 import 'package:volunteerapp/src/routing/routing.dart';
 import 'package:volunteerapp/src/shared/shared.dart';
 
 class OnboardingHomeScreen extends StatelessWidget {
   const OnboardingHomeScreen({super.key});
+  static const route = '/onboarding';
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class OnboardingHomeScreen extends StatelessWidget {
                   SizedBox(height: (Constants.largeVerticalGutter * 3).h),
                   DevfestFilledButton(
                     onPressed: () {
-                      context.goNamed(Devfest2024Routes.onboardingLogin.name);
+                      context.goNamedAndPopAll(OnboardingLoginScreen.route);
                     },
                     title: const Text('Login'),
                   ),

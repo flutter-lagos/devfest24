@@ -24,8 +24,17 @@ final class ConferenceAppStorageService {
     return await _securedStorageInstance.write(key: 'user-token', value: token);
   }
 
+ 
   Future<String> get userToken async {
     return await _securedStorageInstance.read(key: 'user-token') ?? '';
+  }
+
+   Future<void> setuserName(String token) async {
+    return await _securedStorageInstance.write(key: 'user-name', value: token);
+  }
+
+  Future<String> get userName async {
+    return await _securedStorageInstance.read(key: 'user-name') ?? '';
   }
 
   Future<void> setIsFirstLaunch(bool isFirstLaunch) async {

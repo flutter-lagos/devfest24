@@ -1,9 +1,7 @@
 import 'package:cave/cave.dart';
 import 'package:devfest24/src/shared/shared.dart';
-
 import '../model/model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part 'session_sign_in_state.dart';
 
 final sessionSignInVMNotifier =

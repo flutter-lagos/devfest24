@@ -1,33 +1,49 @@
 import 'package:cave/cave.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteerapp/src/features/home/application/check_in_view_model.dart';
+import 'package:volunteerapp/src/features/home/application/user_seach_view_model.dart';
+import 'package:volunteerapp/src/features/search/presentation/screens/search_screen.dart';
+import 'package:volunteerapp/src/features/search/presentation/widgets.dart/widgets.dart';
 import '../../../../routing/routing.dart';
 import '../widgets/widgets.dart';
 
-class HomeScreen extends StatefulWidget {
+final GlobalKey<ScaffoldState> homeScaffoldKey = GlobalKey<ScaffoldState>();
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+  static const route = '/home';
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  List<Map<String, dynamic>> attendees = List.generate(
-    10,
-    (index) => {
-      'checkedIn': index % 2 == 0,
-      'fullName': 'John Doe${index + 1}',
-      'email': 'john${index + 1}@example.com',
-      'ticketId': 'T00${index + 1}'
-    },
-  );
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  String userFullName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref
+          .read(usersearchVM.notifier)
+          .getAttendees(ref.watch(checkInVMNotifier).day);
+    });
+
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    userFullName = await ConferenceAppStorageService.instance.userName;
+    setState(() {}); // Triggers a rebuild to display the name
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = DevfestTheme.of(context).textTheme;
     final headerStyle = textTheme?.bodyBody3Semibold
         ?.copyWith(fontWeight: FontWeight.w600, color: const Color(0xFF1E1E1E));
+
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 100.w,
@@ -43,16 +59,25 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: EdgeInsets.only(right: 24.w),
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                ref.read(checkInVMNotifier.notifier).logout(context);
+              },
               label: Text(
                 'Log out',
                 style: textTheme?.bodyBody3Semibold
                     ?.copyWith(fontWeight: FontWeight.w600),
               ),
-              icon: const Icon(
-                IconsaxOutline.login,
-                color: DevfestColors.backgroundDark,
-              ),
+              icon: ref.watch(
+                      checkInVMNotifier.select((vm) => vm.uiState.isLoading))
+                  ? CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation(DevfestColors.grey10),
+                      backgroundColor: DevfestColors.grey10,
+                      strokeWidth: 2.0,
+                    )
+                  : const Icon(
+                      IconsaxOutline.login,
+                      color: DevfestColors.backgroundDark,
+                    ),
             ),
           ),
         ],
@@ -65,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '☺️ Welcome Sarah',
+                '☺️ Welcome $userFullName',
                 style: textTheme?.titleTitle1Semibold?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: DevfestColors.grey10,
@@ -122,8 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          onTap: () =>
-                              context.goNamed(Devfest2024Routes.search.name),
+                          onTap: () => context.goNamed(SearchScreen.route),
                           enabled: true,
                           readOnly: true,
                           decoration: InputDecoration(
@@ -192,32 +216,92 @@ class _HomeScreenState extends State<HomeScreen> {
                         DataColumn(label: Text('Email Address')),
                         DataColumn(label: Text('Ticket ID')),
                       ],
-                      rows: attendees.map((attendee) {
+                      rows: ref
+                          .watch(
+                              usersearchVM.select((vm) => vm.fetchedAttendees))
+                          .map((attendee) {
                         return DataRow(
                           cells: <DataCell>[
                             DataCell(
                               Center(
-                                child: Checkbox(
-                                  semanticLabel: 'Checkin user',
-                                  value: attendee['checkedIn'],
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      attendee['checkedIn'] = value ?? false;
-                                    });
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  side: const BorderSide(
-                                    color: DevfestColors.backgroundDark,
-                                    width: 1.5,
-                                  ),
-                                  checkColor: DevfestColors.backgroundLight,
-                                  activeColor: const Color(0xFF141B34),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.padded,
-                                  visualDensity: VisualDensity.standard,
-                                ),
+                                child:
+
+                                    ///check if current day is contained in the users list of checked in days
+                                    attendee.checkins.contains(
+                                            ref.watch(checkInVMNotifier).day)
+                                        ? Checkbox(
+                                            semanticLabel: 'Checkin user',
+                                            value: true,
+                                            onChanged: (bool? value) {},
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            side: const BorderSide(
+                                              color:
+                                                  DevfestColors.backgroundDark,
+                                              width: 1.5,
+                                            ),
+                                            checkColor:
+                                                DevfestColors.backgroundLight,
+                                            activeColor:
+                                                const Color(0xFF141B34),
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize.padded,
+                                            visualDensity:
+                                                VisualDensity.standard,
+                                          )
+                                        : Checkbox(
+                                            semanticLabel: 'Checkin user',
+                                            value: attendee.checkins.contains(
+                                                ref
+                                                    .watch(checkInVMNotifier)
+                                                    .day),
+                                            onChanged: (bool? value) {
+                                              ref
+                                                  .read(usersearchVM.notifier)
+                                                  .onHomePageCheckboxClicked(
+                                                    value ?? false,
+                                                    attendee.id,
+                                                  );
+
+                                              ///show the modal if checkbox is selected
+
+                                              if (value == true) {
+                                                //show modal
+                                                showModalBottomSheet(
+                                                    isScrollControlled: true,
+                                                    isDismissible: false,
+                                                    backgroundColor:
+                                                        DevfestColors
+                                                            .warning100,
+                                                    showDragHandle: true,
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return CheckInAttendeeModal(
+                                                        attendee: attendee,
+                                                      );
+                                                    });
+                                              }
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            side: const BorderSide(
+                                              color:
+                                                  DevfestColors.backgroundDark,
+                                              width: 1.5,
+                                            ),
+                                            checkColor:
+                                                DevfestColors.backgroundLight,
+                                            activeColor:
+                                                const Color(0xFF141B34),
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize.padded,
+                                            visualDensity:
+                                                VisualDensity.standard,
+                                          ),
                               ),
                             ),
                             DataCell(
@@ -236,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        attendee['fullName']
+                                        attendee.fullname
                                             .split(' ')
                                             .map((e) => e[0])
                                             .take(2)
@@ -249,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    attendee['fullName'],
+                                    attendee.fullname,
                                     style:
                                         textTheme?.bodyBody4Regular?.copyWith(
                                       fontWeight: FontWeight.w500,
@@ -261,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             DataCell(
                               Text(
-                                attendee['email'],
+                                attendee.emailAddress,
                                 style: textTheme?.bodyBody4Regular?.copyWith(
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFF1E1E1E),
@@ -270,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             DataCell(
                               Text(
-                                attendee['ticketId'],
+                                attendee.ticketId,
                                 style: textTheme?.bodyBody4Regular?.copyWith(
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFF1E1E1E),

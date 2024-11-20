@@ -2,54 +2,44 @@ import 'package:volunteerapp/src/features/home/presentation/screens/home_screen.
 import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_home.dart';
 import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_login.dart';
 import 'package:volunteerapp/src/features/search/presentation/screens/search_screen.dart';
-
-import 'routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class Devfest2024Router {
-  static final rootNavigatorKey = GlobalKey<NavigatorState>();
-
   Devfest2024Router._();
 
   static final Devfest2024Router instance = Devfest2024Router._();
 
-  void initialiseRouter(WidgetRef ref) {
-    router = _getRouter(ref);
-  }
+  static String initialRoute = HomeScreen.route;
 
-  late GoRouter router;
-
-  GoRouter _getRouter(WidgetRef ref) {
-    return GoRouter(
-        navigatorKey: rootNavigatorKey,
-        initialLocation: '/onboarding',
-        routes: [
-          GoRoute(
-            path: '/${Devfest2024Routes.onboardingHome.path}',
-            name: Devfest2024Routes.onboardingHome.name,
-            builder: (context, state) => const OnboardingHomeScreen(),
-            routes: [
-              GoRoute(
-                path: Devfest2024Routes.onboardingLogin.path,
-                name: Devfest2024Routes.onboardingLogin.name,
-                builder: (context, state) => const OnboardingLoginScreen(),
-              ),
-            ],
+  Route<dynamic> onGenerateRoutes(RouteSettings settings) {
+    return switch (settings.name) {
+      OnboardingHomeScreen.route =>
+        MaterialPageRoute(builder: (_) => const OnboardingHomeScreen()),
+      OnboardingLoginScreen.route =>
+        MaterialPageRoute(builder: (_) => const OnboardingLoginScreen()),
+      HomeScreen.route => MaterialPageRoute(builder: (_) => const HomeScreen()),
+      SearchScreen.route =>
+        MaterialPageRoute(builder: (_) => const SearchScreen()),
+      _ => MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text('No route defined for ${settings.name}'),
+            ),
           ),
-          GoRoute(
-            path: '/',
-            name: Devfest2024Routes.home.name,
-            builder: (context, state) => const HomeScreen(),
-            routes: [
-              GoRoute(
-                path: Devfest2024Routes.search.path,
-                name: Devfest2024Routes.search.name,
-                builder: (context, state) => const SearchScreen(),
-              ),
-            ],
-          ),
-        ]);
+        ),
+    };
   }
+}
+
+extension BuildContextX on BuildContext {
+  void pop<T extends Object>([T? result]) => Navigator.of(this).pop<T>(result);
+
+  Future<dynamic> goNamed(String routeName, {Object? arguments}) =>
+      Navigator.of(this).pushNamed(routeName, arguments: arguments);
+
+  Future<dynamic> goNamedAndPopAll(String routeName, {Object? arguments}) =>
+      Navigator.of(this).pushNamedAndRemoveUntil(routeName, (route) => false,
+          arguments: arguments);
 }

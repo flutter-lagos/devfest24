@@ -2,6 +2,7 @@ import 'package:accessibility_tools/accessibility_tools.dart';
 import 'package:cave/cave.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:volunteerapp/src/features/onboarding/presentation/screens/onboarding_home.dart';
 import 'package:volunteerapp/src/routing/routing.dart';
 
 class VolunteerApp extends ConsumerStatefulWidget {
@@ -17,7 +18,18 @@ class _ConferenceAppState extends ConsumerState<VolunteerApp> {
   @override
   void initState() {
     super.initState();
-    Devfest2024Router.instance.initialiseRouter(ref);
+    Future.microtask(() async {
+      final [dynamic isFirstLaunch, dynamic token] = await Future.wait([
+        ConferenceAppStorageService.instance.isFirstLaunch,
+        ConferenceAppStorageService.instance.userToken,
+      ]);
+
+      if (isFirstLaunch == true && (token.toString()).isEmpty) {
+        rootNavigatorKey.currentContext
+            ?.goNamedAndPopAll(OnboardingHomeScreen.route);
+        return;
+      }
+    });
   }
 
   void _unfocus() {
@@ -33,11 +45,16 @@ class _ConferenceAppState extends ConsumerState<VolunteerApp> {
         designSize: designSize,
         minTextAdapt: true,
         builder: (_, child) {
-          return MaterialApp.router(
+          return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Devfest24 Vounteer App',
-            routerConfig: Devfest2024Router.instance.router,
-            builder: (context, child) => AccessibilityTools(child: child),
+            navigatorKey: rootNavigatorKey,
+            initialRoute: Devfest2024Router.initialRoute,
+            onGenerateRoute: Devfest2024Router.instance.onGenerateRoutes,
+            builder: (context, child) => AccessibilityTools(
+                minimumTapAreas: const MinimumTapAreas(mobile: 30, desktop: 44),
+                checkFontOverflows: true,
+                child: child),
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.deepPurple,

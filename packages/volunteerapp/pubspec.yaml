@@ -26,6 +26,7 @@ dependencies:
   cave:
     path: ../cave
 
+  confetti: ^0.8.0
   equatable: ^2.0.5
   firebase_core: ^3.5.0
   flutter:

@@ -18,4 +18,9 @@ final class ConferenceApis {
   String get getSpeakers => 'https://devfestlagos.com/app-assets/speakers.json';
 
   String get getSchedule => 'https://devfestlagos.com/app-assets/schedule.json';
+  String get getAttendees => '$baseUrl/users';
+  String get volunteerLogout => '$baseUrl/volunteers/sessions';
+  String get postCheckUserIn => '$baseUrl/volunteers/checkins';
+  String get postSignin => '$baseUrl/volunteers/sessions';
+
 }
